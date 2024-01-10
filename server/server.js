@@ -23,7 +23,7 @@ const corsOptions = {
     credentials: true,
     optionSuccessStatus: 200,
 };
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Mounting the router middleware to handle routes starting from the root.
 app.use('/', router);
