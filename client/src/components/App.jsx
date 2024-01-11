@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 
 export function App() {
   return (
-    <div>App</div>
+    <div>This is our app</div>
   )
 }
 
