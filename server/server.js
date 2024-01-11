@@ -7,18 +7,10 @@ import cors from 'cors';
 import router from './routes/router.js';
 import dotenv from 'dotenv';
 
-// commonJs syntax
-// const express = require('express');
-// const path = require('path');
-// // Importing cors middleware.
-// const cors = require('cors');
-// // Import router and routes.
-// const router = require('./routes/router');
-// const dotenv = require('dotenv');
-
 // Load environment variables from .env.server.
 dotenv.config({ path: '.env.server' });
 
+// Set local variable PORT to env varianle with server port.
 const PORT = process.env.PORT;
 
 console.log('PORT', PORT);  // Outputs: your_port_here
@@ -40,9 +32,6 @@ app.use(cors(corsOptions));
 
 // Mounting the router middleware to handle routes starting from the root.
 app.use('/', router);
-
-// Assign local variable PORT to server side environment variables.
-
 
 app.listen(PORT, () => {
     console.log(`Server listening on port: ${PORT}...`);

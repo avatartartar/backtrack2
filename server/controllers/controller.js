@@ -1,7 +1,9 @@
-import model from '../models/model.js';
+import model, { basicQueries } from '../models/model.js';
 
+// Controller object created to encapsulate functions related to handling requests to the DB or potentially api
 const controller = {};
 
+// Helper function that takes in a helper function 
 const handleRequest = async (modelFunction, req, res) => {
   try {
     const data = await modelFunction();
@@ -11,15 +13,15 @@ const handleRequest = async (modelFunction, req, res) => {
   }
 };
 
-controller.getTop10Artists = (req, res) => handleRequest(model.getTop10Artists, req, res);
-controller.getTop10Albums = (req, res) => handleRequest(model.getTop10Albums, req, res);
-controller.getTop10Tracks = (req, res) => handleRequest(model.getTop10Tracks, req, res);
+controller.getTop10Artists = (req, res) => handleRequest(basicQueries.getTop10Artists, req, res);
+controller.getTop10Albums = (req, res) => handleRequest(basicQueries.getTop10Albums, req, res);
+controller.getTop10Tracks = (req, res) => handleRequest(basicQueries.getTop10Tracks, req, res);
 
 
 
-controller.getFields = (req, res) => handleRequest(model.getFields, req, res);
+controller.getFields = (req, res) => handleRequest(basicQueries.getFields, req, res);
 
-controller.get10Sessions = (req, res) => handleRequest(model.get10Sessions, req, res);
+controller.get10Sessions = (req, res) => handleRequest(basicQueries.get10Sessions, req, res);
 
 
 export default controller;
