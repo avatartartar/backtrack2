@@ -1,23 +1,18 @@
-const express = require('express');
+// commonJs syntax
+// const express = require('express');
+// const { controller } = require('../controllers/controller.js');
+
+// es6 syntax
+import express from 'express';
 const router = express.Router();
-const { controller } = require('../controllers/controller.js');
+import controller from '../controllers/controller.js';
 
 // Sample route for get 10 records
-router.get('/api/get10', async (req, res) => {
-    try {
-        const response = await controller.get10(req, res, next);
-        return res.status(200).json(response);
-    } catch (error) {
-        next(error)
-    }
-  } 
-)
+router.get('/db/get10', controller.get10Sessions);
+router.get('/db/getColumns', controller.getColumns)
 
-// Global error handler
-app.use((err, req, res) => {
-  console.error(err);
-  return res.status(500).json({ error: err.toString()});
-});
+// CommonJs syntax
+// module.exports = router;
 
-// Export router.
-module.exports = router;
+// ES6 syntax
+export default router;

@@ -1,14 +1,23 @@
-const db = require('..models/model')
+import model from '../models/model.js';
 
 const controller = {};
 
-controller.get10Records = async (req, res, next) => {
-  const { data, error } = await supabase
-    .from('playorder')
-    .select('*')
-    .limit(10);
-
-  if (error) throw error;
-  if (data.length === 0) return []; // Return an empty array if the table is empty
-  return Object.keys(data[0]); // Return the column names
+controller.get10Sessions = async (req, res) => {
+  try {
+      const data = await model.get10Sessions();
+      res.status(200).json(data);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
 };
+
+controller.getColumns = async (req, res) => {
+  try {
+      const data = await model.getColumns();
+      res.status(200).json(data);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+}
+
+export default controller;

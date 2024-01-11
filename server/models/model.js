@@ -1,23 +1,51 @@
 import { createClient } from '@supabase/supabase-js'; // after installing the supabase-js package
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+dotenv.config( { path: './.env.server' } );
 
 // Supabase configuration
-const supabaseUrl = process.env.SUPA_URL;
-const supabaseKey = process.env.SUPA_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const port = process.env.PORT;
+const supaUrl = process.env.SUPA_URL;
+// const supaUrl = 'https://oqgzfklzchjxycnziuxc.supabase.co';
+const supaKey = process.env.SUPA_KEY;
+
+console.log('port', port);  // Outputs: your_port_here
+console.log('supaUrl', supaUrl);  // Outputs: your_key_here
+console.log('supaKey', supaKey);  // Outputs: your_url_here
+
+const supabase = createClient(supaUrl, supaKey);
 let insertCount = 0;
 let recentData;
 
+const model = {};
 
+model.get10Sessions = async (req, res, next) => {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('artist, track, album, country, dt_added, timefn')
+    .limit(10);
 
+  if (error) throw error;
+  if (data.length === 0) return []; // Return an empty array if the table is empty
+  return data; // Return the data
+};
 
-get10Records();
+model.getTop10Tracks = async (req, res, next) => {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('artist, track, album, country, dt_added, timefn')
+    .limit(10);
+
+  if (error) throw error;
+  if (data.length === 0) return []; // Return an empty array if the table is empty
+  return data; // Return the data
+};
 
 // Function to get column names from the playorder table
-const getColumnNames = async () => {
+model.getColumns = async () => {
   const { data, error } = await supabase
-    .from('playorder')
+    .from('sessions')
     .select('*')
     .limit(1);
 
@@ -26,8 +54,10 @@ const getColumnNames = async () => {
   return Object.keys(data[0]); // Return the column names
 };
 
+export default model;
+
 // Function to insert data into the database
-// const insertData = async (data, columnNames) => {
+// const insertData = async (data, columns) => {
 //   const mappedData = {
 //     artist: data.master_metadata_album_artist_name,
 //     track: data.master_metadata_track_name,
@@ -39,7 +69,7 @@ const getColumnNames = async () => {
 
 //   // Add keys from data to mappedData if they are not already in mappedData and they match a column name
 //   for (const key in data) {
-//     if (!mappedData.hasOwnProperty(key) && columnNames.includes(key)) {
+//     if (!mappedData.hasOwnProperty(key) && columns.includes(key)) {
 //       mappedData[key] = data[key];
 //     }
 //   }
@@ -57,12 +87,12 @@ const getColumnNames = async () => {
 //   const fileContent = fs.readFileSync(filePath, 'utf8');
 //   const json = JSON.parse(fileContent);
 
-//   const columnNames = await getColumnNames();
+//   const columnNames = await getColumns();
 
 
 //   for (const item of json) {
 //     recentData = item;
-//     await insertData(item, columnNames);
+//     await insertData(item, columns);
 //     insertCount++;
 
 //     if (insertCount % 500 === 0) {
