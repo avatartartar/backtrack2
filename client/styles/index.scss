@@ -1,0 +1,125 @@
+// importing of fonts
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap');
+
+
+$font-family-mono: "Red Hat Mono", monospace;
+// gradient animation style for landing page
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(45deg, #130188 0%, darken(#13008b, 50%) 100%);
+  background-size: 200% 200%;
+  height: 100%;
+  width: 100%;
+  animation: background 20s ease infinite;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-family: $font-family-mono;
+  color: white;
+}
+
+@keyframes background {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+//html tag styles
+
+h3 {
+  color: white;
+  font-size: 36px;
+  font-family: $font-family-mono;
+  font-weight: 300;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+}
+
+
+.navBar {
+  display: flex;
+  justify-content: center;
+
+  img {
+    margin: 25px;
+    height: 50px;
+  }
+}
+
+.gradientHeader {
+  background: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  font-family: $font-family-mono;
+  font-size: 64px;
+}
+
+.SongList {
+  color: white;
+  font-family: $font-family-mono;
+  width: 400px;
+  h3 {
+    margin: 0px;
+  }
+}
+
+
+.SongList li {
+  border: 0.5px solid gray;
+  width: 400px;
+  text-align: center;
+  padding: 10px;
+  margin: 10px 0px;
+  border-radius: 69px;
+}
+
+.songListAndAlbum {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.topAlbum {
+  h3 {
+    margin: 0;
+    text-align: end;
+    margin-bottom: 15px;
+  }
+}
+
+.albumCard {
+  background: linear-gradient(#ADADFF, #6072D1);
+  width: 500px;
+  height: 515px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+    img {
+        padding-top: 25px;
+        height: 400px;
+        width: 425px;
+        object-fit: cover;
+      }
+  h4 {
+    font-weight: 300;
+    text-align: end;
+    margin-right: -250px;
+  }
+}
+
