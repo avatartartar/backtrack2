@@ -85,7 +85,7 @@ module.exports = (env, argv) => {
             // Will generate an HTML file that includes all webpack bundles in the body using script tags
             new HtmlWebpackPlugin({
                 // The title to use for the generated HTML document.
-                title: 'InsertProjectName',
+                title: 'BackTrack',
                 // The file to write HTML to
                 filename: 'index.html',
                 // The relative or absolute path to the template.
