@@ -5,14 +5,8 @@ import dotenv from 'dotenv';
 dotenv.config( { path: './.env.server' } );
 
 // Supabase configuration
-const port = process.env.PORT;
 const supaUrl = process.env.SUPA_URL;
-// const supaUrl = 'https://oqgzfklzchjxycnziuxc.supabase.co';
 const supaKey = process.env.SUPA_KEY;
-
-console.log('port', port);  // Outputs: your_port_here
-console.log('supaUrl', supaUrl);  // Outputs: your_key_here
-console.log('supaKey', supaKey);  // Outputs: your_url_here
 
 const supabase = createClient(supaUrl, supaKey);
 let insertCount = 0;
@@ -20,41 +14,69 @@ let recentData;
 
 const model = {};
 
-model.get10Sessions = async (req, res, next) => {
-  const { data, error } = await supabase
+// a helper function that executes a query callback and returns the data or throws an error
+// allows us to avoid repeating the same try/catch block in every model function
+const executeQuery = async (queryCallback) => {
+  const { data, error } = await queryCallback(supabase);
+  if (error) throw error;
+  if (data.length === 0) return [];
+  return data;
+};
+
+
+model.getTop10Tracks = () => executeQuery(async (supabase) => {
+  return supabase
+  // a view in supabase
+    .from('top10_tracks')
+    .select('*');
+});
+
+model.getTop10Artists = () => executeQuery(async (supabase) => {
+  return supabase
+  // a view in supabase
+    .from('top10_artists')
+    .select('*');
+});
+
+model.getTop10Albums = () => executeQuery(async (supabase) => {
+  return supabase
+  // a view in supabase
+    .from('top10_albums')
+    .select('*');
+});
+
+// Sample function to get 10 records
+model.get10Sessions = () => executeQuery(async (supabase) => {
+  return supabase
     .from('sessions')
     .select('artist, track, album, country, dt_added, timefn')
     .limit(10);
+});
 
-  if (error) throw error;
-  if (data.length === 0) return []; // Return an empty array if the table is empty
-  return data; // Return the data
-};
-
-model.getTop10Tracks = async (req, res, next) => {
-  const { data, error } = await supabase
-    .from('sessions')
-    .select('artist, track, album, country, dt_added, timefn')
-    .limit(10);
-
-  if (error) throw error;
-  if (data.length === 0) return []; // Return an empty array if the table is empty
-  return data; // Return the data
-};
-
-// Function to get column names from the playorder table
-model.getColumns = async () => {
-  const { data, error } = await supabase
+// get field names
+model.getFields = () => executeQuery(async (supabase) => {
+  return supabase
     .from('sessions')
     .select('*')
     .limit(1);
-
-  if (error) throw error;
-  if (data.length === 0) return []; // Return an empty array if the table is empty
-  return Object.keys(data[0]); // Return the column names
-};
+});
 
 export default model;
+
+
+// model.getTop10Tracks = async () => {
+//   const { data, error } = await supabase
+//     .from('sessions')
+//     .select('track, count(track) as play_count')
+//     .gte('ms_played', 60000) // 60000 milliseconds = 1 minute
+//     .group('track')
+//     .order('play_count', { ascending: false })
+//     .limit(10);
+
+//   if (error) throw error;
+//   if (data.length === 0) return []; // Return an empty array if the table is empty
+//   return data; // Return the data
+// };
 
 // Function to insert data into the database
 // const insertData = async (data, columns) => {
@@ -87,7 +109,7 @@ export default model;
 //   const fileContent = fs.readFileSync(filePath, 'utf8');
 //   const json = JSON.parse(fileContent);
 
-//   const columnNames = await getColumns();
+//   const columnNames = await getFields();
 
 
 //   for (const item of json) {
