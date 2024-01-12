@@ -14,7 +14,7 @@ module.exports = (env, argv) => {
         // Webpack uses this entry point file to create a dependency graph.
         entry: {
             // entry point will be index.jsx file in the client folder
-            bundle: path.resolve(__dirname, 'client/index.jsx'),
+            bundle: path.resolve(__dirname, 'client/src/index.jsx'),
         },
         output: {
             path: path.resolve(__dirname, 'client/build'),
@@ -35,7 +35,7 @@ module.exports = (env, argv) => {
             },
             // Proxying API requests to a backend server.
             proxy: {
-                '/api': {
+                '/db': {
                     target: 'http://localhost:3000', // Replace with your backend server URL
                     changeOrigin: true,
                     secure: false,
