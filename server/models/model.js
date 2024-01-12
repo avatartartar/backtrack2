@@ -2,12 +2,13 @@ import { createClient } from '@supabase/supabase-js'; // after installing the su
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+// This loads environment variables from .env.server file.
 dotenv.config( { path: './.env.server' } );
 
-// Supabase configuration
+// Supabase configuration and connection details.
 const supaUrl = process.env.SUPA_URL;
 const supaKey = process.env.SUPA_KEY;
-
+// Create Supabase client.
 const supabase = createClient(supaUrl, supaKey);
 let insertCount = 0;
 let recentData;
@@ -23,45 +24,17 @@ const executeQuery = async (queryCallback) => {
   return data;
 };
 
-
-model.getTop10Tracks = () => executeQuery(async (supabase) => {
-  return supabase
-  // a view in supabase
-    .from('top10_tracks')
-    .select('*');
-});
-
-model.getTop10Artists = () => executeQuery(async (supabase) => {
-  return supabase
-  // a view in supabase
-    .from('top10_artists')
-    .select('*');
-});
-
-model.getTop10Albums = () => executeQuery(async (supabase) => {
-  return supabase
-  // a view in supabase
-    .from('top10_albums')
-    .select('*');
-});
-
-// Sample function to get 10 records
-model.get10Sessions = () => executeQuery(async (supabase) => {
-  return supabase
-    .from('sessions')
-    .select('artist, track, album, country, dt_added, timefn')
-    .limit(10);
-});
-
-// get field names
-model.getFields = () => executeQuery(async (supabase) => {
-  return supabase
-    .from('sessions')
-    .select('*')
-    .limit(1);
-});
+// Consolidated queries down into object of "basic queries" to be change upon project reqs changing
+const basicQueries = {
+  getTop10Tracks: () => executeQuery(async (supabase) => supabase.from('top10_tracks').select('*')),
+  getTop10Artists: () => executeQuery(async (supabase) => supabase.from('top10_artists').select('*')),
+  getTop10Albums: () => executeQuery(async (supabase) => supabase.from('top10_albums').select('*')),
+  get10Sessions: () => executeQuery(async (supabase) => supabase.from('sessions').select('artist, track, album, country, dt_added, timefn').limit(10)),
+  getFields: () => executeQuery(async (supabase) => supabase.from('sessions').select('*').limit(1)),
+};
 
 export default model;
+export { basicQueries };
 
 
 // model.getTop10Tracks = async () => {
