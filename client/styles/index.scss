@@ -78,6 +78,11 @@ ul {
   }
 }
 
+@keyframes marquee{
+  100%{
+    transform: translate(-100%, 0);
+  }
+}
 
 .SongList li {
   border: 0.5px solid gray;
@@ -86,6 +91,14 @@ ul {
   padding: 10px;
   margin: 10px 0px;
   border-radius: 69px;
+  white-space: nowrap;
+  overflow: hidden;
+    div {
+      animation: marquee 8s linear infinite;
+      padding-left: 100%;
+      display: inline-block;
+      text-align: left;
+    }
 }
 
 .songListAndAlbum {
