@@ -5,9 +5,7 @@ import SongList from '../components/SongList.jsx';
 import TopAlbum from '../components/TopAlbum.jsx';
 import '../../styles/index.scss';
 
-
 export function App() {
-  
 
   return (
     <>

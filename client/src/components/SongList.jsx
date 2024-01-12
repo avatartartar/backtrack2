@@ -17,26 +17,11 @@ const SongList = () => {
     }
   }, [dispatch, status]);
 
-  // store.dispatch(topTenTracksSlice());
-
-  // const songs = useSelector(getTopTenTracks);
-  // const status = useSelector(getTopTenTracksStatus);
-  // const error = useSelector(getTopTenTracksError);
-
   return (
     <div className="SongList">
       <h3>TOP 10 SONGS</h3>
       <ul>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
-        <li>Sweet Home Alabama - Lyndyr Skynyrd</li>
+        {songs.map(song => <li key={song.id}>{song.track} - {song.artist}</li>)}
       </ul>
     </div>
   )

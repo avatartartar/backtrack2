@@ -11,8 +11,8 @@ const fetchTopTenTracks = createAsyncThunk(
   async () => {
     try {
       const response = await fetch('/db/top10Tracks');
-      console.log('response.data in fetchTopTenTracks:', response);
-      return response.data;
+      const data = await response.json();
+      return data;
     } catch (err) {
       console.log(`Error occured during fetchTopTenTracks in topTenTracksSlice: ${err}`);
     }
