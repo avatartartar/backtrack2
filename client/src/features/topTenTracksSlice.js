@@ -10,7 +10,7 @@ const fetchTopTenTracks = createAsyncThunk(
   'tracks/fetchTopTen',
   async () => {
     try {
-      const response = await fetch('http://localhost:8000/db/top10Track');
+      const response = await fetch('/db/top10Tracks');
       console.log('response.data in fetchTopTenTracks:', response);
       return response.data;
     } catch (err) {

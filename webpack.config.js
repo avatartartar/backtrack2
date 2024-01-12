@@ -35,7 +35,7 @@ module.exports = (env, argv) => {
             },
             // Proxying API requests to a backend server.
             proxy: {
-                '/': {
+                '/db': {
                     target: 'http://localhost:3000', // Replace with your backend server URL
                     changeOrigin: true,
                     secure: false,
