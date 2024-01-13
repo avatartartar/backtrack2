@@ -16,9 +16,8 @@ const fetchTopTenTracks = createAsyncThunk(
   async () => {
     try {
       const response = await fetch('/db/top10Tracks');
-      // const data = await callSpotifyApi(await response.json());
       const data = await response.json()
-      console.log('fetchTopTenTracks data', data);
+      // console.log('fetchTopTenTracks data', data);
       return data;
     } catch (err) {
       console.log(`Error occured during fetchTopTenTracks in topTenTracksSlice: ${err}`);

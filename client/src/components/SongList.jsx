@@ -12,7 +12,9 @@ const SongList = () => {
 
   const dispatch = useDispatch();
   const tracks = useSelector((state) => state.topTenTracks.tracks);
+
   const status = useSelector((state) => state.topTenTracks.status);
+
 
 
   useEffect(() => {
