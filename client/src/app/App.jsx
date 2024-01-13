@@ -12,7 +12,7 @@ export function App() {
       <Navbar/>
       <h3>Lets take a trip down memory lane</h3>
       <h1 className="gradientHeader">This is your all time favorites</h1>
-      <div className="songListAndAlbum">
+      <div className="trackListAndAlbum">
       <SongList/>
       <TopAlbum/>
       </div>

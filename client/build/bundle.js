@@ -29868,7 +29868,7 @@ if (
 ) {
   __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 }
-        
+
   })();
 }
 
@@ -32693,7 +32693,7 @@ if (
 ) {
   __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 }
-        
+
   })();
 }
 
@@ -33352,7 +33352,7 @@ if (
 ) {
   __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 }
-        
+
   })();
 }
 
@@ -33541,7 +33541,7 @@ if (
 ) {
   __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
 }
-        
+
   })();
 }
 
@@ -33591,7 +33591,7 @@ function App() {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_Navbar_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h3", null, "Lets take a trip down memory lane"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h1", {
     className: "gradientHeader"
   }, "This is your all time favorites"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "songListAndAlbum"
+    className: "trackListAndAlbum"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SongList_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TopAlbum_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null)));
 }
 
@@ -33648,14 +33648,14 @@ __webpack_require__.r(__webpack_exports__);
 
 var SongList = function SongList() {
   var dispatch = (0,react_redux__WEBPACK_IMPORTED_MODULE_3__.useDispatch)();
-  var songs = (0,react_redux__WEBPACK_IMPORTED_MODULE_3__.useSelector)(function (state) {
-    return state.topTenTracks.songs;
+  var tracks = (0,react_redux__WEBPACK_IMPORTED_MODULE_3__.useSelector)(function (state) {
+    return state.topTenTracks.tracks;
   });
   var status = (0,react_redux__WEBPACK_IMPORTED_MODULE_3__.useSelector)(function (state) {
     return state.topTenTracks.status;
   });
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    // Dispatch the fetchSongs async thunk when the component mounts
+    // Dispatch the fetchTracks async thunk when the component mounts
     if (status === 'idle') {
       dispatch((0,_features_topTenTracksSlice_js__WEBPACK_IMPORTED_MODULE_2__.fetchTopTenTracks)());
     }
@@ -33663,13 +33663,13 @@ var SongList = function SongList() {
 
   // store.dispatch(topTenTracksSlice());
 
-  // const songs = useSelector(getTopTenTracks);
+  // const tracks = useSelector(getTopTenTracks);
   // const status = useSelector(getTopTenTracksStatus);
   // const error = useSelector(getTopTenTracksError);
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "SongList"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h3", null, "TOP 10 SONGS"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd")));
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("h3", null, "TOP 10 TRACKS"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, "Sweet Home Alabama - Lyndyr Skynyrd")));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SongList);
 
@@ -33723,7 +33723,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var initialState = {
-  songs: [],
+  tracks: [],
   status: "idle",
   error: ""
 };
@@ -33758,7 +33758,7 @@ var topTenTracksSlice = (0,_reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_0__.createS
       state.status = "loading";
     }).addCase(fetchTopTenTracks.fulfilled, function (state, action) {
       state.status = "succeeded";
-      state.songs = action.payload;
+      state.tracks = action.payload;
     }).addCase(fetchTopTenTracks.rejected, function (state, action) {
       state.status = "failed";
       state.error = action.error.message;
@@ -33891,7 +33891,7 @@ ul {
   border-radius: 69px;
 }
 
-.songListAndAlbum {
+.trackListAndAlbum {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -33922,7 +33922,7 @@ ul {
   font-weight: 300;
   text-align: end;
   margin-right: -250px;
-}`, "",{"version":3,"sources":["webpack://./client/styles/index.scss"],"names":[],"mappings":"AAMA;EACE,WAAA;EACA,YAAA;AAJF;;AAOA;EACE,0DAAA;EACA,0BAAA;EACA,YAAA;EACA,WAAA;EACA,uCAAA;EACA,aAAA;EACA,mBAAA;EACA,sBAAA;EACA,sCAhBiB;EAiBjB,YAAA;AAJF;;AAOA;EACE;IACE,2BAAA;EAJF;EAOA;IACE,6BAAA;EALF;EAQA;IACE,2BAAA;EANF;AACF;AAWA;EACE,YAAA;EACA,eAAA;EACA,sCAvCiB;EAwCjB,gBAAA;EACA,kBAAA;AATF;;AAYA;EACE,gBAAA;AATF;;AAaA;EACE,aAAA;EACA,uBAAA;AAVF;AAYE;EACE,YAAA;EACA,YAAA;AAVJ;;AAcA;EACE,qEAAA;EACE,6BAAA;EACA,oCAAA;EACF,sCA/DiB;EAgEjB,eAAA;AAXF;;AAcA;EACE,YAAA;EACA,sCArEiB;EAsEjB,YAAA;AAXF;AAYE;EACE,WAAA;AAVJ;;AAeA;EACE,wBAAA;EACA,YAAA;EACA,kBAAA;EACA,aAAA;EACA,gBAAA;EACA,mBAAA;AAZF;;AAeA;EACE,aAAA;EACA,8BAAA;EACA,uBAAA;AAZF;;AAgBE;EACE,SAAA;EACA,eAAA;EACA,mBAAA;AAbJ;;AAiBA;EACE,6CAAA;EACA,YAAA;EACA,aAAA;EACA,aAAA;EACA,uBAAA;EACA,sBAAA;EACA,mBAAA;AAdF;AAeI;EACI,iBAAA;EACA,aAAA;EACA,YAAA;EACA,iBAAA;AAbR;AAeE;EACE,gBAAA;EACA,eAAA;EACA,oBAAA;AAbJ","sourcesContent":["// importing of fonts\n@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap');\n\n\n$font-family-mono: \"Red Hat Mono\", monospace;\n// gradient animation style for landing page\nhtml {\n  width: 100%;\n  height: 100%;\n}\n\nbody {\n  background: linear-gradient(45deg, #130188 0%, darken(#13008b, 50%) 100%);\n  background-size: 200% 200%;\n  height: 100%;\n  width: 100%;\n  animation: background 20s ease infinite;\n  display: flex;\n  align-items: center;\n  flex-direction: column;\n  font-family: $font-family-mono;\n  color: white;\n}\n\n@keyframes background {\n  0% {\n    background-position: 0% 50%;\n  }\n\n  50% {\n    background-position: 100% 50%;\n  }\n\n  100% {\n    background-position: 0% 50%;\n  }\n}\n\n//html tag styles\n\nh3 {\n  color: white;\n  font-size: 36px;\n  font-family: $font-family-mono;\n  font-weight: 300;\n  text-align: center;\n}\n\nul {\n  list-style: none;\n}\n\n\n.navBar {\n  display: flex;\n  justify-content: center;\n\n  img {\n    margin: 25px;\n    height: 50px;\n  }\n}\n\n.gradientHeader {\n  background: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);\n    -webkit-background-clip: text;\n    -webkit-text-fill-color: transparent;\n  font-family: $font-family-mono;\n  font-size: 64px;\n}\n\n.SongList {\n  color: white;\n  font-family: $font-family-mono;\n  width: 400px;\n  h3 {\n    margin: 0px;\n  }\n}\n\n\n.SongList li {\n  border: 0.5px solid gray;\n  width: 400px;\n  text-align: center;\n  padding: 10px;\n  margin: 10px 0px;\n  border-radius: 69px;\n}\n\n.songListAndAlbum {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n}\n\n.topAlbum {\n  h3 {\n    margin: 0;\n    text-align: end;\n    margin-bottom: 15px;\n  }\n}\n\n.albumCard {\n  background: linear-gradient(#ADADFF, #6072D1);\n  width: 500px;\n  height: 515px;\n  display: flex;\n  justify-content: center;\n  flex-direction: column;\n  align-items: center;\n    img {\n        padding-top: 25px;\n        height: 400px;\n        width: 425px;\n        object-fit: cover;\n      }\n  h4 {\n    font-weight: 300;\n    text-align: end;\n    margin-right: -250px;\n  }\n}\n\n"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./client/styles/index.scss"],"names":[],"mappings":"AAMA;EACE,WAAA;EACA,YAAA;AAJF;;AAOA;EACE,0DAAA;EACA,0BAAA;EACA,YAAA;EACA,WAAA;EACA,uCAAA;EACA,aAAA;EACA,mBAAA;EACA,sBAAA;EACA,sCAhBiB;EAiBjB,YAAA;AAJF;;AAOA;EACE;IACE,2BAAA;EAJF;EAOA;IACE,6BAAA;EALF;EAQA;IACE,2BAAA;EANF;AACF;AAWA;EACE,YAAA;EACA,eAAA;EACA,sCAvCiB;EAwCjB,gBAAA;EACA,kBAAA;AATF;;AAYA;EACE,gBAAA;AATF;;AAaA;EACE,aAAA;EACA,uBAAA;AAVF;AAYE;EACE,YAAA;EACA,YAAA;AAVJ;;AAcA;EACE,qEAAA;EACE,6BAAA;EACA,oCAAA;EACF,sCA/DiB;EAgEjB,eAAA;AAXF;;AAcA;EACE,YAAA;EACA,sCArEiB;EAsEjB,YAAA;AAXF;AAYE;EACE,WAAA;AAVJ;;AAeA;EACE,wBAAA;EACA,YAAA;EACA,kBAAA;EACA,aAAA;EACA,gBAAA;EACA,mBAAA;AAZF;;AAeA;EACE,aAAA;EACA,8BAAA;EACA,uBAAA;AAZF;;AAgBE;EACE,SAAA;EACA,eAAA;EACA,mBAAA;AAbJ;;AAiBA;EACE,6CAAA;EACA,YAAA;EACA,aAAA;EACA,aAAA;EACA,uBAAA;EACA,sBAAA;EACA,mBAAA;AAdF;AAeI;EACI,iBAAA;EACA,aAAA;EACA,YAAA;EACA,iBAAA;AAbR;AAeE;EACE,gBAAA;EACA,eAAA;EACA,oBAAA;AAbJ","sourcesContent":["// importing of fonts\n@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap');\n\n\n$font-family-mono: \"Red Hat Mono\", monospace;\n// gradient animation style for landing page\nhtml {\n  width: 100%;\n  height: 100%;\n}\n\nbody {\n  background: linear-gradient(45deg, #130188 0%, darken(#13008b, 50%) 100%);\n  background-size: 200% 200%;\n  height: 100%;\n  width: 100%;\n  animation: background 20s ease infinite;\n  display: flex;\n  align-items: center;\n  flex-direction: column;\n  font-family: $font-family-mono;\n  color: white;\n}\n\n@keyframes background {\n  0% {\n    background-position: 0% 50%;\n  }\n\n  50% {\n    background-position: 100% 50%;\n  }\n\n  100% {\n    background-position: 0% 50%;\n  }\n}\n\n//html tag styles\n\nh3 {\n  color: white;\n  font-size: 36px;\n  font-family: $font-family-mono;\n  font-weight: 300;\n  text-align: center;\n}\n\nul {\n  list-style: none;\n}\n\n\n.navBar {\n  display: flex;\n  justify-content: center;\n\n  img {\n    margin: 25px;\n    height: 50px;\n  }\n}\n\n.gradientHeader {\n  background: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);\n    -webkit-background-clip: text;\n    -webkit-text-fill-color: transparent;\n  font-family: $font-family-mono;\n  font-size: 64px;\n}\n\n.SongList {\n  color: white;\n  font-family: $font-family-mono;\n  width: 400px;\n  h3 {\n    margin: 0px;\n  }\n}\n\n\n.SongList li {\n  border: 0.5px solid gray;\n  width: 400px;\n  text-align: center;\n  padding: 10px;\n  margin: 10px 0px;\n  border-radius: 69px;\n}\n\n.trackListAndAlbum {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n}\n\n.topAlbum {\n  h3 {\n    margin: 0;\n    text-align: end;\n    margin-bottom: 15px;\n  }\n}\n\n.albumCard {\n  background: linear-gradient(#ADADFF, #6072D1);\n  width: 500px;\n  height: 515px;\n  display: flex;\n  justify-content: center;\n  flex-direction: column;\n  align-items: center;\n    img {\n        padding-top: 25px;\n        height: 400px;\n        width: 425px;\n        object-fit: cover;\n      }\n  h4 {\n    font-weight: 300;\n    text-align: end;\n    margin-right: -250px;\n  }\n}\n\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -34072,15 +34072,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_index_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./index.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./client/styles/index.scss");
 
-      
-      
-      
-      
-      
-      
-      
-      
-      
+
+
+
+
+
+
+
+
+
 
 var options = {};
 
@@ -34088,7 +34088,7 @@ options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTra
 options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
 
       options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-    
+
 options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
 options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
 
@@ -34553,7 +34553,7 @@ function isValidKey(key) {
 function getMessage(type) {
   const splitType = type ? `${type}`.split("/") : [];
   const actionName = splitType[splitType.length - 1] || "actionCreator";
-  return `Detected an action creator with type "${type || "unknown"}" being dispatched. 
+  return `Detected an action creator with type "${type || "unknown"}" being dispatched.
 Make sure you're calling the action creator before dispatching, i.e. \`dispatch(${actionName}())\` instead of \`dispatch(${actionName})\`. This is necessary even if the action has no payload.`;
 }
 function createActionCreatorInvariantMiddleware(options = {}) {
@@ -34585,7 +34585,7 @@ function getTimeMeasureUtils(maxDelay, fnName) {
     },
     warnIfExceeded() {
       if (elapsed > maxDelay) {
-        console.warn(`${fnName} took ${elapsed}ms, which is more than the warning threshold of ${maxDelay}ms. 
+        console.warn(`${fnName} took ${elapsed}ms, which is more than the warning threshold of ${maxDelay}ms.
 If your state or actions are very large, you may want to disable the middleware as it might cause too much of a slowdown in development mode. See https://redux-toolkit.js.org/api/getDefaultMiddleware for instructions.
 It is disabled in production builds, so you don't need to worry about that.`);
       }
@@ -40201,7 +40201,7 @@ var createStructuredSelector = Object.assign(
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/ 	
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -40215,17 +40215,17 @@ var createStructuredSelector = Object.assign(
 /******/ 			loaded: false,
 /******/ 			exports: {}
 /******/ 		};
-/******/ 	
+/******/
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-/******/ 	
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
@@ -40238,7 +40238,7 @@ var createStructuredSelector = Object.assign(
 /******/ 			return getter;
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/create fake namespace object */
 /******/ 	(() => {
 /******/ 		var getProto = Object.getPrototypeOf ? (obj) => (Object.getPrototypeOf(obj)) : (obj) => (obj.__proto__);
@@ -40268,7 +40268,7 @@ var createStructuredSelector = Object.assign(
 /******/ 			return ns;
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -40280,7 +40280,7 @@ var createStructuredSelector = Object.assign(
 /******/ 			}
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
 /******/ 		__webpack_require__.g = (function() {
@@ -40292,12 +40292,12 @@ var createStructuredSelector = Object.assign(
 /******/ 			}
 /******/ 		})();
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -40308,7 +40308,7 @@ var createStructuredSelector = Object.assign(
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
 /******/ 		__webpack_require__.nmd = (module) => {
@@ -40317,7 +40317,7 @@ var createStructuredSelector = Object.assign(
 /******/ 			return module;
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/publicPath */
 /******/ 	(() => {
 /******/ 		var scriptUrl;
@@ -40340,12 +40340,12 @@ var createStructuredSelector = Object.assign(
 /******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
 /******/ 		__webpack_require__.p = scriptUrl;
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/nonce */
 /******/ 	(() => {
 /******/ 		__webpack_require__.nc = undefined;
 /******/ 	})();
-/******/ 	
+/******/
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.

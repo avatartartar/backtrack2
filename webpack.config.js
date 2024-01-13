@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 // Function recieves environment variables and argument vector which enables acces to command-line args and env variables
-// Webpack config will dynamically adjust response based on the specified in argv.mode 
+// Webpack config will dynamically adjust response based on the specified in argv.mode
 module.exports = (env, argv) => {
     //
     const isDevelopment = argv.mode === 'development'
@@ -90,7 +90,7 @@ module.exports = (env, argv) => {
                 filename: 'index.html',
                 // The relative or absolute path to the template.
                 template: './client/templates/template.html',
-                // Can insert 
+                // Can insert
             }),
         ],
     };

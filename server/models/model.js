@@ -8,6 +8,7 @@ dotenv.config( { path: './.env.server' } );
 // Supabase configuration and connection details.
 const supaUrl = process.env.SUPA_URL;
 const supaKey = process.env.SUPA_KEY;
+const spotifyToken = process.env.SPOTIFY_TOKEN;
 // Create Supabase client.
 const supabase = createClient(supaUrl, supaKey);
 let insertCount = 0;
@@ -17,6 +18,18 @@ const model = {};
 
 // a helper function that executes a query callback and returns the data or throws an error
 // allows us to avoid repeating the same try/catch block in every model function
+
+
+const getTrackInfo = async (uri) => {
+  const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
+    method: 'GET',
+    headers: { 'Authorization': 'Bearer ' + spotifyToken },
+  });
+  // console.log('getTrackInfo response', response);
+  return await response.json();
+}
+
+
 const executeQuery = async (queryCallback) => {
   const { data, error } = await queryCallback(supabase);
   if (error) throw error;
@@ -26,9 +39,34 @@ const executeQuery = async (queryCallback) => {
 
 // Consolidated queries down into object of "basic queries" to be change upon project reqs changing
 const basicQueries = {
-  getTop10Tracks: () => executeQuery(async (supabase) => supabase.from('top10_tracks').select('*')),
-  getTop10Artists: () => executeQuery(async (supabase) => supabase.from('top10_artists').select('*')),
-  getTop10Albums: () => executeQuery(async (supabase) => supabase.from('top10_albums').select('*')),
+// now querying the Tracks table, rather than a view.
+// can replicate this with artists and albums.
+  getTop10Tracks: () => executeQuery(async (supabase) => supabase
+    .from('tracks')
+    .select('*')
+    .order('playtime_ms', { ascending: false })
+    .limit(10)
+  ).then(async tracks => {
+    for (const track of tracks) {
+      const trackInfo = await getTrackInfo(track.uri);
+      track.preview = trackInfo.preview_url;
+      track.albumImage = trackInfo.album.images[1].url;
+      track.duration = trackInfo.duration_ms;
+      track.popularity = trackInfo.popularity;
+      track.explicit = trackInfo.explicit;
+    }
+    // console.log('callSpotifyApi data', data);
+    return tracks;
+  }),
+  getTop10Artists: () => executeQuery(async (supabase) => supabase
+    .from('top10_artists')
+    .select('*')
+  ),
+  getTop10Albums: () => executeQuery(async (supabase) => supabase
+    .from('top10_albums')
+    .select('*')
+  ),
+
   get10Sessions: () => executeQuery(async (supabase) => supabase.from('sessions').select('artist, track, album, country, dt_added, timefn').limit(10)),
   getFields: () => executeQuery(async (supabase) => supabase.from('sessions').select('*').limit(1)),
 };

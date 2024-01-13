@@ -5,15 +5,15 @@ import { fetchTopTenTracks } from '../features/topTenTracksSlice';
 
 const TopAlbum = () => {
   // const dispatch = useDispatch();
-  const songs = useSelector((state) => state.topTenTracks.songs);
+  const tracks = useSelector((state) => state.topTenTracks.tracks);
   const status = useSelector((state) => state.topTenTracks.status);
 
   // useEffect(() => {
-  //   // Dispatch the fetchSongs async thunk when the component mounts
+  //   // Dispatch the fetchTracks async thunk when the component mounts
   //   if (status === 'idle') {
   //     dispatch(fetchTopTenTracks());
   //   }
-    
+
   // }, [dispatch, status]);
 
   return (
@@ -21,11 +21,10 @@ const TopAlbum = () => {
       <h3>MOST PLAYED ALBUM</h3>
       <div className="albumCard">
         <img src={album} alt="image" />
-        <h4>{songs[0]?.artist} <br /> {songs[0]?.album}</h4>
+        <h4>{tracks[0]?.artist} <br /> {tracks[0]?.album}</h4>
       </div>
     </div>
   )
 }
 
 export default TopAlbum;
-
