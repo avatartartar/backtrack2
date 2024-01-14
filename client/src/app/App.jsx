@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import Navbar from '../components/Navbar.jsx';
 import SongList from '../components/SongList.jsx';
 import TopAlbum from '../components/TopAlbum.jsx';
+import TopTenTracksByYear from '../components/TopTracksByYear.jsx';
 import '../../styles/index.scss';
 
 export function App() {
@@ -16,6 +17,7 @@ export function App() {
       <SongList/>
       <TopAlbum/>
       </div>
+      <TopTenTracksByYear/>
     </>
   )
 }

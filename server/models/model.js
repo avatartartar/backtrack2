@@ -87,11 +87,31 @@ const queries = {
   get10Sessions: () => executeQuery(async (supabase) => supabase
     .from('sessions')
     .select('artist, track, album, country, dt_added, timefn')
-    .limit(10)),
+    .limit(10)
+  ),
   getFields: () => executeQuery(async (supabase) => supabase
     .from('sessions')
     .select('*')
-    .limit(1)),
+    .limit(1)
+  ),
+  //Ross added this to set up a route for front end slider to get tracks by year
+  getTop10TracksByYear: () => 
+    executeQuery(async (supabase) => supabase
+    .from('tracks')
+    .select('name, artist_name, album_name, sessions (ts)')
+    .order('playtime_ms', { ascending: false })
+    .limit(20)
+    ).then(async tracks => {
+    for (const track of tracks) {
+      const trackInfo = await getTrackInfo(track.uri);
+      track.preview = trackInfo.preview_url;
+      track.albumImage = trackInfo.album.images[1].url;
+      track.duration = trackInfo.duration_ms;
+      track.popularity = trackInfo.popularity;
+      track.explicit = trackInfo.explicit;
+    }
+    return tracks;
+  })
 };
 
 

@@ -188,3 +188,26 @@ ul {
     margin-right: -250px;
   }
 }
+
+.sliderContainer {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  padding-top: 50px;
+}
+
+.slider {
+  width: 100%;
+  align-items: center;
+}
+
+.sliderButton {
+  width: 120px;
+  height: 30px;
+  border-radius: 9999px;
+  background-color: #ADADFF;
+  color: #130188;
+  margin-left: 10px;
+  font-size: larger;
+  cursor: pointer;
+}

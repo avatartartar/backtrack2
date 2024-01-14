@@ -10,14 +10,13 @@ const initialState = {
   error: ""
 };
 
-
-const fetchTopTenTracks = createAsyncThunk(
-  'tracks/fetchTopTen',
-  async () => {
+const fetchTopTenTracksByYear = createAsyncThunk(
+  'tracks/fetchTopTenByYear',
+  async (year) => {
     try {
-      const response = await fetch('/db/top10Tracks');
+      const response = await fetch(`/db/top10TracksByYear/?year=${year}`);
       const data = await response.json()
-      // console.log('fetchTopTenTracks data', data);
+      console.log('fetchTopTenTracksByYear data in slice', data);
       return data;
     } catch (err) {
       console.log(`Error occured during fetchTopTenTracks in topTenTracksSlice: ${err}`);
@@ -25,26 +24,27 @@ const fetchTopTenTracks = createAsyncThunk(
   }
 );
 
-export const topTenTracksSlice = createSlice({
-  name: 'topTenTracks',
+export const topTenTracksByYearSlice = createSlice({
+  name: 'topTenTracksByYear',
   initialState,
   reducers: {
   },
   extraReducers(builder) {
     builder
-      .addCase(fetchTopTenTracks.pending, (state, action) => {
+      .addCase(fetchTopTenTracksByYear.pending, (state, action) => {
         state.status = "loading";
       })
-      .addCase(fetchTopTenTracks.fulfilled, (state, action) => {
+      .addCase(fetchTopTenTracksByYear.fulfilled, (state, action) => {
         state.status = "succeeded"
         state.tracks = action.payload;
       })
-      .addCase(fetchTopTenTracks.rejected, (state, action) => {
+      .addCase(fetchTopTenTracksByYear.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
+
   }
 });
 
-export { fetchTopTenTracks };
-export default topTenTracksSlice.reducer;
+export { fetchTopTenTracksByYear };
+export default topTenTracksByYearSlice.reducer;
