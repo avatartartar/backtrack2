@@ -18,7 +18,9 @@ controller.getTop10Albums = (req, res) => handleRequest(queries.getTop10Albums, 
 controller.getTop10Tracks = (req, res) => handleRequest(queries.getTop10Tracks, req, res);
 
 
-//Ross added this to set up a route for front end slider to get tracks by year
+//Ross added this to set up a route for front end slider to get tracks by year. right now the query times out each time. not using handleRequest
+//yet, as we are not responding to request yet, we are taking data to pass it on to them filter in another controller. didn't want to refactor the
+//whole codebase, so I created a custom controller just to get this working first.
 controller.getTop10TracksByYear = async (req, res, next) => {
   try {
     const data = await queries.getTop10TracksByYear();
@@ -30,11 +32,12 @@ controller.getTop10TracksByYear = async (req, res, next) => {
   }
 }
 
-//Ross added this to set up a route for front end slider to get tracks by year
+//Ross added this to set up a route for front end slider to get tracks by year. This controller will filter the results by year. Still need
+//to get a valid response to the front end, then we can build this controller out.
 controller.filterByYear = (req, res) => {
-  const { year } = req.query;
+  const { year } = req.query; //query string from front end request
   const { tracks } = res.locals;
-  res.status(200).json(tracks);
+  return res.status(200).json(tracks);
 }
 
 //

@@ -23,7 +23,7 @@ const TopTenTracksByYear = () => {
       <input type="range" min="2000" max="2024" className="slider" name='slider' onChange={(e) => handleSliderInput(e)}/>
       <button className='sliderButton' onClick={handleClick}><b>{year}</b></button>
     </div>
-    {tracks.map(track => {return <div>{track.name}</div>})}
+    {/* {tracks.map(track => {return <div>{track.name}</div>})} */}
     </>
   );
 }

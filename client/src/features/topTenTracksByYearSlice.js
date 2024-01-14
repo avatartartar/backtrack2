@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Spotify configuration and connection details.
-// const spotifyToken = process.env.REACT_APP_SPOTIFY_TOKEN;
-// console.log('spotifyToken', spotifyToken);
+//Created a new slice to use for top ten tracks by year. May want to change tracks to be some sort of Map or object for easy lookup on year.
+//This appears to be working. It correctly sends the year to the correct route. Not receiving a response yet as the request keeps timing out at the
+//database call in server/models.js
 
 const initialState = {
   tracks: [],
