@@ -3,6 +3,10 @@
 
 
 $font-family-mono: "Red Hat Mono", monospace;
+//gradient for headers / slider etc:
+$gradient-text: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);
+// border radius used for list elements, slider etc:
+$border-radius: 69px;
 // gradient animation style for landing page
 html {
   width: 100%;
@@ -78,7 +82,7 @@ ul {
 }
 
 .gradientHeader {
-  background: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);
+  background: $gradient-text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   font-family: $font-family-mono;
@@ -117,7 +121,7 @@ ul {
   height: 1em;
   padding: 10px;
   margin: 10px 0px;
-  border-radius: 69px;
+  border-radius: $border-radius;
   white-space: nowrap;
   overflow: hidden;
   position: relative;
@@ -188,3 +192,70 @@ ul {
     margin-right: -250px;
   }
 }
+
+
+//  YEAR SLIDER STYLING:
+
+.slideWrapper {
+  display: flex;
+  justify-content: center;
+  margin: 50px;
+}
+
+// This is the slider container
+
+.displayYearWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+}
+
+.slideContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// This is the actual slider
+.slider {
+  --webkit-appearance: none; // removing default css style
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  margin: 50px 0px;
+  border-radius: $border-radius;
+  background: $gradient-text; // setting background (slider) to be same gradient as text
+  opacity: 0.7; // opacity is 0,7. On hover it will change. 
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; // removing default styles
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #fff;
+  border-radius: 50%; // making it a circle
+  cursor: pointer; 
+}
+
+// adding rules for firefox browsers:
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #fff;
+  border-radius: 50%; // making it a circle
+  cursor: pointer;
+}
+
+.chart {
+  flex: 1;
+}
+
+
