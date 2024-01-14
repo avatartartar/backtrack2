@@ -105,27 +105,46 @@ ul {
   }
 }
 
-@keyframes marquee{
-  100%{
-    transform: translate(-100%, 0);
-  }
+
+@keyframes marquee {
+  0% { left: 0; }
+  100% { left: -100%; }
 }
 
 .SongList li {
   border: 0.5px solid gray;
   width: 400px;
-  text-align: center;
+  height: 1em;
   padding: 10px;
   margin: 10px 0px;
   border-radius: 69px;
   white-space: nowrap;
   overflow: hidden;
-    div {
-      animation: marquee 8s linear infinite;
-      padding-left: 100%;
-      display: inline-block;
-      text-align: left;
-    }
+  position: relative;
+  cursor: pointer;
+}
+
+.tracks {
+  position: absolute;
+  overflow: hidden;
+  display: block;
+  width: 200%;
+  div {
+    display: inline-block;
+    width: 50%;
+  }
+}
+
+.onPlay {
+  position: absolute;
+  overflow: hidden;
+  display: block;
+  width: 200%;
+  animation: marquee 8s linear infinite;
+  div {
+    display: inline-block;
+    width: 50%;
+  }
 }
 
 .trackListAndAlbum {
