@@ -13,8 +13,6 @@ dotenv.config({ path: '.env.server' });
 // Set local variable PORT to env varianle with server port.
 const PORT = process.env.PORT;
 
-console.log('PORT', PORT);  // Outputs: your_port_here
-
 // Assign express to variable app.
 const app = express();
 

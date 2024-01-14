@@ -2,13 +2,16 @@ import { createClient } from '@supabase/supabase-js'; // after installing the su
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+// we import the getSpotifyToken function from the spotifyTokenRefresh.js file
+import { getSpotifyToken } from '../spotifyTokenRefresh.js';
+
 // This loads environment variables from .env.server file.
 dotenv.config( { path: './.env.server' } );
 
 // Supabase configuration and connection details.
 const supaUrl = process.env.SUPA_URL;
 const supaKey = process.env.SUPA_KEY;
-const spotifyToken = process.env.SPOTIFY_TOKEN;
+
 // Create Supabase client.
 const supabase = createClient(supaUrl, supaKey);
 let insertCount = 0;
@@ -23,7 +26,10 @@ const model = {};
 const getTrackInfo = async (uri) => {
   const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
     method: 'GET',
-    headers: { 'Authorization': 'Bearer ' + spotifyToken },
+    // Keith/spotifyTokenIntegration: 2024-01-13
+    // we now call the getSpotifyToken function to get the token
+    // which is either cached or gets refreshed (so to speak)
+    headers: { 'Authorization': 'Bearer ' + await getSpotifyToken() },
   });
   // console.log('getTrackInfo response', response);
   return await response.json();
@@ -38,7 +44,7 @@ const executeQuery = async (queryCallback) => {
 };
 
 // Consolidated queries down into object of "basic queries" to be change upon project reqs changing
-const basicQueries = {
+const queries = {
 // now querying the Tracks table, rather than a view.
 // can replicate this with artists and albums.
   getTop10Tracks: () => executeQuery(async (supabase) => supabase
@@ -55,24 +61,41 @@ const basicQueries = {
       track.popularity = trackInfo.popularity;
       track.explicit = trackInfo.explicit;
     }
-    // console.log('callSpotifyApi data', data);
     return tracks;
   }),
+
+  // Keith/spotifyTokenIntegration: 2024-01-13
+  // topArtists and Albums updated by James in supabase.
+  // queries now updated here to take advantage of the new tables.
+
   getTop10Artists: () => executeQuery(async (supabase) => supabase
-    .from('top10_artists')
+    .from('artists')
     .select('*')
-  ),
-  getTop10Albums: () => executeQuery(async (supabase) => supabase
-    .from('top10_albums')
-    .select('*')
+    .neq('playtime_ms', 0)
+    .order('playtime_ms', { ascending: false })
+    .limit(10)
   ),
 
-  get10Sessions: () => executeQuery(async (supabase) => supabase.from('sessions').select('artist, track, album, country, dt_added, timefn').limit(10)),
-  getFields: () => executeQuery(async (supabase) => supabase.from('sessions').select('*').limit(1)),
+  getTop10Albums: () => executeQuery(async (supabase) => supabase
+    .from('albums')
+    .select('*')
+    .neq('playtime_ms', 0)
+    .order('playtime_ms', { ascending: false })
+    .limit(10)
+  ),
+
+  get10Sessions: () => executeQuery(async (supabase) => supabase
+    .from('sessions')
+    .select('artist, track, album, country, dt_added, timefn')
+    .limit(10)),
+  getFields: () => executeQuery(async (supabase) => supabase
+    .from('sessions')
+    .select('*')
+    .limit(1)),
 };
 
-export default model;
-export { basicQueries };
+
+export { queries };
 
 
 // model.getTop10Tracks = async () => {
