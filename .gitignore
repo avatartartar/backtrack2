@@ -73,3 +73,6 @@ typings/
 
 # dist folder should be re-bundled
 dist
+
+# Build folder
+build
