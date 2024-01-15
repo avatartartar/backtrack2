@@ -3,6 +3,9 @@ import logo from '../../assets/logo.png';
 import { fetchTopTenTracks } from '../features/topTenTracksSlice.js';
 // import store from '../store/store.js';
 import { useDispatch, useSelector } from 'react-redux';
+import playIcon from '../../assets/play_icon.png';
+import pauseIcon from '../../assets/pause_icon.png';
+
 
 const SongList = () => {
   const [audio, setAudio] = useState(null);
@@ -10,9 +13,20 @@ const SongList = () => {
   const [endClipTimeout, setEndClipTimeout] = useState(null);
 
   const dispatch = useDispatch();
-  const tracks = useSelector((state) => state.topTenTracks.tracks);
+  // KG 2024-01-14_03-20-PM: consolidated tracks, status, and error into one object.
+  const { tracks, status, error } = useSelector(state => state.topTenTracks);
 
-  const status = useSelector((state) => state.topTenTracks.status);
+  if (status === 'loading') {
+    // console.log('loading tracks from state in songList.jsx');
+  }
+
+  if (status === 'failed') {
+    console.log('FAILED: loading tracks from state in songList.jsx');
+  }
+
+  if (error) {
+    console.log('ERROR: loading tracks from state in songList.jsx');
+  }
 
 
   useEffect(() => {
@@ -80,34 +94,28 @@ const SongList = () => {
     }
   }
 
- 
- 
+  // Keith 2024-01-14_03-27-PM: changed the key 'preview' to 'audio_clip_url' for specificity.
+
   return (
     <div className="SongList">
       <h3>TOP 10 TRACKS</h3>
       <ul>
         {tracks.map(track => (
           <li key={track.id}>
-            <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
-                <div onClick={() => controlAudio(track.preview, track.id)}>
-                {track.name} - {track.artist_name}                      
-                </div>                               
-                <div onClick={() => controlAudio(track.preview, track.id)}>
+            <img src={playIcon} alt="" style={isClickedId === track.id ? {display: 'none'} : {display: 'block'}}/>
+            <img src={pauseIcon} alt="" style={isClickedId === track.id ? { display: 'block' } : { display: 'none' }} />
+            <div className="scrollWrapper">
+              <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
+                <div onClick={() => controlAudio(track.audio_clip_url, track.id)}>
+                {track.name} - {track.artist_name}
+                </div>
+                <div onClick={() => controlAudio(track.audio_clip_url, track.id)}>
                 {track.name} - {track.artist_name}
                 </div>
               </div>
-            </li>
-            ))}
-        {/* <li> */}
-          {/* <div className='onPlay' >
-            <div>
-              Håkan Hellström - Det kommer aldrig va över för mig
             </div>
-            <div >
-              Håkan Hellström - Det kommer aldrig va över för mig
-            </div>
-          </div>
-        </li> */}
+          </li>
+          ))}
       </ul>
     </div>
   )
