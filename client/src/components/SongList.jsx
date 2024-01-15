@@ -3,6 +3,9 @@ import logo from '../../assets/logo.png';
 import { fetchTopTenTracks } from '../features/topTenTracksSlice.js';
 // import store from '../store/store.js';
 import { useDispatch, useSelector } from 'react-redux';
+import playIcon from '../../assets/play_icon.png';
+import pauseIcon from '../../assets/pause_icon.png';
+
 
 const SongList = () => {
   const [audio, setAudio] = useState(null);
@@ -99,8 +102,10 @@ const SongList = () => {
       <ul>
         {tracks.map(track => (
           <li key={track.id}>
-            <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
-
+            <img src={playIcon} alt="" style={isClickedId === track.id ? {display: 'none'} : {display: 'block'}}/>
+            <img src={pauseIcon} alt="" style={isClickedId === track.id ? { display: 'block' } : { display: 'none' }} />
+            <div className="scrollWrapper">
+              <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
                 <div onClick={() => controlAudio(track.audio_clip_url, track.id)}>
                 {track.name} - {track.artist_name}
                 </div>
@@ -108,8 +113,9 @@ const SongList = () => {
                 {track.name} - {track.artist_name}
                 </div>
               </div>
-            </li>
-            ))}
+            </div>
+          </li>
+          ))}
       </ul>
     </div>
   )

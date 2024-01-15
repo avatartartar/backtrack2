@@ -113,6 +113,7 @@ ul {
 
 .SongList li {
   border: 0.5px solid gray;
+  display: flex;
   width: 400px;
   height: 1em;
   padding: 10px;
@@ -120,8 +121,19 @@ ul {
   border-radius: 69px;
   white-space: nowrap;
   overflow: hidden;
-  position: relative;
+  // position: relative;
   cursor: pointer;
+    img {
+        height: 15px;
+        width: 15px;
+        margin: 0px 10px;
+    }
+}
+
+.scrollWrapper {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .tracks {
@@ -129,6 +141,7 @@ ul {
   overflow: hidden;
   display: block;
   width: 200%;
+  margin-top: -3px;
   div {
     display: inline-block;
     width: 50%;
