@@ -94,21 +94,18 @@ const queries = {
   //Ross added this to set up a route for front end slider to get tracks by year. commented out part of the query just to test as this query
   //keeps timing out. trying to join the sessions table on sessions.track_id = tracks.id and pull in the sessions.ts field to filter by year
   //downstream
-  getTop10TracksByYear: () =>
-    executeQuery(async (supabase) => supabase
-    .from('tracks')
+  getTop10TracksByYear: () => {
+    return executeQuery(async (supabase) => supabase
+    .from('sessions')
     .select(`
-      name,
+      track_name,
       artist_name,
       album_name,
-      playtime_ms,
-      sessions (
-        ts,
-        track_id
-        )
+      ms_played,
+      sesh_year
     `)
-    .order('playtime_ms', { ascending: false })
-    .limit(100)
+    .eq('sesh_year', 2021)
+    .order('ms_played', { ascending: false })
     ).then(tracks => tracks)
   //   .then(async tracks => {
   //   for (const track of tracks) {
@@ -121,6 +118,8 @@ const queries = {
   //   }
   //   return tracks;
   // })
+  }
+
 };
 
 export { queries };
