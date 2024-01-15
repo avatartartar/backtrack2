@@ -86,7 +86,7 @@ const SongList = () => {
     <div className="SongList">
       <h3>TOP 10 TRACKS</h3>
       <ul>
-        {/* {tracks.map(track => (
+        {tracks.map(track => (
           <li key={track.id}>
             <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
                 <div onClick={() => controlAudio(track.preview, track.id)}>
@@ -97,9 +97,9 @@ const SongList = () => {
                 </div>
               </div>
             </li>
-            ))} */}
-        <li>
-          <div className='onPlay' >
+            ))}
+        {/* <li> */}
+          {/* <div className='onPlay' >
             <div>
               Håkan Hellström - Det kommer aldrig va över för mig
             </div>
@@ -107,7 +107,7 @@ const SongList = () => {
               Håkan Hellström - Det kommer aldrig va över för mig
             </div>
           </div>
-        </li>
+        </li> */}
       </ul>
     </div>
   )

@@ -84,6 +84,7 @@ ul {
 .gradientHeader {
   background: $gradient-text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   font-family: $font-family-mono;
   font-size: 64px;

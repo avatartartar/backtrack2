@@ -43,7 +43,6 @@ export const topTenTracksSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
-
   }
 });
 
