@@ -34,10 +34,32 @@ controller.getTop10TracksByYear = async (req, res, next) => {
 
 //Ross added this to set up a route for front end slider to get tracks by year. This controller will filter the results by year. Still need
 //to get a valid response to the front end, then we can build this controller out.
-controller.filterByYear = (req, res) => {
-  const { year } = req.query; //query string from front end request
+// controller.filterByYear = (req, res) => {
+//   const { year } = req.query; //query string from front end request
+//   const { tracks } = res.locals;
+//   console.log('tracks length: ', tracks.length);
+//   return res.status(200).json(tracks);
+// }
+
+controller.groupByTrack = (req, res, next) => {
   const { tracks } = res.locals;
-  return res.status(200).json(tracks);
+  const tracker = {};
+  const groupedData = tracks.reduce((acc, { track_name, album_name, artist_name, ms_played, sesh_year }) => {
+    const key = JSON.stringify(artist_name + album_name + track_name);
+    const indexInAcc = tracker[key];
+    //check if acc has the artist album and track combo
+    //if no, add the artist album and track combo and set ms_played and return acc
+    if (!tracker[key] && tracker[key] !== 0) {
+      const index = acc.push({track_name, album_name, artist_name, ms_played}) - 1;
+      tracker[key] = index;
+      return acc;
+    }
+    //if yes, then add ms_played to existing ms_played and return acc
+    acc[indexInAcc].ms_played += ms_played;
+    return acc;
+  }, []);
+  res.locals.groupedByTrack = groupedData;
+  return next();
 }
 
 //
