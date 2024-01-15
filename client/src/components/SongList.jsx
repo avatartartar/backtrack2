@@ -99,8 +99,8 @@ const SongList = () => {
       <ul>
         {tracks.map(track => (
           <li key={track.id}>
-            <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
-
+            <div className="scrollWrapper">
+              <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
                 <div onClick={() => controlAudio(track.audio_clip_url, track.id)}>
                 {track.name} - {track.artist_name}
                 </div>
@@ -108,8 +108,9 @@ const SongList = () => {
                 {track.name} - {track.artist_name}
                 </div>
               </div>
-            </li>
-            ))}
+            </div>
+          </li>
+          ))}
       </ul>
     </div>
   )
