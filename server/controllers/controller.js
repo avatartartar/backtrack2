@@ -32,15 +32,6 @@ controller.getTop10TracksByYear = async (req, res, next) => {
   }
 }
 
-//Ross added this to set up a route for front end slider to get tracks by year. This controller will filter the results by year. Still need
-//to get a valid response to the front end, then we can build this controller out.
-// controller.filterByYear = (req, res) => {
-//   const { year } = req.query; //query string from front end request
-//   const { tracks } = res.locals;
-//   console.log('tracks length: ', tracks.length);
-//   return res.status(200).json(tracks);
-// }
-
 controller.groupByTrack = (req, res, next) => {
   const { tracks } = res.locals;
   const tracker = {};
