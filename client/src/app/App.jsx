@@ -3,13 +3,10 @@ import ReactDOM from 'react-dom/client';
 import Navbar from '../components/Navbar.jsx';
 import SongList from '../components/SongList.jsx';
 import TopAlbum from '../components/TopAlbum.jsx';
-import TopTenTracksByYear from '../components/TopTracksByYear.jsx';
+import Chart from '../components/Chart.jsx';
 import '../../styles/index.scss';
 import { fetchTopTenTracksByYear } from '../features/topTenTracksByYearSlice.js';
 import { useDispatch, useSelector } from 'react-redux';
-
-
-
 
 
 
@@ -20,9 +17,9 @@ export function App() {
   const dispatch = useDispatch();
   const tracks = useSelector((state) => state.topTenTracksByYear.tracks);
   const status = useSelector((state) => state.topTenTracksByYear.status);
-  const totalState = useSelector((state) => state);
-  console.log('totalstate', totalState)
-  console.log(tracks, 'tracks');
+  // const totalState = useSelector((state) => state);
+  // console.log('totalstate', totalState)
+  // console.log(tracks, 'tracks');
 
   function handleSliderInput(e) {
     setYear(e.target.value);
@@ -44,7 +41,7 @@ export function App() {
     setData(newData);
   }, [year, tracks])
 
-  console.log('data in toptracksperyear', data)
+  console.log('data in app.jsx', data)
 
   return (
     <>
@@ -66,7 +63,7 @@ export function App() {
       <SongList/>
       <TopAlbum/>
       </div>
-      <TopTenTracksByYear/>
+      <Chart/>
     </>
   )
 }
