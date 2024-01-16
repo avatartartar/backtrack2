@@ -16,7 +16,7 @@ const fetchTopTenTracks = createAsyncThunk(
   'tracks/fetchTopTen',
     async () => {
       try {
-        const response = await fetch('/db/top10Tracks');
+        const response = await fetch('/tracks/top10Tracks');
         if (!response.ok) {
           console.log('Response not okay:', await response.text());
           throw new Error('Fetch request failed in fetchTopTenTracks in topTenTracksSlice.');

@@ -14,7 +14,7 @@ const fetchTopTenTracksByYear = createAsyncThunk(
   'tracks/fetchTopTenByYear',
   async (year) => {
     try {
-      const response = await fetch(`/db/top10TracksByYear/?year=${year}`);
+      const response = await fetch(`/tracks/top10TracksByYear/?year=${year}`);
       const data = await response.json()
       console.log('fetchTopTenTracksByYear data in slice', data);
       return data;

@@ -1,11 +1,15 @@
 // Importing express for the server and path for working with file pahts in Node.js.
 import express from 'express';
 import path from 'path';
+import dotenv from 'dotenv';
 // Importing cors middleware.
 import cors from 'cors';
 // Import router and routes.
 import router from './routes/router.js';
-import dotenv from 'dotenv';
+import tracksRouter from './routes/tracksRouter.js';
+import artistsRouter from './routes/artistsRouter.js';
+import albumsRouter from './routes/albumsRouter.js';
+
 
 // Load environment variables from .env.server.
 dotenv.config({ path: '.env.server' });
@@ -29,6 +33,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Mounting the router middleware to handle routes starting from the root.
+app.use('/tracks', tracksRouter);
+app.use('/artists', artistsRouter);
+app.use('/albums', albumsRouter);
 app.use('/', router);
 
 app.listen(PORT, () => {
