@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 
+
 const TopTenTracksByYear = () => {
   const [year, setYear] = useState(2000);
   const [data, setData] = useState([]);
@@ -38,17 +39,22 @@ const TopTenTracksByYear = () => {
 
   console.log('data in toptracksperyear', data)
 
+  function CustomTooltip({ payload, label, active }) {
+    console.log(payload, 'payload');
+    if (active) {
+      return (
+        <div className="custom-tooltip" style={{background: 'green'}}>
+          <p className="label">{payload[0].payload.name}</p>
+          <p className="desc">{payload[0].payload.minutes}</p>
+        </div>
+      );
+    }
 
+    return null;
+  }
 
   return (
     <div className="topTracksByYearWrapper">
-    <div className="slideContainer">
-        <h1>The Year is</h1><h1 className="topTracksByYearYear">{year}</h1>
-      <input type="range" min="2000" max="2024" onMouseUp={handleClick} className="slider" name='slider' onChange={(e) => (
-        handleSliderInput(e)
-        )}/>
-      {/* <button className='sliderButton' onClick={handleClick}><b>{year}</b></button> */}
-    </div>
     {/* {tracks.map(track => {return <div>{track.name}</div>})} */}
       <div className="chart">
         <ResponsiveContainer width="100%" height="100%">
@@ -58,18 +64,18 @@ const TopTenTracksByYear = () => {
             data={data}
             margin={{
               top: 5,
-              right: 30,
+              right: 20,
               left: 20,
               bottom: 5,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="0 0" />
             <XAxis dataKey="name" />
             <YAxis dataKey="minutes" />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="minutes" fill="#8884d8" activeBar={<Rectangle fill="pink" stroke="blue" />} />
-            {/* <Bar dataKey="uv" fill="#82ca9d" activeBar={<Rectangle fill="gold" stroke="purple" />} /> */}
+            <Tooltip content={<CustomTooltip />} />
+            {/* <Tooltip wrapperStyle={{ width: 100 }} /> */}
+            <Legend/>
+            <Bar className="barStyle" dataKey="minutes" fill="#00d171" activeBar={<Rectangle fill="#a521ff" stroke="blue" />} />
           </BarChart>
         </ResponsiveContainer>
       </div>

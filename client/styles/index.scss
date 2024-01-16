@@ -67,6 +67,89 @@ ul {
   width: 400px;
 }
 
+.favoriteMusicHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+  h1 {
+    margin: 0px 20px;
+  }
+}
+
+//  YEAR SLIDER STYLING:
+
+.slideWrapper {
+  display: flex;
+  justify-content: center;
+  margin: 50px;
+}
+
+// This is the slider container
+
+.topTracksByYearWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+}
+
+.slideContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.topTracksByYearYear {
+  background: $gradient-text;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 74px;
+  margin: 0px;
+}
+
+// This is the actual slider
+.slider {
+  --webkit-appearance: none; // removing default css style
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  margin: 0px 0px;
+  border-radius: $border-radius;
+  background: $gradient-text; // setting background (slider) to be same gradient as text
+  opacity: 0.7; // opacity is 0,7. On hover it will change. 
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; // removing default styles
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #00d26f;
+  border-radius: 50%; // making it a circle
+  cursor: pointer;
+}
+
+// adding rules for firefox browsers:
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #fff;
+  border-radius: 50%; // making it a circle
+  cursor: pointer;
+}
+
+.chart {
+  flex: 1;
+}
+
 
 .navBar {
   display: flex;
@@ -210,79 +293,14 @@ ul {
   }
 }
 
-
-//  YEAR SLIDER STYLING:
-
-.slideWrapper {
-  display: flex;
-  justify-content: center;
-  margin: 50px;
-}
-
-// This is the slider container
-
+// styling for the graph wrapper
 .topTracksByYearWrapper {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  justify-content: center;
-}
-
-.slideContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 100px;
-}
-
-.topTracksByYearYear {
-  background: $gradient-text;
-    -webkit-background-clip: text;
-  background-clip: text;
-    -webkit-text-fill-color: transparent;
-  font-size: 74px;
-  margin: 0px;
-}
-
-// This is the actual slider
-.slider {
-  --webkit-appearance: none; // removing default css style
-  appearance: none;
-  width: 80%;
-  height: 10px;
   margin: 50px 0px;
-  border-radius: $border-radius;
-  background: $gradient-text; // setting background (slider) to be same gradient as text
-  opacity: 0.7; // opacity is 0,7. On hover it will change. 
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-  &:hover {
-    opacity: 1;
-  }
+  width: 100%;
 }
 
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none; // removing default styles
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  background: #fff;
-  border-radius: 50%; // making it a circle
-  cursor: pointer; 
-}
-
-// adding rules for firefox browsers:
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: #fff;
-  border-radius: 50%; // making it a circle
-  cursor: pointer;
-}
-
-.chart {
-  flex: 1;
+.custom-tooltip {
+  background: blue;
 }
 
 
