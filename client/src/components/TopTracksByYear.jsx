@@ -7,12 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const TopTenTracksByYear = () => {
   const [year, setYear] = useState(2000);
-  const [dragging, setDragging] = useState(false);
   const [data, setData] = useState([]);
 
   const dispatch = useDispatch();
   const tracks = useSelector((state) => state.topTenTracksByYear.tracks);
   const status = useSelector((state) => state.topTenTracksByYear.status);
+  const totalState = useSelector((state) => state);
+  console.log('totalstate', totalState)
   console.log(tracks, 'tracks');
 
   function handleSliderInput(e) {
@@ -20,6 +21,7 @@ const TopTenTracksByYear = () => {
   }
 
   function handleClick() {
+    console.log(year, 'year inside of handleClick')
     dispatch(fetchTopTenTracksByYear(year));
   }
 
@@ -27,12 +29,14 @@ const TopTenTracksByYear = () => {
     const top10ByYear = tracks.filter((track, index) =>  index < 10);
     
     const newData = top10ByYear.map((track) => ({
-        name: track.track_name[0],
+        name: track.track_name,
         minutes: track.ms_played,
     }));
 
     setData(newData);
   }, [year, tracks])
+
+  console.log('data in toptracksperyear', data)
 
 
 
@@ -41,8 +45,7 @@ const TopTenTracksByYear = () => {
     <div className="slideContainer">
         <h1>The Year is</h1><h1 className="topTracksByYearYear">{year}</h1>
       <input type="range" min="2000" max="2024" onMouseUp={handleClick} className="slider" name='slider' onChange={(e) => (
-        handleSliderInput(e),
-        setDragging(true)
+        handleSliderInput(e)
         )}/>
       {/* <button className='sliderButton' onClick={handleClick}><b>{year}</b></button> */}
     </div>
