@@ -1,8 +1,10 @@
 import express from 'express';
 const router = express.Router();
-import controller from '../controllers/controller.js';
+import artistsController from '../controllers/artistsController.js';
 
-router.get('/top10Artists', controller.getTop10Artists);
+router.get('/top10Artists', artistsController.getTop10Artists, (req, res) => {
+  return res.status(200).json(res.locals.top10Artists);
+});
 
 // ES6 syntax
 export default router;
