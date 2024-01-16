@@ -3,10 +3,16 @@
 
 
 $font-family-mono: "Red Hat Mono", monospace;
+//gradient for headers / slider etc:
+$gradient-text: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);
+// border radius used for list elements, slider etc:
+$border-radius: 69px;
 // gradient animation style for landing page
 html {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 #root {
@@ -18,9 +24,10 @@ html {
 }
 
 body {
-  background: linear-gradient(45deg, #130188 0%, darken(#13008b, 50%) 100%);
-  background-size: 200% 200%;
-  height: 100%;
+  // background: linear-gradient(45deg, #130188 0%, darken(#13008b, 50%) 100%) bottom;
+  background: linear-gradient(to bottom,#130188, #13008b);
+  background-size: 400% 200%;
+  height: 100% !important;
   width: 100%;
   animation: background 20s ease infinite;
   display: flex;
@@ -78,8 +85,9 @@ ul {
 }
 
 .gradientHeader {
-  background: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);
+  background: $gradient-text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   font-family: $font-family-mono;
   font-size: 64px;
@@ -118,7 +126,7 @@ ul {
   height: 1em;
   padding: 10px;
   margin: 10px 0px;
-  border-radius: 69px;
+  border-radius: $border-radius;
   white-space: nowrap;
   overflow: hidden;
   // position: relative;
@@ -202,25 +210,79 @@ ul {
   }
 }
 
-.sliderContainer {
-  width: 100%;
-  height: 30px;
+
+//  YEAR SLIDER STYLING:
+
+.slideWrapper {
   display: flex;
-  padding-top: 50px;
+  justify-content: center;
+  margin: 50px;
 }
 
-.slider {
+// This is the slider container
+
+.topTracksByYearWrapper {
   width: 100%;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
 }
 
-.sliderButton {
-  width: 120px;
-  height: 30px;
-  border-radius: 9999px;
-  background-color: #ADADFF;
-  color: #130188;
-  margin-left: 10px;
-  font-size: larger;
+.slideContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.topTracksByYearYear {
+  background: $gradient-text;
+    -webkit-background-clip: text;
+  background-clip: text;
+    -webkit-text-fill-color: transparent;
+  font-size: 74px;
+  margin: 0px;
+}
+
+// This is the actual slider
+.slider {
+  --webkit-appearance: none; // removing default css style
+  appearance: none;
+  width: 80%;
+  height: 10px;
+  margin: 50px 0px;
+  border-radius: $border-radius;
+  background: $gradient-text; // setting background (slider) to be same gradient as text
+  opacity: 0.7; // opacity is 0,7. On hover it will change. 
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; // removing default styles
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #fff;
+  border-radius: 50%; // making it a circle
+  cursor: pointer; 
+}
+
+// adding rules for firefox browsers:
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #fff;
+  border-radius: 50%; // making it a circle
   cursor: pointer;
 }
+
+.chart {
+  flex: 1;
+}
+
+

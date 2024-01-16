@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar.jsx';
 import SongList from '../components/SongList.jsx';
 import TopAlbum from '../components/TopAlbum.jsx';
 import TopTenTracksByYear from '../components/TopTracksByYear.jsx';
+// import DisplayYear from '../components/DisplayYear.jsx';
 import '../../styles/index.scss';
 
 export function App() {
