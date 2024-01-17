@@ -14,8 +14,6 @@ const supaKey = process.env.SUPA_KEY;
 
 // Create Supabase client.
 const supabase = createClient(supaUrl, supaKey);
-let insertCount = 0;
-let recentData;
 
 const model = {};
 
@@ -33,6 +31,15 @@ const getTrackInfo = async (uri) => {
   return await response.json();
 }
 
+const handleRequest = async (modelFunction, req, res) => {
+  try {
+    const data = await modelFunction();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 const executeQuery = async (queryCallback) => {
   const { data, error } = await queryCallback(supabase);
@@ -41,10 +48,10 @@ const executeQuery = async (queryCallback) => {
   return data;
 };
 
-// Consolidated queries down into object of "basic queries" to be change upon project reqs changing
+
+// Consolidated queries down into object of "queries"
 const queries = {
 // now querying the Tracks table, rather than a view.
-// can replicate this with artists and albums.
   getTop10Tracks: () => executeQuery(async (supabase) => supabase
     .from('tracks')
     .select('*')
@@ -81,45 +88,53 @@ const queries = {
     .limit(10)
   ),
 
-  get10Sessions: () => executeQuery(async (supabase) => supabase
-    .from('sessions')
-    .select('artist, track, album, country, dt_added, timefn')
-    .limit(10)
-  ),
-  getFields: () => executeQuery(async (supabase) => supabase
-    .from('sessions')
-    .select('*')
-    .limit(1)
-  ),
-  //Ross added this to set up a route for front end slider to get tracks by year. commented out part of the query just to test as this query
-  //keeps timing out. trying to join the sessions table on sessions.track_id = tracks.id and pull in the sessions.ts field to filter by year
-  //downstream
-  getTop10TracksForYear: (year) => 
-    executeQuery(async (supabase) => supabase
-      .from('sessions')
-      .select(`
-        track_name,
-        artist_name,
-        album_name,
-        ms_played,
-        sesh_year
-      `)
-      .eq('sesh_year', year)
-      .gte('ms_played', 60000)
-      .order('ms_played', { ascending: false })
-      ).then(tracks => tracks)
-  //   .then(async tracks => {
-  //   for (const track of tracks) {
-  //     const trackInfo = await getTrackInfo(track.uri);
-  //     track.preview = trackInfo.preview_url;
-  //     track.albumImage = trackInfo.album.images[1].url;
-  //     track.duration = trackInfo.duration_ms;
-  //     track.popularity = trackInfo.popularity;
-  //     track.explicit = trackInfo.explicit;
-  //   }
-  //   return tracks;
-  // })
+  getTop10ArtistsForYear: (year) => executeQuery(async (supabase) => supabase
+      .from('top_artists_by_year')
+      .select('*')
+      .eq('year', year)),
+  
+  getTop10AlbumsForYear: (year) => executeQuery(async (supabase) => supabase
+      .from('top_albums_by_year')
+      .select('*')
+      .eq('year', year)),
+  
+  getTop10TracksForYear: (year) => executeQuery(async (supabase) => supabase
+      .from('top_tracks_by_year')
+      .select('*')
+      .eq('year', year)),
+  
+  getTop10ArtistsForYearByMonth: (year) => executeQuery(async (supabase) => supabase
+      .from('top_artists_by_year_month')
+      .select('*')
+      .eq('year', year)),
 
-};
+  
+  getTop10AlbumsForYearByMonth: (year) => executeQuery(async (supabase) => supabase
+      .from('top_albums_by_year_month')
+      .select('*')
+      .eq('year', year)),
+  
+  getTop10TracksForYearByMonth: (year) => executeQuery(async (supabase) => supabase
+      .from('top_tracks_by_year_month')
+      .select('*')
+      .eq('year', year)),
+
+  // Old query to get Top10TracksForYear. Does not use views. 
+
+  // getTop10TracksForYear: (year) => 
+  //   executeQuery(async (supabase) => supabase
+  //     .from('sessions')
+  //     .select(`
+  //       track_name,
+  //       artist_name,
+  //       album_name,
+  //       ms_played,
+  //       sesh_year
+  //     `)
+  //     .eq('sesh_year', year)
+  //     .gte('ms_played', 60000)
+  //     .order('ms_played', { ascending: false })
+  //     ).then(tracks => tracks),
+  };
 
 export { queries };
