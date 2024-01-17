@@ -9,7 +9,6 @@ const LogStateComp = () => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.metaKey && event.key === 'Enter') {
-        console.log('logging state');
         logState(store);
       }
     };

@@ -19,6 +19,16 @@ let recentData;
 
 const model = {};
 
+
+// const handleRequest = async (modelFunction, req, res) => {
+//   try {
+//     const data = await modelFunction();
+//     res.status(200).json(data);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
 // a helper function that executes a query callback and returns the data or throws an error
 // allows us to avoid repeating the same try/catch block in every model function
 const getTrackInfo = async (uri) => {
@@ -41,7 +51,7 @@ const executeQuery = async (queryCallback) => {
   return data;
 };
 
-// Consolidated queries down into object of "basic queries" to be change upon project reqs changing
+// Consolidated queries down into object of "queries" to be change upon project reqs changing
 const queries = {
 // now querying the Tracks table, rather than a view.
 // can replicate this with artists and albums.
@@ -81,59 +91,60 @@ const queries = {
     .limit(10)
   ),
 
-  getSessions: () => executeQuery(async (supabase) => supabase
-    .from('sessions')
-    .select('artist, track, album, country, dt_added, timefn')
-    .limit(10)
-  ),
-  getFields: () => executeQuery(async (supabase) => supabase
-    .from('sessions')
+  getTopArtistsByYear: (year) => executeQuery(async (supabase) => supabase
+    .from('top_artists_by_year')
     .select('*')
-    .limit(1)
+    .eq('year', year)
   ),
-  //Ross added this to set up a route for front end slider to get tracks by year. commented out part of the query just to test as this query
-  //keeps timing out. trying to join the sessions table on sessions.track_id = tracks.id and pull in the sessions.ts field to filter by year
-  //downstream
 
-  // Keith 2024-01-16_10-04-PM
-  // this works to get the top tracks per year, but the playtime and count data is not returned, oddly.
+  getTopAlbumsByYear: (year) => executeQuery(async (supabase) => supabase
+    .from('top_albums_by_year')
+    .select('*')
+    .eq('year', year)
+  ),
+
   getTopTracksByYear: (year) => executeQuery(async (supabase) => supabase
     .from('top_tracks_by_year')
     .select('*')
     .eq('year', year)
-    .limit(10)
-  )
-  // getTopTracksByYear: (year) => executeQuery(async (supabase) => supabase
-  //       .from('top_tracks_by_year')
-  //       .select('*')
-  //       .eq('year', year).then(
-  //         async (response) => {
-  //           if (response.error) {
-  //             throw response.error;
-  //           }
-  //           // console.log('Data from getTopTracksBYYear query', response.data);
-  //           return response.data;
-  //         }
-  //     )
-  // )
+  ),
 
-  // getTopTracksByYear: async (year) => {
-  //   try {
-  //     const response = await supabase
-  //       .from('top_tracks_by_year')
-  //       .select('*')
-  //       .eq('year', year);
-  //     if (response.error) {
-  //       throw response.error;
-  //     }
-  //     console.log('Data from getTopTracksBYYear query', response.data);
-  //     return response.data;
+  getTopArtistsByYearByMonth: (year) => executeQuery(async (supabase) => supabase
+    .from('top_artists_by_year_month')
+    .select('*')
+    .eq('year', year)
+  ),
 
-  //     // return response.data;
-  //   } catch (error) {
-  //     console.error('Error fetching top tracks by year:', error);
-  //   }
-  // }
+  getTopAlbumsByYearByMonth: (year) => executeQuery(async (supabase) => supabase
+    .from('top_albums_by_year_month')
+    .select('*')
+    .eq('year', year)
+  ),
+
+  getTopTracksByYearByMonth: (year) => executeQuery(async (supabase) => supabase
+    .from('top_tracks_by_year_month')
+    .select('*')
+    .eq('year', year)
+  ),
+
+
+
+  // Old query to get Top10TracksForYear. Does not use views.
+
+  // getTop10TracksForYear: (year) =>
+  //   executeQuery(async (supabase) => supabase
+  //     .from('sessions')
+  //     .select(`
+  //       track_name,
+  //       artist_name,
+  //       album_name,
+  //       ms_played,
+  //       sesh_year
+  //     `)
+  //     .eq('sesh_year', year)
+  //     .gte('ms_played', 60000)
+  //     .order('ms_played', { ascending: false })
+  //     ).then(tracks => tracks),
 
 };
 

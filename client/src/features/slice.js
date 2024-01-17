@@ -5,24 +5,37 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // that can be be resued for any slice. reduces code duplication.
 
 const initialState = {
-  year: 'all-time',
   arrData: [],
   objData: {},
   status: "idle",
   error: "",
 };
 
+const yearSlice = createSlice({
+  name: 'year',
+  initialState: {
+    year: 0,
+    default: 'all-time',
+    status: "idle",
+    error: ""
+  },
+  reducers: {
+    setYear: (state, action) => {
+      state.year = action.payload;
+      console.log('yearSlice: state.year:', state.year);
+    },
+  },
+});
+
 const slice = (endpoint, title, filter) => {
-  console.log('title in reducerFn:', title);
-  const fetchFn = createAsyncThunk(
+  const actions = createAsyncThunk(
     `fetch/${title}`,
     async (obj) => {
       let url = `${endpoint}/${title}`;
-      console.log('filter:', filter);
       if (filter && obj.query) {
-        url = `${endpoint}/${title}${filter}${obj.value}`;
+        url = `${endpoint}/${title}${filter}${obj.query}`;
       }
-      console.log('url in fetchFn:', url);
+      console.log('fetching:', url);
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Fetch request failed at endpoint ${url}`);
@@ -32,46 +45,52 @@ const slice = (endpoint, title, filter) => {
     }
   );
 
-
-  const reducerFn = createSlice({
+  const reducer = createSlice({
     name: title,
     initialState,
     reducers: {},
     extraReducers(builder) {
       builder
-        .addCase(fetchFn.pending, (state, action) => {
+        .addCase(actions.pending, (state, action) => {
           state.status = "loading";
         })
-        .addCase(fetchFn.fulfilled, (state, action) => {
+        .addCase(actions.fulfilled, (state, action) => {
           state.status = "succeeded";
+          // this catches the case where the data is an array or an object
           if (Array.isArray(action.payload)) {
-            console.log('action.payload:', action.payload);
             state.arrData = action.payload;
           } else {
             state.objData = action.payload;
           }
-          if (title === 'topTracksByYear') {
-            state.year = action.meta.arg.value;
-            console.log('a', action);
-            console.log('action.payload from title conditional', action.payload);
+          if (title.includes('ByYear')) {
+            console.log('title includes ByYear');
+            state.year = action.meta.arg.query;
+            state.objData[state.year] = action.payload;
+          }
+          else{
+            state.alltime = action.payload;
           }
         })
-        .addCase(fetchFn.rejected, (state, action) => {
+        .addCase(actions.rejected, (state, action) => {
           console.log(`status REJECTED for ${title} in slice.js`);
           state.status = "failed";
           state.error = action.error.message;
         })
     }
   });
-  // console.log('slice:', slice);
-  // console.log('fetchFn:', fetchFn);
-  return { reducerFn, fetchFn };
-}
-const { reducerFn: topTracksSlice, fetchFn: fetchTopTracks } = slice('/tracks', 'topTracks');
-const { reducerFn: topAlbumsSlice, fetchFn: fetchTopAlbums } = slice('/albums', 'topAlbums');
-const { reducerFn: topArtistsSlice, fetchFn: fetchTopArtists } = slice('/artists', 'topArtists');
-const { reducerFn: topTracksByYearSlice, fetchFn: fetchTopTracksByYear } = slice('/tracks','topTracksByYear', '?year=');
 
+  return { reducer, actions };
+}
+const { reducer: topTracksSlice, actions: fetchTopTracks } = slice('/tracks', 'topTracks');
+const { reducer: topAlbumsSlice, actions: fetchTopAlbums } = slice('/albums', 'topAlbums');
+const { reducer: topArtistsSlice, actions: fetchTopArtists } = slice('/artists', 'topArtists');
+const { reducer: topAlbumsByYearSlice, actions: fetchTopAlbumsByYear } = slice('/tracks','topAlbumsByYear', '?year=');
+const { reducer: topArtistsByYearSlice, actions: fetchTopArtistsByYear } = slice('/tracks','topArtistsByYear', '?year=');
+const { reducer: topTracksByYearSlice, actions: fetchTopTracksByYear } = slice('/tracks','topTracksByYear', '?year=');
+
+
+const { reducer: yearReducer, actions: yearActions } = yearSlice;
+const { setYear } = yearActions;
 
 export {
   fetchTopTracks,
@@ -82,4 +101,6 @@ export {
   topAlbumsSlice,
   topArtistsSlice,
   topTracksByYearSlice,
+  setYear,
+  yearReducer
 };

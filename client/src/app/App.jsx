@@ -16,13 +16,13 @@ export function App() {
       <LogState/>
       <Navbar/>
       <h3>Lets take a trip down memory lane</h3>
-      <h1 className="gradientHeader">This is your all time favorites</h1>
+      {/* <h1 className="gradientHeader">This is your all time favorites</h1> */}
       <YearSliderComp/>
       <div className="trackListAndAlbum">
       <TopTracks/>
       <TopAlbum/>
       </div>
-      {/* <GraphComp/> */}
+      <GraphComp/>
     </>
   )
 }

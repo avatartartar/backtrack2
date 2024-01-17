@@ -1,147 +1,74 @@
 import React, { useEffect, useState, PureComponent } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+import { AreaChart, Area, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
 // import { fetchTopTracksByYear } from '../features/slice.js';
 import { useDispatch, useSelector } from 'react-redux';
 
 
-//sample data for graph
-const data = [
-  {
-    name: '2011',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: '2012',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: '2013',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: '2014',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: '2015',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: '2016',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: '2017',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: '2017',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: '2018',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: '2019',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: '2020',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: '2021',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: '2022',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-  {
-    name: '2023',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
-
-
 const GraphComp = () => {
-  // const [year, setYear] = useState(2000);
-
+  const [data, setData] = useState([]);
   const dispatch = useDispatch();
-//   const { arrData: topTracksByYear, status } = useSelector(state => state.topTracksByYear);
+
+  const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.year);
+  const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
+  const { arrData: topTracksByYear, status: statusTopTracksByYear, error: errorTopTracksByYear } = useSelector(state => state.topTracksByYear);
+
+  // setting tracks to either topTracks or topTracksByYear depending on the year selected.
+  // then this gets served to the component that renders the tracks.
+  const tracks = year === 0 ? topTracks : topTracksByYear;
+
+  useEffect(() => {
+    if (tracks && tracks.length > 0) {
+      const topByYear = tracks.filter((track, index) =>  index < 10);
+      console.log('useEffect in GraphComp.jsx invoked');
+      const newData = topByYear.map((track) => ({
+        name: track.name,
+        minutes: track.playtime_minutes,
+      }));
+
+      setData(newData);
+    }
+  }, [year, tracks])
 
 
-// // sample year for getting year
-//   const yearsArray = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024']
+  function CustomTooltip({ payload, label, active }) {
+    if (active) {
+      return (
+        <div className="custom-tooltip" style={{background: 'green', width: '200px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center'}}>
+          <p className="label">{payload[0].payload.name}</p>
+          <p className="desc">{payload[0].payload.minutes}</p>
+        </div>
+      );
+    }
 
-
-  // function handleSliderInput(e) {
-  //   // setYear(e.target.value);
-  //   dispatch(fetchTopTracksByYear({value: e.target.value}));
-  // }
-
-  // function handleClick() {
-  //   dispatch(fetchTopTracksByYear({value: year}));
-  // }
-
+    return null;
+  }
   return (
     <div className="topTracksByYearWrapper">
-    {/* <div className="slideContainer">
-        <h1>The Year is</h1><h1 className="topTracksByYearYear">{year}</h1>
-      <input type="range" min="2000" max="2024" className="slider" name='slider' onChange={(e) => handleSliderInput(e)}/>
-      <button className='sliderButton' onClick={handleClick}><b>{year}</b></button>
-    </div> */}
-    {/* {tracks.map(track => {return <div>{track.name}</div>})} */}
       <div className="chart">
-        <ResponsiveContainer width="90%" height="50%">
-          <LineChart
+        <ResponsiveContainer width="100%" height="40%">
+          <BarChart
+            layout="vertical"
             width={500}
             height={300}
             data={data}
             margin={{
               top: 5,
-              right: 30,
-              left: 20,
+              right: 50,
+              left: 50,
               bottom: 5,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-            <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-          </LineChart>
+
+            <CartesianGrid strokeDasharray="0 0" />
+            <XAxis dataKey="minutes" type="number" />
+            <YAxis dataKey="name"  type="category" width={80} />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend/>
+            <Bar className="barStyle" dataKey="minutes" fill="#3a86ff" activeBar={<Rectangle fill="#fb5607" />}>
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </div>

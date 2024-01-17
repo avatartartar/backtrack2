@@ -7,37 +7,44 @@ import playIcon from '../../assets/play_icon.png';
 import pauseIcon from '../../assets/pause_icon.png';
 
 
+
 const TopTracksComp = () => {
   const dispatch = useDispatch();
   const [audio, setAudio] = useState(null);
   const [isClickedId, setIsClickedId] = useState(null);
   const [endClipTimeout, setEndClipTimeout] = useState(null);
 
+  const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.year);
+  const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
+  const { arrData: topTracksByYear, status: statusTopTracksByYear, error: errorTopTracksByYear } = useSelector(state => state.topTracksByYear);
 
-  // KG 2024-01-14_03-20-PM: consolidated tracks, status, and error into one object.
-  const { arrData: topTracks, status, error } = useSelector(state => state.topTracks);
-  // console.log('tracks', topTracks);
-  console.log('status in topTracksComp from reducer:', status)
+  // setting tracks to either topTracks or topTracksByYear depending on the year selected.
+  // then this gets served to the component that renders the tracks.
+  const tracks = year === 0 ? topTracks : topTracksByYear;
 
-  if (status === 'loading') {
-    // console.log('loading tracks from state in TopTracksComp.jsx');
-  }
 
-  if (status === 'failed') {
+
+  // console.log('status in topTracksComp from reducer:', status)
+
+  // if (status === 'loading') {
+  //   // console.log('loading tracks from state in TopTracksComp.jsx');
+  // }
+
+  if (statusTopTracks === 'failed') {
     console.log('FAILED: loading tracks from state in topTracksComp.jsx');
   }
 
-  if (error) {
+  if (errorTopTracks) {
     console.log('ERROR: loading tracks from state in TopTracksComp.jsx');
   }
 
 
   useEffect(() => {
     // Dispatch the fetchTracks async thunk when the component mounts
-    if (status === 'idle') {
+    if (statusTopTracks === 'idle') {
       dispatch(fetchTopTracks());
     }
-  }, [dispatch, status]);
+  }, [dispatch, statusTopTracks]);
 
 
    const controlAudio = (previewUrl, trackId) => {
@@ -103,7 +110,7 @@ const TopTracksComp = () => {
     <div className="TopTracks">
       <h3>TOP 10 TRACKS</h3>
       <ul>
-        {topTracks.map(track => (
+        {tracks.map(track => (
           <li key={track.id}>
             <img src={playIcon} alt="" style={isClickedId === track.id ? {display: 'none'} : {display: 'block'}}/>
             <img src={pauseIcon} alt="" style={isClickedId === track.id ? { display: 'block' } : { display: 'none' }} />
