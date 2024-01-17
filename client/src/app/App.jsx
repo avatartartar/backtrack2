@@ -3,48 +3,24 @@ import ReactDOM from 'react-dom/client';
 import Navbar from '../components/Navbar.jsx';
 import SongList from '../components/SongList.jsx';
 import TopAlbum from '../components/TopAlbum.jsx';
-import Chart from '../components/Chart.jsx';
+// import Chart from '../components/Chart.jsx';
 import '../../styles/index.scss';
 import { fetchTopTenTracksByYear } from '../features/topTenTracksByYearSlice.js';
 import { useDispatch, useSelector } from 'react-redux';
 import TopTenTracksByYear from '../components/TopTracksByYear.jsx';
 import { setYear } from '../features/topTenTracksByYearSlice.js';
 
-
-
 export function App() {
-  // const [year, setYear] = useState(2000);
-  const [data, setData] = useState([]);
-
   const dispatch = useDispatch();
-  const tracks = useSelector((state) => state.topTenTracksByYear.tracks);
-  const status = useSelector((state) => state.topTenTracksByYear.status);
   const year = useSelector((state) => state.topTenTracksByYear.year)
-  // const totalState = useSelector((state) => state);
-  // console.log('totalstate', totalState)
-  console.log(tracks, 'tracks');
 
   function handleSliderInput(e) {
     dispatch(setYear(e.target.value));
   }
 
   function handleClick() {
-    console.log(year, 'year inside of handleClick')
     dispatch(fetchTopTenTracksByYear(year));
   }
-
-  useEffect(() => {
-    const top10ByYear = tracks.filter((track, index) => index < 10);
-
-    const newData = top10ByYear.map((track) => ({
-      name: track.track_name,
-      minutes: track.ms_played,
-    }));
-
-    setData(newData);
-  }, [year, tracks])
-
-  console.log('data in app.jsx', data)
 
   return (
     <>
@@ -60,7 +36,6 @@ export function App() {
           )} />
         </div>
         </div>
-        {/* <button className='sliderButton' onClick={handleClick}><b>{year}</b></button> */}
       </div>
       <div className="trackListAndAlbum">
       <SongList/>
