@@ -1,9 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client';
-import Navbar from '../components/Navbar.jsx';
-import SongList from '../components/SongList.jsx';
-import TopAlbum from '../components/TopAlbum.jsx';
-import TopTenTracksByYear from '../components/TopTracksByYear.jsx';
+import Navbar from '../components/NavbarComp.jsx';
+import TopTracks from '../components/TopTracksComp.jsx';
+import TopAlbum from '../components/TopAlbumComp.jsx';
+import GraphComp from '../components/GraphComp.jsx';
+import LogState from '../components/LogStateComp.jsx';
+import YearSliderComp from '../components/SliderComp.jsx';
 // import DisplayYear from '../components/DisplayYear.jsx';
 import '../../styles/index.scss';
 
@@ -11,14 +13,16 @@ export function App() {
 
   return (
     <>
+      <LogState/>
       <Navbar/>
       <h3>Lets take a trip down memory lane</h3>
       <h1 className="gradientHeader">This is your all time favorites</h1>
+      <YearSliderComp/>
       <div className="trackListAndAlbum">
-      <SongList/>
+      <TopTracks/>
       <TopAlbum/>
       </div>
-      <TopTenTracksByYear/>
+      {/* <GraphComp/> */}
     </>
   )
 }

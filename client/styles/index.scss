@@ -100,7 +100,7 @@ ul {
     }
 }
 
-.SongList {
+.TopTracks {
   color: white;
   font-family: $font-family-mono;
   width: 422px;
@@ -119,7 +119,7 @@ ul {
   100% { left: -100%; }
 }
 
-.SongList li {
+.TopTracks li {
   border: 0.5px solid gray;
   display: flex;
   width: 400px;
@@ -254,7 +254,7 @@ ul {
   margin: 50px 0px;
   border-radius: $border-radius;
   background: $gradient-text; // setting background (slider) to be same gradient as text
-  opacity: 0.7; // opacity is 0,7. On hover it will change. 
+  opacity: 0.7; // opacity is 0,7. On hover it will change.
   -webkit-transition: 0.2s;
   transition: 0.2s;
   &:hover {
@@ -269,7 +269,7 @@ ul {
   height: 25px;
   background: #fff;
   border-radius: 50%; // making it a circle
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 // adding rules for firefox browsers:
@@ -284,5 +284,3 @@ ul {
 .chart {
   flex: 1;
 }
-
-

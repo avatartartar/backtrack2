@@ -25,7 +25,8 @@ module.exports = (env, argv) => {
             assetModuleFilename: '[name][ext]',
         },
         // Generates source maps for easeir debugging (see build folder)
-        devtool: isDevelopment ? 'source-map' : false,
+        // devtool: isDevelopment ? 'source-map' : false,
+        devtool: 'inline-source-map',
         // Can create local servers to mimic production environment.
         devServer: {
             // Configures a local development server.

@@ -45,7 +45,7 @@ const executeQuery = async (queryCallback) => {
 const queries = {
 // now querying the Tracks table, rather than a view.
 // can replicate this with artists and albums.
-  getTop10Tracks: () => executeQuery(async (supabase) => supabase
+  getTopTracks: () => executeQuery(async (supabase) => supabase
     .from('tracks')
     .select('*')
     .order('playtime_ms', { ascending: false })
@@ -65,7 +65,7 @@ const queries = {
     // return tracks;
   ),
 
-  getTop10Artists: () => executeQuery(async (supabase) => supabase
+  getTopArtists: () => executeQuery(async (supabase) => supabase
     .from('artists')
     .select('*')
     .neq('playtime_ms', 0)
@@ -73,7 +73,7 @@ const queries = {
     .limit(10)
   ),
 
-  getTop10Albums: () => executeQuery(async (supabase) => supabase
+  getTopAlbums: () => executeQuery(async (supabase) => supabase
     .from('albums')
     .select('*')
     .neq('playtime_ms', 0)
@@ -81,7 +81,7 @@ const queries = {
     .limit(10)
   ),
 
-  get10Sessions: () => executeQuery(async (supabase) => supabase
+  getSessions: () => executeQuery(async (supabase) => supabase
     .from('sessions')
     .select('artist, track, album, country, dt_added, timefn')
     .limit(10)
@@ -94,31 +94,46 @@ const queries = {
   //Ross added this to set up a route for front end slider to get tracks by year. commented out part of the query just to test as this query
   //keeps timing out. trying to join the sessions table on sessions.track_id = tracks.id and pull in the sessions.ts field to filter by year
   //downstream
-  getTop10TracksForYear: (year) => 
-    executeQuery(async (supabase) => supabase
-      .from('sessions')
-      .select(`
-        track_name,
-        artist_name,
-        album_name,
-        ms_played,
-        sesh_year
-      `)
-      .eq('sesh_year', year)
-      .gte('ms_played', 60000)
-      .order('ms_played', { ascending: false })
-      ).then(tracks => tracks)
-  //   .then(async tracks => {
-  //   for (const track of tracks) {
-  //     const trackInfo = await getTrackInfo(track.uri);
-  //     track.preview = trackInfo.preview_url;
-  //     track.albumImage = trackInfo.album.images[1].url;
-  //     track.duration = trackInfo.duration_ms;
-  //     track.popularity = trackInfo.popularity;
-  //     track.explicit = trackInfo.explicit;
+
+  // Keith 2024-01-16_10-04-PM
+  // this works to get the top tracks per year, but the playtime and count data is not returned, oddly.
+  getTopTracksByYear: (year) => executeQuery(async (supabase) => supabase
+    .from('top_tracks_by_year')
+    .select('*')
+    .eq('year', year)
+    .limit(10)
+  )
+  // getTopTracksByYear: (year) => executeQuery(async (supabase) => supabase
+  //       .from('top_tracks_by_year')
+  //       .select('*')
+  //       .eq('year', year).then(
+  //         async (response) => {
+  //           if (response.error) {
+  //             throw response.error;
+  //           }
+  //           // console.log('Data from getTopTracksBYYear query', response.data);
+  //           return response.data;
+  //         }
+  //     )
+  // )
+
+  // getTopTracksByYear: async (year) => {
+  //   try {
+  //     const response = await supabase
+  //       .from('top_tracks_by_year')
+  //       .select('*')
+  //       .eq('year', year);
+  //     if (response.error) {
+  //       throw response.error;
+  //     }
+  //     console.log('Data from getTopTracksBYYear query', response.data);
+  //     return response.data;
+
+  //     // return response.data;
+  //   } catch (error) {
+  //     console.error('Error fetching top tracks by year:', error);
   //   }
-  //   return tracks;
-  // })
+  // }
 
 };
 

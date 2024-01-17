@@ -2,10 +2,10 @@ import { queries } from '../models/model.js';
 
 const artistsController = {};
 
-artistsController.getTop10Artists = async (req, res, next) => {
+artistsController.getTopArtists = async (req, res, next) => {
   try {
-    const top10Artists = await queries.getTop10Artists();
-    res.locals.top10Artists = top10Artists;
+    const topArtists = await queries.getTopArtists();
+    res.locals.topArtists = topArtists;
     return next();
 
   } catch (error) {

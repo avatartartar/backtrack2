@@ -1,13 +1,14 @@
 import express from 'express';
 const router = express.Router();
-import tracksController from '../controllers/tracksController.js'; 
+import tracksController from '../controllers/tracksController.js';
 
-router.get('/top10Tracks', tracksController.getTop10Tracks, (req, res) => {
-  return res.status(200).json(res.locals.top10Tracks);
+router.get('/topTracks', tracksController.getTopTracks, (req, res) => {
+  return res.status(200).json(res.locals.topTracks);
 });
-//Ross added this to set up a route for front end slider to get tracks by year. 
-router.get('/top10TracksByYear', tracksController.getTop10TracksForYear, tracksController.getTracksByTimePlayed, (req, res) => {
-  return res.status(200).json(res.locals.tracksByTotalTimePlayed)
+//Ross added this to set up a route for front end slider to get tracks by year.
+router.get('/topTracksByYear', tracksController.getTopTracksByYear, /* tracksController.getTracksByTimePlayed, */ (req, res) => {
+  return res.status(200).json(res.locals.topTracksByYear);
+  // return res.status(200).json(res.locals.TracksByTimePlayed);
 });
 
 // ES6 syntax

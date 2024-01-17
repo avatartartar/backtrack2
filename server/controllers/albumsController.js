@@ -2,10 +2,10 @@ import { queries } from '../models/model.js';
 
 const albumsController = {};
 
-albumsController.getTop10Albums = async (req, res, next) => {
+albumsController.getTopAlbums = async (req, res, next) => {
   try {
-    const top10Albums = await queries.getTop10Albums();
-    res.locals.top10Albums = top10Albums;
+    const topAlbums = await queries.getTopAlbums();
+    res.locals.topAlbums = topAlbums;
     return next();
 
   } catch (error) {
