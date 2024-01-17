@@ -24,7 +24,6 @@ const Chart = () => {
         existingData[track.track_name] = track.ms_played;
       } else {
         const newDataPoint = {
-          name: track.month,
           [track.track_name]: track.ms_played,
         };
         acc.push(newDataPoint);
@@ -33,14 +32,34 @@ const Chart = () => {
       return acc;
     }, []);
 
-    setData(chartData);
+    const finalData = [...Array(12)].map((ignoreParam, i) => {
+      const month = i + 1;
+      const existingData = chartData.find((dataPoint) => dataPoint.month)
+
+      if (existingData) {
+        return existingData;
+      }
+
+      return { 
+        month,
+        data,
+       }
+    });
+
+
+    setData(finalData);
   }, [tracks]);
 
-  const areas = Object.keys(data[0] || {}).map((track, index) => (
+  console.log(data, 'data on line 48')
+  console.log(data[0], 'data[0] on line 49')
+
+
+  // const areas = Object.keys(data[0] || {}).map((track, index) => (
+  const areas = data.forEach((el) => (
     <Area
-      key={index}
+      key={el.month}
       type="monotone"
-      dataKey={track}
+      dataKey={el.data.name}
       stackId="2"
       stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
       fill={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
@@ -62,7 +81,7 @@ const Chart = () => {
         }}
       >
         <CartesianGrid vertical={false} horizontal={false} />
-        <XAxis dataKey="name" axisLine={false} tickLine={false} />
+        <XAxis dataKey="month" axisLine={false} tickLine={false} />
         <YAxis axisLine={false} tickLine={false} />
         <Tooltip />
         {areas}
