@@ -7,22 +7,25 @@ import Chart from '../components/Chart.jsx';
 import '../../styles/index.scss';
 import { fetchTopTenTracksByYear } from '../features/topTenTracksByYearSlice.js';
 import { useDispatch, useSelector } from 'react-redux';
+import TopTenTracksByYear from '../components/TopTracksByYear.jsx';
+import { setYear } from '../features/topTenTracksByYearSlice.js';
 
 
 
 export function App() {
-  const [year, setYear] = useState(2000);
+  // const [year, setYear] = useState(2000);
   const [data, setData] = useState([]);
 
   const dispatch = useDispatch();
   const tracks = useSelector((state) => state.topTenTracksByYear.tracks);
   const status = useSelector((state) => state.topTenTracksByYear.status);
+  const year = useSelector((state) => state.topTenTracksByYear.year)
   // const totalState = useSelector((state) => state);
   // console.log('totalstate', totalState)
-  // console.log(tracks, 'tracks');
+  console.log(tracks, 'tracks');
 
   function handleSliderInput(e) {
-    setYear(e.target.value);
+    dispatch(setYear(e.target.value));
   }
 
   function handleClick() {
@@ -63,7 +66,8 @@ export function App() {
       <SongList/>
       <TopAlbum/>
       </div>
-      <Chart/>
+      <TopTenTracksByYear/>
+      {/* <Chart/> */}
     </>
   )
 }

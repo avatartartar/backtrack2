@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import logo from '../../assets/logo.png';
 import { fetchTopTenTracks } from '../features/topTenTracksSlice.js';
+import { setYear } from '../features/topTenTracksByYearSlice.js';
 // import store from '../store/store.js';
 import { useDispatch, useSelector } from 'react-redux';
 import playIcon from '../../assets/play_icon.png';
@@ -11,10 +12,10 @@ const SongList = () => {
   const [audio, setAudio] = useState(null);
   const [isClickedId, setIsClickedId] = useState(null);
   const [endClipTimeout, setEndClipTimeout] = useState(null);
-
   const dispatch = useDispatch();
   // KG 2024-01-14_03-20-PM: consolidated tracks, status, and error into one object.
   const { tracks, status, error } = useSelector(state => state.topTenTracks);
+
 
   if (status === 'loading') {
     // console.log('loading tracks from state in songList.jsx');
@@ -35,7 +36,6 @@ const SongList = () => {
       dispatch(fetchTopTenTracks());
     }
   }, [dispatch, status]);
-
 
    const controlAudio = (previewUrl, trackId) => {
 
