@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 // Importing cors middleware.
 import cors from 'cors';
 // Import router and routes.
-import router from './routes/router.js';
 import tracksRouter from './routes/tracksRouter.js';
 import artistsRouter from './routes/artistsRouter.js';
 import albumsRouter from './routes/albumsRouter.js';
@@ -36,7 +35,6 @@ app.use(cors(corsOptions));
 app.use('/tracks', tracksRouter);
 app.use('/artists', artistsRouter);
 app.use('/albums', albumsRouter);
-app.use('/', router);
 
 app.listen(PORT, () => {
     console.log(`Server listening on port: ${PORT}...`);
