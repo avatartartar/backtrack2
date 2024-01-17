@@ -5,6 +5,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 //database call in server/models.js
 
 const initialState = {
+  year: "All Time",
   tracks: [],
   status: "idle",
   error: ""
@@ -28,6 +29,9 @@ export const topTenTracksByYearSlice = createSlice({
   name: 'topTenTracksByYear',
   initialState,
   reducers: {
+    setYear: (state, action) => {
+      state.year = action.payload;
+    },
   },
   extraReducers(builder) {
     builder
@@ -45,6 +49,6 @@ export const topTenTracksByYearSlice = createSlice({
 
   }
 });
-
+export const { setYear } = topTenTracksByYearSlice.actions;
 export { fetchTopTenTracksByYear };
 export default topTenTracksByYearSlice.reducer;
