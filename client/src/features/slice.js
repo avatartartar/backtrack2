@@ -41,7 +41,9 @@ const slice = (endpoint, title, filter) => {
         throw new Error(`Fetch request failed at endpoint ${url}`);
       }
       const responseJson = await response.json();
+      console.log(`responseJson for ${title}:`, responseJson)
       return responseJson;
+   
     }
   );
 
@@ -63,7 +65,6 @@ const slice = (endpoint, title, filter) => {
             state.objData = action.payload;
           }
           if (title.includes('ByYear')) {
-            console.log('title includes ByYear');
             state.year = action.meta.arg.query;
             state.objData[state.year] = action.payload;
           }
@@ -84,8 +85,8 @@ const slice = (endpoint, title, filter) => {
 const { reducer: topTracksSlice, actions: fetchTopTracks } = slice('/tracks', 'topTracks');
 const { reducer: topAlbumsSlice, actions: fetchTopAlbums } = slice('/albums', 'topAlbums');
 const { reducer: topArtistsSlice, actions: fetchTopArtists } = slice('/artists', 'topArtists');
-const { reducer: topAlbumsByYearSlice, actions: fetchTopAlbumsByYear } = slice('/tracks','topAlbumsByYear', '?year=');
-const { reducer: topArtistsByYearSlice, actions: fetchTopArtistsByYear } = slice('/tracks','topArtistsByYear', '?year=');
+const { reducer: topAlbumsByYearSlice, actions: fetchTopAlbumsByYear } = slice('/albums','topAlbumsByYear', '?year=');
+const { reducer: topArtistsByYearSlice, actions: fetchTopArtistsByYear } = slice('/artists','topArtistsByYear', '?year=');
 const { reducer: topTracksByYearSlice, actions: fetchTopTracksByYear } = slice('/tracks','topTracksByYear', '?year=');
 
 
@@ -97,10 +98,12 @@ export {
   fetchTopAlbums,
   fetchTopArtists,
   fetchTopTracksByYear,
+  fetchTopArtistsByYear,
   topTracksSlice,
   topAlbumsSlice,
   topArtistsSlice,
   topTracksByYearSlice,
+  topArtistsByYearSlice,
   setYear,
   yearReducer
 };
