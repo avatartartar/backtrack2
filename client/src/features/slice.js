@@ -42,7 +42,7 @@ const slice = (endpoint, title, filter) => {
       }
       const responseJson = await response.json();
       return responseJson;
-   
+
     }
   );
 
@@ -57,12 +57,8 @@ const slice = (endpoint, title, filter) => {
         })
         .addCase(actions.fulfilled, (state, action) => {
           state.status = "succeeded";
-          // this catches the case where the data is an array or an object
-          if (Array.isArray(action.payload)) {
-            state.arrData = action.payload;
-          } else {
-            state.objData = action.payload;
-          }
+
+          state.arrData = action.payload;
           if (title.includes('ByYear')) {
             state.year = action.meta.arg.query;
             state.objData[state.year] = action.payload;

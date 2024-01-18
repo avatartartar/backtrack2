@@ -108,17 +108,8 @@ ul {
   }
 }
 
-//  YEAR SLIDER STYLING:
-
-.slideWrapper {
-  display: flex;
-  justify-content: center;
-  margin: 50px;
-}
-
-// This is the slider container
-
-.topTracksByYearWrapper {
+.graphWrapper {
+  margin: 50px 0px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -126,13 +117,23 @@ ul {
   justify-content: center;
 }
 
+//  YEAR SLIDER STYLING:
+
+// .slideWrapper {
+//   display: flex;
+//   justify-content: center;
+//   margin: 50px;
+// }
+
+// This is the slider container
+
 .sliderContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.topTracksByYear {
+.sliderSubContainer {
   background: $gradient-text;
   -webkit-background-clip: text;
   background-clip: text;
@@ -331,10 +332,7 @@ ul {
 
 // styling for the graph wrapper
 // styling for the graph wrapper
-.topTracksByYearWrapper {
-  margin: 50px 0px;
-  width: 100%;
-}
+
 
 
 .topArtistsByYearWrapper {
