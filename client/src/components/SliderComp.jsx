@@ -21,20 +21,17 @@ const YearSliderComp = () => {
     // dispatch other 'TopByYear' actions here
   }
 
-
-  // functionality for animation on load: 
+  // functionality for animation on load: All will disappear except 
+  // for slider and header for slider after landing page is completed
   useEffect(() => {
     const tl = gsap.timeline({
       defaults: {ease: "power1.out"},
       onComplete: () => {
         gsap.to(".hide", {duration: 2, opacity: 0, y: -600, stagger: 0.05})
-        gsap.from(".sliderContainer", {duration: 5, y: 0, stagger: 0.5}, "+5")
-        gsap.to(".sliderContainer", {duration: 3, y: -400})
-        gsap.to("#landingAndSticky", {duration: 3, height: 300})
-  
-        
-        // const hideLanding = document.getElementById("landingAndSticky");
-        // hideLanding.style.height = '400px';
+        gsap.from(".sliderContainer", {duration: 2, y: 0, stagger: 0.05}, "+5")
+        gsap.to(".sliderContainer", {duration: 2, y: -400})
+        gsap.to("#landingAndSticky", {duration: 2, height: 400})
+        gsap.to(".slider", {duration: 2, width: '70%', ease: 'back.in'})
       }
     })
 
@@ -42,7 +39,7 @@ const YearSliderComp = () => {
     gsap.set(headings, {y: "100%", opacity: 0});
 
     headings.forEach((heading, index) => {
-      tl.to(heading, {y: "0%", opacity: 1, duration: 5}, index * 0.75);
+      tl.to(heading, {y: "0%", opacity: 1, duration: 2}, index * 0.75);
     })
   }, [])
 
@@ -56,10 +53,16 @@ const YearSliderComp = () => {
       <h1 className="landing hide">Discover your</h1>
       <div className="landing sliderContainer">
         <h1 className="topTracksByYear">Your {year ? year : 'all-time'} backtrack</h1>
-        <input type="range" min="2011" max="2023" onMouseUp={handleClick} className="slider" name='slider' onChange={(e) => (
-          handleSliderInput(e)
-        )} />
-        {/* <br></br> */}
+        <input 
+          type="range" 
+          min="2011" 
+          max="2023" 
+          defaultValue="2023"
+          onMouseUp={handleClick} 
+          className="slider" 
+          name='slider' 
+          onChange={(e) => (handleSliderInput(e))} />
+          {/* <br></br> */}
       </div>
     </div>
   )

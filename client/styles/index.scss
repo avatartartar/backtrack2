@@ -1,15 +1,30 @@
 // importing of fonts
-@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+
+// Added Rubik as header font for our app
+
+$purple: #B200FF;
+$blue: #0085FF;
+$green: #0BEC21;
+$white: #efefef;
+$darkBlue: #130188;
+$darkBlue2: #13008b;
+$lightBlue: #ADADFF;
+$skyeBlue: #6072D1;
 
 $font-family-mono: "Red Hat Mono", monospace;
 // $font-family-roboto-mono: "Roboto Mono", monospace;
-$font-family-header: "Poppins", sans-serif;
+$font-family-header: "Rubik", sans-serif;
 //gradient for headers / slider etc:
-$gradient-text: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);
+$gradient-text: -webkit-linear-gradient(60deg, $purple, $blue, $green);
 // border radius used for list elements, slider etc:
 $border-radius: 69px;
 // gradient animation style for landing page
+
+
 html {
   width: 100%;
   height: 100%;
@@ -25,19 +40,23 @@ html {
 
 }
 
+
 body {
-  // background: linear-gradient(45deg, #130188 0%, darken(#13008b, 50%) 100%) bottom;
-  background: linear-gradient(to bottom,#130188, #13008b);
-  background-size: 400% 200%;
-  height: 100% !important;
+  background: linear-gradient(45deg, $darkBlue 0%, darken($darkBlue2, 50%) 100%);
+  background-size: 200% 200%;
   width: 100%;
-  animation: background 20s ease infinite;
+  animation: background 10s ease infinite;
+  margin: 0px !important;
   display: flex;
   align-items: center;
   flex-direction: column;
   font-family: $font-family-mono;
-  color: white;
+  color: $white;
+  // added background-attachment to make sure background doesn't repeat itself
+  background-attachment: fixed;
 }
+
+
 
 @keyframes background {
   0% {
@@ -56,7 +75,7 @@ body {
 //html tag styles
 
 h3 {
-  color: white;
+  color: $white;
   font-size: 36px;
   font-family: $font-family-mono;
   font-weight: 300;
@@ -71,7 +90,7 @@ ul {
 
 
 #landingAndSticky {
-  margin-bottom: 100px;
+  // margin-bottom: 100px;
   height: 100vh;
   h1 {
     font-size: 96px;
@@ -111,8 +130,6 @@ ul {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 1100px;
-
 }
 
 .topTracksByYear {
@@ -130,7 +147,7 @@ ul {
   appearance: none;
   width: 100%;
   height: 5px;
-  margin: 0px 0px;
+  margin: 40px 0px;
   border-radius: $border-radius;
   background: $gradient-text; // setting background (slider) to be same gradient as text
   opacity: 0.7; // opacity is 0,7. On hover it will change.
@@ -142,13 +159,20 @@ ul {
   }
 }
 
+// Added backtrack icon to slider instead of green circle
+// Can move back if we prefer the green circle
+// Kept the comments just in case
+
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none; // removing default styles
   appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #00d26f;
-  border-radius: 50%; // making it a circle
+  width: 25px;
+  height: 25px;
+  // background: #00d26f;
+  background-image: url('../assets/backtrack_green.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  // border-radius: 50%; // making it a circle
   cursor: pointer;
 }
 
@@ -156,8 +180,6 @@ ul {
 .slider::-moz-range-thumb {
   width: 25px;
   height: 25px;
-  background: #fff;
-  border-radius: 50%; // making it a circle
   cursor: pointer;
 }
 
@@ -199,7 +221,7 @@ ul {
 }
 
 .TopTracks {
-  color: white;
+  color: $white;
   font-family: $font-family-mono;
   width: 422px;
   h3 {
@@ -218,10 +240,10 @@ ul {
 }
 
 .TopTracks li {
-  border: 0.5px solid gray;
+  border: 0.3px solid rgba(255, 255, 255, 0.7);
   display: flex;
   width: 400px;
-  height: 1em;
+  height: 20px;
   padding: 10px;
   margin: 10px 0px;
   border-radius: $border-radius;
@@ -247,7 +269,6 @@ ul {
   overflow: hidden;
   display: block;
   width: 200%;
-  margin-top: -3px;
   div {
     display: inline-block;
     width: 50%;
@@ -288,7 +309,7 @@ ul {
 }
 
 .albumCard {
-  background: linear-gradient(#ADADFF, #6072D1);
+  background: linear-gradient($lightBlue, $skyeBlue);
   width: 500px;
   height: 515px;
   display: flex;
@@ -351,5 +372,5 @@ ul {
   // font-family: $font-family-roboto-mono;
   font-family: $font-family-header;
   font-size: 28px;
-  color: white;
+  color: $white;
 }
