@@ -94,13 +94,15 @@ ul {
   justify-content: center;
 }
 
-.slideContainer {
+.sliderContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 1100px;
+
 }
 
-.topTracksByYearYear {
+.topTracksByYear {
   background: $gradient-text;
   -webkit-background-clip: text;
   background-clip: text;
@@ -118,7 +120,7 @@ ul {
   margin: 0px 0px;
   border-radius: $border-radius;
   background: $gradient-text; // setting background (slider) to be same gradient as text
-  opacity: 0.7; // opacity is 0,7. On hover it will change. 
+  opacity: 0.7; // opacity is 0,7. On hover it will change.
   -webkit-transition: 0.2s;
   transition: 0.2s;
 
@@ -147,7 +149,7 @@ ul {
 }
 
 .chart {
-  flex: 1;
+  flex: 2;
 }
 
 
@@ -183,7 +185,7 @@ ul {
     }
 }
 
-.SongList {
+.TopTracks {
   color: white;
   font-family: $font-family-mono;
   width: 422px;
@@ -202,7 +204,7 @@ ul {
   100% { left: -100%; }
 }
 
-.SongList li {
+.TopTracks li {
   border: 0.5px solid gray;
   display: flex;
   width: 400px;
@@ -294,10 +296,8 @@ ul {
 }
 
 // styling for the graph wrapper
+// styling for the graph wrapper
 .topTracksByYearWrapper {
   margin: 50px 0px;
   width: 100%;
 }
-
-
-

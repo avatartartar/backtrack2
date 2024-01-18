@@ -2,10 +2,11 @@ import { queries } from '../models/model.js';
 
 const tracksController = {};
 
-tracksController.getTop10Tracks = async (req, res, next) => {
+tracksController.getTopTracks = async (req, res, next) => {
   try {
-    const top10Tracks = await queries.getTop10Tracks();
-    res.locals.top10Tracks = top10Tracks;
+    const data = await queries.getTopTracks();
+    res.locals.topTracks = data;
+    // console.log('topTracks in tracksController', topTracks);
     return next();
 
   } catch (error) {
@@ -13,11 +14,15 @@ tracksController.getTop10Tracks = async (req, res, next) => {
   }
 }
 
-tracksController.getTop10TracksForYear = async (req, res, next) => {
+//Ross added this to set up a route for front end slider to get tracks by year. right now the query times out each time. not using handleRequest
+//yet, as we are not responding to request yet, we are taking data to pass it on to them filter in another controller. didn't want to refactor the
+//whole codebase, so I created a custom controller just to get this working first.
+tracksController.getTopTracksByYear = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const top10TracksForYear = await queries.getTop10TracksForYear(year);
-    res.locals.top10TracksForYear = top10TracksForYear;
+    const data = await queries.getTopTracksByYear(year);
+    res.locals.topTracksByYear = data;
+    // console.log('topTracksByYear.length in tracksController', data.length);
     return next();
 
   } catch (error) {
@@ -25,40 +30,24 @@ tracksController.getTop10TracksForYear = async (req, res, next) => {
   }
 }
 
-tracksController.getTop10TracksForYearByMonth = async (req, res, next) => {
+tracksController.getTopTracksByYearByMonth = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const top10TracksForYearByMonth = await queries.getTop10TracksForYearByMonth(year);
-    res.locals.top10TracksForYearByMonth = top10TracksForYearByMonth;
+    const data = await queries.getTopTracksByYearByMonth(year);
+    res.locals.topTracksByYearByMonth = data;
     return next();
 
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
-
-// Old middlware for when querying tracks by year. Now making query to view with by year and month data.
-
-// tracksController.getTop10TracksForYear = async (req, res, next) => {
-//   const { year } = req.query;
-//   console.log('year:', year)
-//   try {
-//     const tracksForYear = await queries.getTop10TracksForYear(year);
-//     res.locals.tracksForYear = tracksForYear;
-//     return next();
-
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// }
-
-// input: track data for specific year
-// output: data grouped by track with total time played for each track in that year
+//input: track data for specific year
+//output: data grouped by track with total time played for each track in that year
 // tracksController.getTracksByTimePlayed = (req, res, next) => {
-//   const { tracksForYear } = res.locals;
+//   const { topTracksByYear } = res.locals;
 //   const tracker = {};
 //   //properties here should match the field names returned from model query
-//   const tracksByTotalTimePlayed = tracksForYear.reduce((acc, { track_name, album_name, artist_name, ms_played, sesh_year }) => {
+//   const tracksByTotalTimePlayed = topTracksByYear.reduce((acc, { track_name, album_name, artist_name, ms_played, sesh_year }) => {
 //     const key = JSON.stringify(artist_name + album_name + track_name);
 //     const indexInAcc = tracker[key];
 //     //check if acc has the artist album and track combo

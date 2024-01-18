@@ -2,16 +2,24 @@ import express from 'express';
 const router = express.Router();
 import artistsController from '../controllers/artistsController.js';
 
-router.get('/top10Artists', artistsController.getTop10Artists, (req, res) => {
-  return res.status(200).json(res.locals.top10Artists);
+router.get('/topArtists', artistsController.getTopArtists, (req, res) => {
+  return res.status(200).json(res.locals.topArtists);
 });
 
-router.get('/top10ArtistsForYear', artistsController.getTop10ArtistsForYear, (req, res) => {
-  return res.status(200).json(res.locals.top10ArtistsForYear);
+router.get('/topArtistsByYear', artistsController.getTopArtistsByYear, (req, res) => {
+  return res.status(200).json(res.locals.topArtistsByYear);
 });
 
-router.get('/top10ArtistsForYearByMonth', artistsController.getTop10ArtistsForYearByMonth, (req, res) => {
-  return res.status(200).json(res.locals.top10ArtistsForYearByMonth);
+router.get('/topArtistsByYearByMonth', artistsController.getTopArtistsByYearByMonth, (req, res) => {
+  return res.status(200).json(res.locals.topArtistsByYearByMonth);
+});
+
+router.get('/topArtistsForYear', artistsController.getTopArtistsByYear, (req, res) => {
+  return res.status(200).json(res.locals.topArtistsByYear);
+});
+
+router.get('/topArtistsByYearByMonth', artistsController.getTopArtistsByYearByMonth, (req, res) => {
+  return res.status(200).json(res.locals.topArtistsByYearByMonth);
 });
 
 // ES6 syntax

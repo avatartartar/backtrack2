@@ -2,11 +2,11 @@ import { queries } from '../models/model.js';
 
 const albumsController = {};
 
-albumsController.getTop10Albums = async (req, res, next) => {
-  
+albumsController.getTopAlbums = async (req, res, next) => {
+
   try {
-    const top10Albums = await queries.getTop10Albums();
-    res.locals.top10Albums = top10Albums;
+    const topAlbums = await queries.getTopAlbums();
+    res.locals.topAlbums = topAlbums;
     return next();
 
   } catch (error) {
@@ -14,11 +14,11 @@ albumsController.getTop10Albums = async (req, res, next) => {
   }
 }
 
-albumsController.getTop10AlbumsForYear = async (req, res, next) => {
+albumsController.getTopAlbumsByYear = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const top10AlbumsForYear = await queries.getTop10AlbumsForYear(year);
-    res.locals.top10AlbumsForYear = top10AlbumsForYear;
+    const topAlbumsByYear = await queries.getTopAlbumsByYear(year);
+    res.locals.topAlbumsByYear = topAlbumsByYear;
     return next();
 
   } catch (error) {
@@ -26,11 +26,11 @@ albumsController.getTop10AlbumsForYear = async (req, res, next) => {
   }
 }
 
-albumsController.getTop10AlbumsForYearByMonth = async (req, res, next) => {
+albumsController.getTopAlbumsByYearByMonth = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const top10AlbumsForYearByMonth = await queries.getTop10AlbumsForYearByMonth(year);
-    res.locals.top10AlbumsForYearByMonth = top10AlbumsForYearByMonth;
+    const topAlbumsByYearByMonth = await queries.getTopAlbumsByYearByMonth(year);
+    res.locals.topAlbumsByYearByMonth = topAlbumsByYearByMonth;
     return next();
 
   } catch (error) {

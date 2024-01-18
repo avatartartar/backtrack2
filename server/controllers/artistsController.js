@@ -2,9 +2,9 @@ import { queries } from '../models/model.js';
 
 const artistsController = {};
 
-artistsController.getTop10Artists = async (req, res, next) => {
+artistsController.getTopArtists = async (req, res, next) => {
   try {
-    const top10Artists = await queries.getTop10Artists();
+    const top10Artists = await queries.getTopArtists();
     res.locals.top10Artists = top10Artists;
     return next();
 
@@ -13,11 +13,11 @@ artistsController.getTop10Artists = async (req, res, next) => {
   }
 }
 
-artistsController.getTop10ArtistsForYear = async (req, res, next) => {
+artistsController.getTopArtistsByYear = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const top10ArtistsForYear = await queries.getTop10ArtistsForYear(year);
-    res.locals.top10ArtistsForYear = top10ArtistsForYear;
+    const top10ArtistsByYear = await queries.getTopArtistsByYear(year);
+    res.locals.top10ArtistsByYear = top10ArtistsByYear;
     return next();
 
   } catch (error) {
@@ -25,11 +25,11 @@ artistsController.getTop10ArtistsForYear = async (req, res, next) => {
   }
 }
 
-artistsController.getTop10ArtistsForYearByMonth = async (req, res, next) => {
+artistsController.getTopArtistsByYearByMonth = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const top10ArtistsForYearByMonth = await queries.getTop10ArtistsForYearByMonth(year);
-    res.locals.top10ArtistsForYearByMonth = top10ArtistsForYearByMonth;
+    const top10ArtistsByYearByMonth = await queries.getTopArtistsByYearByMonth(year);
+    res.locals.top10ArtistsByYearByMonth = top10ArtistsByYearByMonth;
     return next();
 
   } catch (error) {

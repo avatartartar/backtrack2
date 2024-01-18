@@ -17,6 +17,16 @@ const supabase = createClient(supaUrl, supaKey);
 
 const model = {};
 
+
+// const handleRequest = async (modelFunction, req, res) => {
+//   try {
+//     const data = await modelFunction();
+//     res.status(200).json(data);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
 // a helper function that executes a query callback and returns the data or throws an error
 // allows us to avoid repeating the same try/catch block in every model function
 const getTrackInfo = async (uri) => {
@@ -48,11 +58,11 @@ const executeQuery = async (queryCallback) => {
   return data;
 };
 
-
-// Consolidated queries down into object of "queries"
+// Consolidated queries down into object of "queries" to be change upon project reqs changing
 const queries = {
 // now querying the Tracks table, rather than a view.
-  getTop10Tracks: () => executeQuery(async (supabase) => supabase
+// can replicate this with artists and albums.
+  getTopTracks: () => executeQuery(async (supabase) => supabase
     .from('tracks')
     .select('*')
     .order('playtime_ms', { ascending: false })
@@ -72,7 +82,7 @@ const queries = {
     // return tracks;
   ),
 
-  getTop10Artists: () => executeQuery(async (supabase) => supabase
+  getTopArtists: () => executeQuery(async (supabase) => supabase
     .from('artists')
     .select('*')
     .neq('playtime_ms', 0)
@@ -80,7 +90,7 @@ const queries = {
     .limit(10)
   ),
 
-  getTop10Albums: () => executeQuery(async (supabase) => supabase
+  getTopAlbums: () => executeQuery(async (supabase) => supabase
     .from('albums')
     .select('*')
     .neq('playtime_ms', 0)
@@ -88,40 +98,47 @@ const queries = {
     .limit(10)
   ),
 
-  getTop10ArtistsForYear: (year) => executeQuery(async (supabase) => supabase
-      .from('top_artists_by_year')
-      .select('*')
-      .eq('year', year)),
-  
-  getTop10AlbumsForYear: (year) => executeQuery(async (supabase) => supabase
-      .from('top_albums_by_year')
-      .select('*')
-      .eq('year', year)),
-  
-  getTop10TracksForYear: (year) => executeQuery(async (supabase) => supabase
-      .from('top_tracks_by_year')
-      .select('*')
-      .eq('year', year)),
-  
-  getTop10ArtistsForYearByMonth: (year) => executeQuery(async (supabase) => supabase
-      .from('top_artists_by_year_month')
-      .select('*')
-      .eq('year', year)),
+  getTopArtistsByYear: (year) => executeQuery(async (supabase) => supabase
+    .from('top_artists_by_year')
+    .select('*')
+    .eq('year', year)
+  ),
 
-  
-  getTop10AlbumsForYearByMonth: (year) => executeQuery(async (supabase) => supabase
-      .from('top_albums_by_year_month')
-      .select('*')
-      .eq('year', year)),
-  
-  getTop10TracksForYearByMonth: (year) => executeQuery(async (supabase) => supabase
-      .from('top_tracks_by_year_month')
-      .select('*')
-      .eq('year', year)),
+  getTopAlbumsByYear: (year) => executeQuery(async (supabase) => supabase
+    .from('top_albums_by_year')
+    .select('*')
+    .eq('year', year)
+  ),
 
-  // Old query to get Top10TracksForYear. Does not use views. 
+  getTopTracksByYear: (year) => executeQuery(async (supabase) => supabase
+    .from('top_tracks_by_year')
+    .select('*')
+    .eq('year', year)
+  ),
 
-  // getTop10TracksForYear: (year) => 
+  getTopArtistsByYearByMonth: (year) => executeQuery(async (supabase) => supabase
+    .from('top_artists_by_year_month')
+    .select('*')
+    .eq('year', year)
+  ),
+
+  getTopAlbumsByYearByMonth: (year) => executeQuery(async (supabase) => supabase
+    .from('top_albums_by_year_month')
+    .select('*')
+    .eq('year', year)
+  ),
+
+  getTopTracksByYearByMonth: (year) => executeQuery(async (supabase) => supabase
+    .from('top_tracks_by_year_month')
+    .select('*')
+    .eq('year', year)
+  ),
+
+
+
+  // Old query to get Top10TracksForYear. Does not use views.
+
+  // getTop10TracksForYear: (year) =>
   //   executeQuery(async (supabase) => supabase
   //     .from('sessions')
   //     .select(`
@@ -135,6 +152,7 @@ const queries = {
   //     .gte('ms_played', 60000)
   //     .order('ms_played', { ascending: false })
   //     ).then(tracks => tracks),
-  };
+
+};
 
 export { queries };

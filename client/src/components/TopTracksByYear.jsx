@@ -24,7 +24,7 @@ const TopTenTracksByYear = () => {
 
   useEffect(() => {
     const top10ByYear = tracks.filter((track, index) =>  index < 10);
-  
+
     const newData = top10ByYear.map((track) => ({
         name: track.track_name,
         minutes: track.ms_played,
