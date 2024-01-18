@@ -21,7 +21,6 @@ const GraphComp = () => {
   useEffect(() => {
     if (tracks && tracks.length > 0) {
       const topByYear = tracks.filter((track, index) =>  index < 10);
-      console.log('useEffect in GraphComp.jsx invoked');
       const newData = topByYear.map((track) => ({
         name: track.name,
         minutes: track.playtime_minutes,
@@ -45,13 +44,13 @@ const GraphComp = () => {
     return null;
   }
   return (
-    <div className="topTracksByYearWrapper">
+    <div className="graphWrapper">
       <div className="chart">
-        <ResponsiveContainer width="100%" height="40%">
+        <ResponsiveContainer width="100%" height="60%">
           <BarChart
             layout="vertical"
-            width={500}
-            height={300}
+            // width={500}
+            // height={300}
             data={data}
             margin={{
               top: 5,

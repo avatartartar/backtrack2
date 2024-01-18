@@ -21,7 +21,7 @@ const YearSliderComp = () => {
     // dispatch other 'TopByYear' actions here
   }
 
-  // functionality for animation on load: All will disappear except 
+  // functionality for animation on load: All will disappear except
   // for slider and header for slider after landing page is completed
   useEffect(() => {
     const tl = gsap.timeline({
@@ -52,15 +52,15 @@ const YearSliderComp = () => {
       <h1 className="landing hide">Adventure,</h1>
       <h1 className="landing hide">Discover your</h1>
       <div className="landing sliderContainer">
-        <h1 className="topTracksByYear">Your {year ? year : 'all-time'} backtrack</h1>
-        <input 
-          type="range" 
-          min="2011" 
-          max="2023" 
+        <h1 className="sliderSubContainer">Your {year ? year : 'all-time'} backtrack</h1>
+        <input
+          type="range"
+          min="2011"
+          max="2023"
           defaultValue="2023"
-          onMouseUp={handleClick} 
-          className="slider" 
-          name='slider' 
+          onMouseUp={handleClick}
+          className="slider"
+          name='slider'
           onChange={(e) => (handleSliderInput(e))} />
           {/* <br></br> */}
       </div>
