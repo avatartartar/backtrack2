@@ -305,7 +305,7 @@ ul {
 }
 
 
-.topAlbumsByYearWrapper {
+.topArtistsByYearWrapper {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -325,7 +325,7 @@ ul {
   }
 }
 
-.topAlbumsByYear {
+.topArtistsByYear {
   width: 80%;
   height: 50%;
   margin-bottom: 3em;
@@ -336,7 +336,7 @@ ul {
   gap: 2em;
 }
 
-.topAlbumsByYear p {
+.topArtistsByYear p {
   font-family: $font-family-roboto-mono;
   font-size: 28px;
   color: white;
