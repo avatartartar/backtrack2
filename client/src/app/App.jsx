@@ -6,6 +6,7 @@ import TopAlbum from '../components/TopAlbumComp.jsx';
 import GraphComp from '../components/GraphComp.jsx';
 import LogState from '../components/LogStateComp.jsx';
 import YearSliderComp from '../components/SliderComp.jsx';
+// s
 // import DisplayYear from '../components/DisplayYear.jsx';
 import TopArtistsByYearComp from '../components/TopAristsByYearComp.jsx';
 import '../../styles/index.scss';
@@ -18,8 +19,6 @@ const { year } = useSelector(state => state.year);
     <>
       <LogState/>
       <Navbar/>
-      <h3>Lets take a trip down memory lane</h3>
-      {/* <h1 className="gradientHeader">This is your all time favorites</h1> */}
       <YearSliderComp/>
       <div className="trackListAndAlbum">
       <TopTracks/>
