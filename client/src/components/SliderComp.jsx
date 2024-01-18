@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client';
 import '../../styles/index.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTopTracksByYear, setYear } from '../features/slice.js';
+import { fetchTopTracksByYear, fetchTopArtistsByYear, setYear } from '../features/slice.js';
 
 const YearSliderComp = () => {
 
@@ -15,6 +15,7 @@ const YearSliderComp = () => {
   }
 
   function handleClick() {
+    dispatch(fetchTopArtistsByYear({query: year}));
     dispatch(fetchTopTracksByYear({query: year}));
     // dispatch other 'TopByYear' actions here
   }

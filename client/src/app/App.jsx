@@ -7,6 +7,7 @@ import GraphComp from '../components/GraphComp.jsx';
 import LogState from '../components/LogStateComp.jsx';
 import YearSliderComp from '../components/SliderComp.jsx';
 // import DisplayYear from '../components/DisplayYear.jsx';
+import TopArtistsByYearComp from '../components/TopAristsByYearComp.jsx';
 import '../../styles/index.scss';
 
 export function App() {
@@ -21,6 +22,7 @@ export function App() {
       <TopTracks/>
       <TopAlbum/>
       </div>
+      <TopArtistsByYearComp/>
       <GraphComp/>
     </>
   )

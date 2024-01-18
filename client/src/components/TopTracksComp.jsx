@@ -22,8 +22,6 @@ const TopTracksComp = () => {
   // then this gets served to the component that renders the tracks.
   const tracks = year === 0 ? topTracks : topTracksByYear;
 
-
-
   // console.log('status in topTracksComp from reducer:', status)
 
   // if (status === 'loading') {

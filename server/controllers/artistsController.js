@@ -4,8 +4,8 @@ const artistsController = {};
 
 artistsController.getTopArtists = async (req, res, next) => {
   try {
-    const top10Artists = await queries.getTopArtists();
-    res.locals.top10Artists = top10Artists;
+    const topArtists = await queries.getTopArtists();
+    res.locals.topArtists = topArtists;
     return next();
 
   } catch (error) {
@@ -16,8 +16,8 @@ artistsController.getTopArtists = async (req, res, next) => {
 artistsController.getTopArtistsByYear = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const top10ArtistsByYear = await queries.getTopArtistsByYear(year);
-    res.locals.top10ArtistsByYear = top10ArtistsByYear;
+    const topArtistsByYear = await queries.getTopArtistsByYear(year);
+    res.locals.topArtistsByYear = topArtistsByYear;
     return next();
 
   } catch (error) {
@@ -28,8 +28,8 @@ artistsController.getTopArtistsByYear = async (req, res, next) => {
 artistsController.getTopArtistsByYearByMonth = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const top10ArtistsByYearByMonth = await queries.getTopArtistsByYearByMonth(year);
-    res.locals.top10ArtistsByYearByMonth = top10ArtistsByYearByMonth;
+    const topArtistsByYearByMonth = await queries.getTopArtistsByYearByMonth(year);
+    res.locals.topArtistsByYearByMonth = topArtistsByYearByMonth;
     return next();
 
   } catch (error) {
