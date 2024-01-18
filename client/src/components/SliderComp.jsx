@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import '../../styles/index.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTopTracksByYear, fetchTopArtistsByYear, setYear } from '../features/slice.js';
+import gsap from 'gsap';
 
 const YearSliderComp = () => {
 
@@ -20,13 +21,46 @@ const YearSliderComp = () => {
     // dispatch other 'TopByYear' actions here
   }
 
+
+  // functionality for animation on load: 
+  useEffect(() => {
+    const tl = gsap.timeline({
+      defaults: {ease: "power1.out"},
+      onComplete: () => {
+        gsap.to(".hide", {duration: 2, opacity: 0, y: -600, stagger: 0.05})
+        gsap.from(".sliderContainer", {duration: 5, y: 0, stagger: 0.5}, "+5")
+        gsap.to(".sliderContainer", {duration: 3, y: -400})
+        gsap.to("#landingAndSticky", {duration: 3, height: 300})
+  
+        
+        // const hideLanding = document.getElementById("landingAndSticky");
+        // hideLanding.style.height = '400px';
+      }
+    })
+
+    const headings = document.querySelectorAll(".landing")
+    gsap.set(headings, {y: "100%", opacity: 0});
+
+    headings.forEach((heading, index) => {
+      tl.to(heading, {y: "0%", opacity: 1, duration: 5}, index * 0.75);
+    })
+  }, [])
+
+
+
   return (
-    <div className="sliderContainer">
-      <h1 className="topTracksByYear">Your {year ? year : 'all-time'} favorites</h1>
-      <input type="range" min="2011" max="2023" onMouseUp={handleClick} className="slider" name='slider' onChange={(e) => (
-        handleSliderInput(e)
-      )} />
-      <br></br>
+    <div id="landingAndSticky">
+      <h1 className="landing hide">Keith,</h1>
+      <h1 className="landing hide">In your Spotify</h1>
+      <h1 className="landing hide">Adventure,</h1>
+      <h1 className="landing hide">Discover your</h1>
+      <div className="landing sliderContainer">
+        <h1 className="topTracksByYear">Your {year ? year : 'all-time'} backtrack</h1>
+        <input type="range" min="2011" max="2023" onMouseUp={handleClick} className="slider" name='slider' onChange={(e) => (
+          handleSliderInput(e)
+        )} />
+        {/* <br></br> */}
+      </div>
     </div>
   )
 }

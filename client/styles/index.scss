@@ -1,10 +1,10 @@
 // importing of fonts
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap');
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 $font-family-mono: "Red Hat Mono", monospace;
-$font-family-roboto-mono: "Roboto Mono", monospace;
+// $font-family-roboto-mono: "Roboto Mono", monospace;
+$font-family-header: "Poppins", sans-serif;
 //gradient for headers / slider etc:
 $gradient-text: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);
 // border radius used for list elements, slider etc:
@@ -67,6 +67,17 @@ ul {
   list-style: none;
   padding: 0;
   width: 400px;
+}
+
+
+#landingAndSticky {
+  margin-bottom: 100px;
+  height: 100vh;
+  h1 {
+    font-size: 96px;
+    margin: 0px 20px;
+    font-family: $font-family-header;
+  }
 }
 
 .favoriteMusicHeader {
@@ -337,7 +348,8 @@ ul {
 }
 
 .topArtistsByYear p {
-  font-family: $font-family-roboto-mono;
+  // font-family: $font-family-roboto-mono;
+  font-family: $font-family-header;
   font-size: 28px;
   color: white;
 }
