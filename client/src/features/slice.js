@@ -41,7 +41,6 @@ const slice = (endpoint, title, filter) => {
         throw new Error(`Fetch request failed at endpoint ${url}`);
       }
       const responseJson = await response.json();
-      console.log(`responseJson for ${title}:`, responseJson)
       return responseJson;
    
     }

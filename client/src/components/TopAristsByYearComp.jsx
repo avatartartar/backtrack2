@@ -3,15 +3,20 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const TopArtistsByYearComp = () => {
   const { year } = useSelector(state => state.year);
-  console.log('year in TopArtistsByYearComp:', year)
   const { arrData: topArtistsByYear, status: statusTopArtistsByYear, error: errorTopArtistsByYear } = useSelector(state => state.topArtistsByYear);
-  console.log('errorTopArtistsByYear in TopArtistsByYearComp:', errorTopArtistsByYear)
-  console.log('statusTopArtistsByYear in TopArtistsByYearComp:', statusTopArtistsByYear)
-  console.log('topArtistsByYear in TopArtistsByYearComp:', topArtistsByYear)
 
   return (
-    <div>
- 
+    <div className='topAlbumsByYearWrapper'>
+      <h3>Your favorite artists were</h3>
+      <div className='topAlbumsByYear'>{topArtistsByYear.map((artist, i, arr) => {
+        if (i === arr.length - 1) return <p>{artist.name}</p>;
+        return (
+          <>
+            <p>{artist.name}</p>
+            <p>-</p>
+          </>
+        )
+      })}</div>
     </div>
   );
 }
