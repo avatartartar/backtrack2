@@ -14,12 +14,12 @@ router.get('/topArtistsByYearByMonth', artistsController.getTopArtistsByYearByMo
   return res.status(200).json(res.locals.topArtistsByYearByMonth);
 });
 
-router.get('/top10ArtistsForYear', artistsController.getTop10ArtistsForYear, (req, res) => {
-  return res.status(200).json(res.locals.top10ArtistsForYear);
+router.get('/topArtistsForYear', artistsController.getTopArtistsByYear, (req, res) => {
+  return res.status(200).json(res.locals.topArtistsByYear);
 });
 
-router.get('/top10ArtistsForYearByMonth', artistsController.getTop10ArtistsForYearByMonth, (req, res) => {
-  return res.status(200).json(res.locals.top10ArtistsForYearByMonth);
+router.get('/topArtistsByYearByMonth', artistsController.getTopArtistsByYearByMonth, (req, res) => {
+  return res.status(200).json(res.locals.topArtistsByYearByMonth);
 });
 
 // ES6 syntax

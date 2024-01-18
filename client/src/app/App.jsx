@@ -10,17 +10,6 @@ import YearSliderComp from '../components/SliderComp.jsx';
 import '../../styles/index.scss';
 
 export function App() {
-  const dispatch = useDispatch();
-  const year = useSelector((state) => state.topTenTracksByYear.year)
-
-  function handleSliderInput(e) {
-    dispatch(setYear(e.target.value));
-  }
-
-  function handleClick() {
-    dispatch(fetchTopTenTracksByYear(year));
-  }
-
   return (
     <>
       <LogState/>

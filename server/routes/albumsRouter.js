@@ -16,12 +16,12 @@ router.get('/topAlbumsByYearByMonth', albumsController.getTopAlbumsByYearByMonth
 });
 
 
-router.get('/top10AlbumsForYear', albumsController.getTop10AlbumsForYear, (req, res) => {
-  return res.status(200).json(res.locals.top10AlbumsForYear);
+router.get('/topAlbumsByYear', albumsController.getTopAlbumsByYear, (req, res) => {
+  return res.status(200).json(res.locals.top10AlbumsByYear);
 });
 
-router.get('/top10AlbumsForYearByMonth', albumsController.getTop10AlbumsForYearByMonth, (req, res) => {
-  return res.status(200).json(res.locals.top10AlbumsForYearByMonth);
+router.get('/topAlbumsByYearByMonth', albumsController.getTopAlbumsByYearByMonth, (req, res) => {
+  return res.status(200).json(res.locals.topAlbumsByYearByMonth);
 });
 
 // ES6 syntax
