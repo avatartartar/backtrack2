@@ -6,9 +6,9 @@ const TopArtistsByYearComp = () => {
   const { arrData: topArtistsByYear, status: statusTopArtistsByYear, error: errorTopArtistsByYear } = useSelector(state => state.topArtistsByYear);
 
   return (
-    <div className='topAlbumsByYearWrapper'>
+    <div className='topArtistsByYearWrapper'>
       <h3>Your favorite artists were</h3>
-      <div className='topAlbumsByYear'>{topArtistsByYear.map((artist, i, arr) => {
+      <div className='topArtistsByYear'>{topArtistsByYear.map((artist, i, arr) => {
         if (i === arr.length - 1) return <p>{artist.name}</p>;
         return (
           <>
