@@ -1,8 +1,10 @@
 // importing of fonts
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
 
 
 $font-family-mono: "Red Hat Mono", monospace;
+$font-family-roboto-mono: "Roboto Mono", monospace;
 //gradient for headers / slider etc:
 $gradient-text: -webkit-linear-gradient(60deg, #B200FF, #0085FF, #0BEC21);
 // border radius used for list elements, slider etc:
@@ -300,4 +302,42 @@ ul {
 .topTracksByYearWrapper {
   margin: 50px 0px;
   width: 100%;
+}
+
+
+.topArtistsByYearWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+  justify-content: center;
+  align-items: center;
+  h3 {
+    font-family: $font-family-mono;
+    font-weight: 800;
+    margin-top: 3em;
+    margin-bottom: 2em;
+    font-size: 50px;
+    background: $gradient-text;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.topArtistsByYear {
+  width: 80%;
+  height: 50%;
+  margin-bottom: 3em;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2em;
+}
+
+.topArtistsByYear p {
+  font-family: $font-family-roboto-mono;
+  font-size: 28px;
+  color: white;
 }

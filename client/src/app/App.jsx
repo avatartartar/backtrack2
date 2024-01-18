@@ -9,8 +9,11 @@ import YearSliderComp from '../components/SliderComp.jsx';
 // import DisplayYear from '../components/DisplayYear.jsx';
 import TopArtistsByYearComp from '../components/TopAristsByYearComp.jsx';
 import '../../styles/index.scss';
+import { useSelector } from 'react-redux';
 
 export function App() {
+const { year } = useSelector(state => state.year);
+
   return (
     <>
       <LogState/>
@@ -22,7 +25,7 @@ export function App() {
       <TopTracks/>
       <TopAlbum/>
       </div>
-      <TopArtistsByYearComp/>
+      {year > 0 && <TopArtistsByYearComp/>}
       <GraphComp/>
     </>
   )
