@@ -14,8 +14,6 @@ const supaKey = process.env.SUPA_KEY;
 
 // Create Supabase client.
 const supabase = createClient(supaUrl, supaKey);
-let insertCount = 0;
-let recentData;
 
 const model = {};
 
@@ -42,6 +40,15 @@ const getTrackInfo = async (uri) => {
   // console.log('getTrackInfo response', response);
   return await response.json();
 }
+
+const handleRequest = async (modelFunction, req, res) => {
+  try {
+    const data = await modelFunction();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 
 const executeQuery = async (queryCallback) => {

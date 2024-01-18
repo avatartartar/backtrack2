@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client';
 import Navbar from '../components/NavbarComp.jsx';
 import TopTracks from '../components/TopTracksComp.jsx';
@@ -10,6 +10,16 @@ import YearSliderComp from '../components/SliderComp.jsx';
 import '../../styles/index.scss';
 
 export function App() {
+  const dispatch = useDispatch();
+  const year = useSelector((state) => state.topTenTracksByYear.year)
+
+  function handleSliderInput(e) {
+    dispatch(setYear(e.target.value));
+  }
+
+  function handleClick() {
+    dispatch(fetchTopTenTracksByYear(year));
+  }
 
   return (
     <>

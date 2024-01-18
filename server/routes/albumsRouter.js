@@ -15,5 +15,14 @@ router.get('/topAlbumsByYearByMonth', albumsController.getTopAlbumsByYearByMonth
   return res.status(200).json(res.locals.topAlbumsByYearByMonth);
 });
 
+
+router.get('/top10AlbumsForYear', albumsController.getTop10AlbumsForYear, (req, res) => {
+  return res.status(200).json(res.locals.top10AlbumsForYear);
+});
+
+router.get('/top10AlbumsForYearByMonth', albumsController.getTop10AlbumsForYearByMonth, (req, res) => {
+  return res.status(200).json(res.locals.top10AlbumsForYearByMonth);
+});
+
 // ES6 syntax
 export default router;
