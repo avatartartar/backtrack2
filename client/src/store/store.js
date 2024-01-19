@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { topTracksSlice, topAlbumsSlice, topArtistsSlice, topTracksByYearSlice, topArtistsByYearSlice,topAlbumsByYearSlice, yearReducer } from '../features/slice.js';
+import { topTracksSlice, topAlbumsSlice, topArtistsSlice, topTracksByYearSlice, topArtistsByYearSlice, topAlbumsByYearSlice, chosenReducer } from '../features/slice.js';
 
 const store = configureStore({
   reducer: {
@@ -9,7 +9,7 @@ const store = configureStore({
     topTracksByYear: topTracksByYearSlice.reducer,
     topArtistsByYear: topArtistsByYearSlice.reducer,
     topAlbumsByYear: topAlbumsByYearSlice.reducer,
-    year: yearReducer
+    chosen: chosenReducer
   },
   // devTools: process.env.NODE_ENV !== 'production',
 });
