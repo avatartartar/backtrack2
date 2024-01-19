@@ -150,14 +150,15 @@ const TopTracksComp = () => {
       <h3>Top 10 Tracks</h3>
       <ul>
         {topTracks.map(track => (
+          <React.Fragment key={track.id}>
           <TrackElement
-            key={track.id}
             track={track}
             controlPlayback={controlPlayback}
             controlImage={controlImage}
             isClickedId={isClickedId}
             setIsClickedId={setIsClickedId}
           />
+         </React.Fragment>
         ))}
       </ul>
     </div>

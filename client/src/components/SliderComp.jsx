@@ -20,7 +20,17 @@ const SliderComp = () => {
         dispatch(setChosenTrack(action.payload[0]))
       }
     })
-    dispatch(fetchTopArtists(year))
+    dispatch(fetchTopArtists(year)).then((action) => {
+      if (fetchTopArtists.fulfilled.match(action)) {
+    gsap.to('.eachArtist', {
+      opacity: 0,
+      duration: 0.2,
+      onComplete: () => {
+        dispatch(fetchTopArtists(year));
+      }
+    });
+      }
+    })
   // dispatch(fetchTopAlbums(year))
   }
 
@@ -37,6 +47,9 @@ const SliderComp = () => {
 
   function handleClick() {
     fetchData()
+
+
+    // dispatch other 'TopByYear' actions here
   }
 
   // functionality for animation on load: All will disappear except
