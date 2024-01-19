@@ -9,11 +9,17 @@ import YearSliderComp from '../components/SliderComp.jsx';
 // s
 // import DisplayYear from '../components/DisplayYear.jsx';
 import TopArtistsByYearComp from '../components/TopAristsByYearComp.jsx';
+import { fetchTopArtists } from '../features/slice.js';
 import '../../styles/index.scss';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 export function App() {
-const { year } = useSelector(state => state.year);
+// const { year } = useSelector(state => state.year);
+const dispatch = useDispatch();
+
+useEffect(() => {
+  dispatch(fetchTopArtists());
+}, []);
 
   return (
     <>
@@ -24,7 +30,7 @@ const { year } = useSelector(state => state.year);
       <TopTracks/>
       <TopAlbum/>
       </div>
-      {year > 0 && <TopArtistsByYearComp/>}
+      <TopArtistsByYearComp/>
       <GraphComp/>
     </>
   )

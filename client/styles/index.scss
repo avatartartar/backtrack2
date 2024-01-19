@@ -355,7 +355,7 @@ ul {
   }
 }
 
-.topArtistsByYear {
+.artists {
   width: 80%;
   height: 50%;
   margin-bottom: 3em;
@@ -366,7 +366,7 @@ ul {
   gap: 2em;
 }
 
-.topArtistsByYear p {
+.artists p {
   // font-family: $font-family-roboto-mono;
   font-family: $font-family-header;
   font-size: 28px;
