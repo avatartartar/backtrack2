@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client';
-import Navbar from '../components/NavbarComp.jsx';
-import TopTracks from '../components/TopTracksComp.jsx';
-import TopAlbum from '../components/TopAlbumComp.jsx';
+import NavbarComp from '../components/NavbarComp.jsx';
+import TopTracksComp from '../components/TopTracksComp.jsx';
+import TopAlbumComp from '../components/TopAlbumComp.jsx';
 import GraphComp from '../components/GraphComp.jsx';
-import LogState from '../components/LogStateComp.jsx';
+import LogStateComp from '../components/LogStateComp.jsx';
 import YearSliderComp from '../components/SliderComp.jsx';
 // s
 // import DisplayYear from '../components/DisplayYear.jsx';
@@ -13,18 +13,16 @@ import '../../styles/index.scss';
 import { useSelector } from 'react-redux';
 
 export function App() {
-const { year } = useSelector(state => state.year);
+const { year } = useSelector(state => state.chosen);
 
   return (
     <>
-      <LogState/>
-      <Navbar/>
+      <LogStateComp/>
+      <NavbarComp/>
       <YearSliderComp/>
-      <div className="trackListAndAlbum">
-      <TopTracks/>
-      <TopAlbum/>
-      </div>
+      <TopTracksComp/>
       {year > 0 && <TopArtistsByYearComp/>}
+      {/* <TopAlbumComp/> */}
       <GraphComp/>
     </>
   )
