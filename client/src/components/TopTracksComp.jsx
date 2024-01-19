@@ -153,7 +153,8 @@ const TopTracksComp = () => {
     <div className="TopTracksContainer">
       <h3>TOP 10 TRACKS</h3>
       <ul>
-        {tracks.map(track => (
+        {tracks.length === 0 && [0,0,0,0,0,0,0,0,0,0].map(el => <li></li>)}
+        {tracks.length > 0 && tracks.map(track => (
           <TrackElement
             key={track.id}
             track={track}

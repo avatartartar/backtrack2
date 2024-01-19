@@ -371,7 +371,7 @@ ul {
   width: 100%;
   display: flex;
   flex-direction: column;
-  height: 60vh;
+  height: 50vh;
   justify-content: center;
   align-items: center;
   h3 {
@@ -387,18 +387,19 @@ ul {
   }
 }
 
-.topArtistsByYear {
+.artists {
   width: 80%;
-  height: 50%;
+  height: 40%;
   margin-bottom: 3em;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 2em;
 }
 
-.topArtistsByYear p {
+.artists p {
   // font-family: $font-family-roboto-mono;
   font-family: $font-family-header;
   font-size: 28px;

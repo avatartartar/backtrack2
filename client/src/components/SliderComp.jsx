@@ -16,8 +16,15 @@ const YearSliderComp = () => {
   }
 
   function handleClick() {
-    dispatch(fetchTopArtistsByYear({query: year}));
-    dispatch(fetchTopTracksByYear({query: year}));
+    gsap.to('.eachArtist', {
+      opacity: 0, 
+      duration: 0.2,
+      onComplete: () => {
+        dispatch(fetchTopArtistsByYear({query: year}));
+        dispatch(fetchTopTracksByYear({query: year}));
+      }
+    });
+
     // dispatch other 'TopByYear' actions here
   }
 
