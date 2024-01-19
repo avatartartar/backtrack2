@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 const TopArtistsByYearComp = () => {
-  const { year } = useSelector(state => state.year);
+  const { year } = useSelector(state => state.chosen);
   const { arrData: topArtistsByYear, status: statusTopArtistsByYear, error: errorTopArtistsByYear } = useSelector(state => state.topArtistsByYear);
 
   return (

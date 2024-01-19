@@ -8,7 +8,7 @@ import gsap from 'gsap';
 const YearSliderComp = () => {
 
   const dispatch = useDispatch();
-  const { year, status, error } = useSelector(state => state.year);
+  const { year, status, error } = useSelector(state => state.chosen);
 
   function handleSliderInput(e) {
     dispatch(setYear(e.target.value));
