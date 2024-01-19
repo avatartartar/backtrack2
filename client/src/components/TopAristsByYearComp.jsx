@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { gsap } from "gsap";
 
 const TopArtistsByYearComp = () => {
   const { year } = useSelector(state => state.year);
@@ -8,6 +9,14 @@ const TopArtistsByYearComp = () => {
 
   let artists = year === 0 ? topArtists : topArtistsByYear;
   artists = mapNameAndAddDashes(artists);
+
+  useEffect(() => {
+    if (year !== 0) {
+      const tl = gsap.timeline({defaults: { ease: 'power3.out' }});
+      tl.set('.eachArtist', { x: '100vw' });
+      tl.to('.eachArtist', { x: 0, duration: 0.1, stagger: 0.2 });
+    }
+  }, [artists]);
 
   return (
     <div className='topArtistsByYearWrapper'>

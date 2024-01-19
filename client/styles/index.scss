@@ -357,12 +357,13 @@ ul {
 
 .artists {
   width: 80%;
-  height: 50%;
+  height: 40%;
   margin-bottom: 3em;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 2em;
 }
 
