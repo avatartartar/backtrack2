@@ -2,11 +2,12 @@ import express from 'express';
 const router = express.Router();
 import artistsController from '../controllers/artistsController.js';
 
-router.get('/topArtists', artistsController.getTopArtists, (req, res) => {
+router.get('/', artistsController.getTopArtists, (req, res) => {
   return res.status(200).json(res.locals.topArtists);
 });
 
-router.get('/topArtistsByYear', artistsController.getTopArtistsByYear, (req, res) => {
+router.get('/ByYear', artistsController.getTopArtistsByYear, (req, res) => {
+  console.log('in artistsRouter get /ByYear');
   return res.status(200).json(res.locals.topArtistsByYear);
 });
 

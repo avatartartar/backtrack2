@@ -2,11 +2,13 @@ import express from 'express';
 const router = express.Router();
 import tracksController from '../controllers/tracksController.js';
 
-router.get('/topTracks', tracksController.getTopTracks, (req, res) => {
+router.get('/', tracksController.getTopTracks, (req, res) => {
+  console.log('in tracksRouter get /');
   return res.status(200).json(res.locals.topTracks);
 });
 //Ross added this to set up a route for front end slider to get tracks by year.
-router.get('/topTracksByYear', tracksController.getTopTracksByYear, /* tracksController.getTracksByTimePlayed, */ (req, res) => {
+router.get('/ByYear', tracksController.getTopTracksByYear, (req, res) => {
+  console.log('in tracksRouter get /ByYear');
   return res.status(200).json(res.locals.topTracksByYear);
   // return res.status(200).json(res.locals.TracksByTimePlayed);
 });

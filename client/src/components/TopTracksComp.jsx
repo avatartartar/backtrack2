@@ -19,37 +19,33 @@ const TopTracksComp = () => {
 
   const {
     name: chosenTrack,
-    image: chosenTrackImage,
-    artistName: chosenTrackArtistName,
-    albumName: chosenTrackAlbumName,
+    image_url: chosenTrackImage,
+    artist_name: chosenTrackArtistName,
+    album_name: chosenTrackAlbumName,
   } = useSelector(state => state.chosen.track);
 
   const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
-  const { arrData: topTracksByYear, status: statusTopTracksByYear, error: errorTopTracksByYear } = useSelector(state => state.topTracksByYear);
 
   // setting tracks to either topTracks or topTracksByYear depending on the year selected.
   // then this gets served to the component that renders the tracks.
-  const tracks = year === 0 ? topTracks : topTracksByYear;
 
   const dispatch = useDispatch();
   const [audio, setAudio] = useState(null);
   const [isClickedId, setIsClickedId] = useState(null);
   const [endClipTimeout, setEndClipTimeout] = useState(null);
 
-  useEffect(() => {
-    // Dispatch the fetchTracks async thunk when the component mounts
-    if (statusTopTracks === 'idle') {
-      dispatch(fetchTopTracks());
-    }
-  }, [dispatch, statusTopTracks]);
-
-
-
-
-
-  const controlImage = (trackName, artistName, albumName, imageUrl) => {
-    dispatch(setChosenTrack({name: trackName, image: imageUrl, artistName: artistName, albumName: albumName}))
+  const controlImage = (track) => {
+    console.log('controlImage in TopTracksComp.jsx');
+    dispatch(setChosenTrack(track))
   }
+
+  //
+  // useEffect(() => {
+  //   // Dispatch the fetchTracks async thunk when the component mounts
+  //   if (statusTopTracks === 'idle') {
+  //     dispatch(fetchTopTracks(year));
+  //   }
+  // }, [dispatch, statusTopTracks]);
 
    const controlPlayback = (previewUrl, trackId, imageUrl, albumName, artistName) => {
 
@@ -69,7 +65,7 @@ const TopTracksComp = () => {
     }
 
     if (isClickedId === trackId && audio) {
-      fadeAudio(audio, -0.005, 250, () => {
+      fadeAudio(audio, -0.005, 125, () => {
         audio.pause();
         audio.currentTime = 0;
         setIsClickedId(null);
@@ -98,7 +94,7 @@ const TopTracksComp = () => {
           newAudio.currentTime = 0;
           setIsClickedId(null);
         });
-      }, 28000);
+      }, 20000);
 
       // Save the new audio and endClipTimeout in state
       setAudio(newAudio);
@@ -120,7 +116,7 @@ const TopTracksComp = () => {
       playAudio();
     }
   }
-  function TrackElement({ track, controlPlayback, controlImage, isClickedId }) {
+  function TrackElement({ track, controlPlayback, controlImage, isClickedId, setIsClickedId }) {
     return (
       <li>
         <img src={playIcon} alt="" style={isClickedId === track.id ? {display: 'none'} : {display: 'block'}}/>
@@ -130,7 +126,7 @@ const TopTracksComp = () => {
             <div onClick={() => {
               controlPlayback(track.audio_clip_url, track.id, track.image_url, track.album_name, track.artist_name)
               &
-              controlImage(track.name, track.artist_name, track.album_name, track.image_url)
+              controlImage(track)
               if (isClickedId === track.id) {
                 setIsClickedId(null);
               } else {
@@ -151,16 +147,16 @@ const TopTracksComp = () => {
   return (
     <div className="TopTracksAndImageContainer">
     <div className="TopTracksContainer">
-      <h3>TOP 10 TRACKS</h3>
+      <h3>Top 10 Tracks</h3>
       <ul>
-        {tracks.length === 0 && [0,0,0,0,0,0,0,0,0,0].map(el => <li></li>)}
-        {tracks.length > 0 && tracks.map(track => (
+        {topTracks.map(track => (
           <TrackElement
             key={track.id}
             track={track}
             controlPlayback={controlPlayback}
             controlImage={controlImage}
             isClickedId={isClickedId}
+            setIsClickedId={setIsClickedId}
           />
         ))}
       </ul>
@@ -172,7 +168,7 @@ const TopTracksComp = () => {
       </div>
     </div>
   </div>
-)
-        }
+  )
+}
 
 export default TopTracksComp;

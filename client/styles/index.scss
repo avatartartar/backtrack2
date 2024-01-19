@@ -221,6 +221,17 @@ ul {
     }
 }
 
+
+.TopTracksAndImageContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  @media (max-width: 1055px) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
 .TopTracksContainer {
   color: $white;
   font-family: $font-family-mono;
@@ -235,10 +246,6 @@ ul {
 }
 
 
-@keyframes marquee {
-  0% { left: 0; }
-  100% { left: -100%; }
-}
 
 .TopTracksContainer li {
   border: 0.3px solid rgba(255, 255, 255, 0.7);
@@ -252,11 +259,11 @@ ul {
   overflow: hidden;
   // position: relative;
   cursor: pointer;
-    img {
-        height: 15px;
-        width: 15px;
-        margin: 0px 10px;
-    }
+  img {
+    height: 15px;
+    width: 15px;
+    margin: 0px 10px;
+  }
 }
 
 .trackScrollWrapper {
@@ -276,6 +283,10 @@ ul {
   }
 }
 
+@keyframes marquee {
+  0% { left: 0; }
+  100% { left: -100%; }
+}
 .onPlay {
   position: absolute;
   overflow: hidden;
@@ -285,16 +296,6 @@ ul {
   div {
     display: inline-block;
     width: 50%;
-  }
-}
-
-.TopTracksAndImageContainer {
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-start;
-  @media (max-width: 1055px) {
-    flex-direction: column;
-    align-items: center;
   }
 }
 
@@ -367,7 +368,7 @@ ul {
 
 
 
-.topArtistsByYearWrapper {
+.artistsWrapper {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -377,8 +378,8 @@ ul {
   h3 {
     font-family: $font-family-mono;
     font-weight: 800;
-    margin-top: 3em;
-    margin-bottom: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
     font-size: 50px;
     background: $gradient-text;
     -webkit-background-clip: text;
@@ -432,14 +433,14 @@ ul {
 }
 
 .topAlbumContainer {
-    width: 980px; 
-    height: 988px; 
+    width: 980px;
+    height: 988px;
     position: absolute;
     top: 3164px;
-    left: 374px; 
+    left: 374px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    
+
 }

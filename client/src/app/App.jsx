@@ -1,36 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client';
+import { useDispatch, useSelector } from 'react-redux';
+
 import NavbarComp from '../components/NavbarComp.jsx';
 import TopTracksComp from '../components/TopTracksComp.jsx';
 import TopAlbumComp from '../components/TopAlbumComp.jsx';
 import GraphComp from '../components/GraphComp.jsx';
 import LogStateComp from '../components/LogStateComp.jsx';
 import YearSliderComp from '../components/SliderComp.jsx';
-// s
+
+import { fetchTopTracks, fetchTopArtists, setChosenTrack } from '../features/slice.js';
 // import DisplayYear from '../components/DisplayYear.jsx';
-import TopArtistsByYearComp from '../components/TopAristsByYearComp.jsx';
-import { fetchTopArtists } from '../features/slice.js';
+import TopArtistsComp from '../components/TopArtistsComp.jsx';
 import '../../styles/index.scss';
-import { useSelector, useDispatch } from 'react-redux';
+
+
 
 export function App() {
-const { year } = useSelector(state => state.chosen);
-const dispatch = useDispatch();
-
-useEffect(() => {
-  dispatch(fetchTopArtists());
-}, []);
 
   return (
     <>
       <LogStateComp/>
       <NavbarComp/>
       <YearSliderComp/>
-      <div className="trackListAndAlbum">
       <TopTracksComp/>
+      <TopArtistsComp/>
       {/* <TopAlbumComp/> */}
-      </div>
-      <TopArtistsByYearComp/>
       <GraphComp/>
     </>
   )
