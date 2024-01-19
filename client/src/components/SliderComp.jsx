@@ -2,23 +2,41 @@ import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client';
 import '../../styles/index.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTopTracksByYear, fetchTopArtistsByYear, setYear } from '../features/slice.js';
+import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack } from '../features/slice.js';
 import gsap from 'gsap';
 
-const YearSliderComp = () => {
+const SliderComp = () => {
 
   const dispatch = useDispatch();
-  const { year, status, error } = useSelector(state => state.chosen);
+
+  const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
+
+
+  const fetchData = () => {
+    // the below .then on the dispatch then matching the fulfilled of dispatch to action allows us to wait for the fetchTopTracks to complete before dispatching the chosenTrack.
+    // trying to set the chosen track when the page first loads was resulting in an error, as TopTracks hadn't yet returned its promise.
+    dispatch(fetchTopTracks(year)).then((action) => {
+      if (fetchTopTracks.fulfilled.match(action) & !chosenTrack.name) {
+        dispatch(setChosenTrack(action.payload[0]))
+      }
+    })
+    dispatch(fetchTopArtists(year))
+  // dispatch(fetchTopAlbums(year))
+  }
+
+  // Dispatch the fetch async thunks when the component mounts
+  useEffect(() => {
+    if (status === 'idle') {
+      fetchData()
+    }
+  }, [dispatch, status]);
 
   function handleSliderInput(e) {
     dispatch(setYear(e.target.value));
-    // dispatch(fetchTopTracksByYear({value: e.target.value}));
   }
 
   function handleClick() {
-    dispatch(fetchTopArtistsByYear({query: year}));
-    dispatch(fetchTopTracksByYear({query: year}));
-    // dispatch other 'TopByYear' actions here
+    fetchData()
   }
 
   // functionality for animation on load: All will disappear except
@@ -43,21 +61,20 @@ const YearSliderComp = () => {
     })
   }, [])
 
-
-
   return (
     <div id="landingAndSticky">
       <h1 className="landing hide">Keith,</h1>
       <h1 className="landing hide">In your Spotify</h1>
       <h1 className="landing hide">Adventure,</h1>
-      <h1 className="landing hide">Discover your</h1>
+      <h1 className="landing hide">Discover...</h1>
       <div className="landing sliderContainer">
-        <h1 className="sliderSubContainer">Your {year ? year : 'all-time'} backtrack</h1>
+        {/* the terniary operator below allows us to use the 2024 year in the slider while displaying 'all-time'  */}
+        <h1 className="sliderSubContainer">Your { year != 2024 ? year : 'all-time' } backtrack</h1>
         <input
           type="range"
           min="2011"
-          max="2023"
-          defaultValue="2023"
+          max="2024"
+          defaultValue="2024"
           onMouseUp={handleClick}
           className="slider"
           name='slider'
@@ -67,4 +84,4 @@ const YearSliderComp = () => {
     </div>
   )
 }
-export default YearSliderComp;
+export default SliderComp;
