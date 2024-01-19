@@ -108,7 +108,8 @@ const TopTracksComp = () => {
     <div className="TopTracks">
       <h3>TOP 10 TRACKS</h3>
       <ul>
-        {tracks.map(track => (
+        {tracks.length === 0 && [0,0,0,0,0,0,0,0,0,0].map(el => <li></li>)}
+        {tracks.length > 0 && tracks.map(track => (
           <li key={track.id}>
             <img src={playIcon} alt="" style={isClickedId === track.id ? {display: 'none'} : {display: 'block'}}/>
             <img src={pauseIcon} alt="" style={isClickedId === track.id ? { display: 'block' } : { display: 'none' }} />
