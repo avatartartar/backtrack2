@@ -30,13 +30,16 @@ const YearSliderComp = () => {
         gsap.to(".hide", {duration: 2, opacity: 0, y: -600, stagger: 0.05})
         gsap.from(".sliderContainer", {duration: 2, y: 0, stagger: 0.05}, "+5")
         gsap.to(".sliderContainer", {duration: 2, y: -400})
-        gsap.to("#landingAndSticky", {duration: 2, height: 400})
-        gsap.to(".slider", {duration: 2, width: '70%', ease: 'back.in'})
+        gsap.to("#landingAndSticky", {
+          duration: 2, height: 130, background: '#060430', padding: '30px', marginTop: '0px'})
+        gsap.to(".slider", {duration: 2, width: '70%', opacity: 1, ease: 'power3.out'})
       }
     })
 
     const headings = document.querySelectorAll(".landing")
     gsap.set(headings, {y: "100%", opacity: 0});
+    gsap.set(".slider", {opacity: 0})
+    gsap.set('.currentYear', {duration: 0.02, ease: 'in'})
 
     headings.forEach((heading, index) => {
       tl.to(heading, {y: "0%", opacity: 1, duration: 2}, index * 0.75);
@@ -44,15 +47,14 @@ const YearSliderComp = () => {
   }, [])
 
 
-
   return (
     <div id="landingAndSticky">
       <h1 className="landing hide">Keith,</h1>
-      <h1 className="landing hide">In your Spotify</h1>
-      <h1 className="landing hide">Adventure,</h1>
-      <h1 className="landing hide">Discover your</h1>
+      <h1 className="landing hide">In your</h1>
+      <h1 className="landing hide">Spotify Adventure,</h1>
+      <h1 className="landing hide">Discover</h1>
       <div className="landing sliderContainer">
-        <h1 className="sliderSubContainer">Your {year ? year : 'all-time'} backtrack</h1>
+        <h1 className="sliderSubContainer">Your <span className="currentYear" >{year ? year : 'all-time'}</span> backtrack</h1>
         <input
           type="range"
           min="2011"

@@ -37,16 +37,16 @@ html {
     width: 100%;
     height: 100%;
   }
-
 }
 
 
 body {
   background: linear-gradient(45deg, $darkBlue 0%, darken($darkBlue2, 50%) 100%);
   background-size: 200% 200%;
-  width: 100%;
-  animation: background 10s ease infinite;
-  margin: 0px !important;
+  width: 1200;
+  // animation: background 10s ease infinite;
+  margin: 0px;
+
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -78,7 +78,7 @@ h3 {
   color: $white;
   font-size: 36px;
   font-family: $font-family-mono;
-  font-weight: 300;
+  font-weight: 400;
   text-align: center;
 }
 
@@ -90,13 +90,18 @@ ul {
 
 
 #landingAndSticky {
+  margin-top: 200px;
+  position: sticky;
+  top: 20px;
+  z-index: 10;
   // margin-bottom: 100px;
   height: 100vh;
   h1 {
-    font-size: 96px;
+    font-size: 84px;
     margin: 0px 20px;
     font-family: $font-family-header;
   }
+  margin-bottom: 50px;
 }
 
 .favoriteMusicHeader {
@@ -109,7 +114,14 @@ ul {
 }
 
 .graphWrapper {
-  margin: 50px 0px;
+  h3 {
+    margin-left: 60px;
+    margin-bottom: 10px;
+    text-align: start;
+    text-transform: uppercase;
+  }
+  margin: 20px 0px;
+  margin-top: 150px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -146,9 +158,9 @@ ul {
 .slider {
   --webkit-appearance: none; // removing default css style
   appearance: none;
-  width: 100%;
+  width: 700px;
   height: 5px;
-  margin: 40px 0px;
+  margin: 20px 0px;
   border-radius: $border-radius;
   background: $gradient-text; // setting background (slider) to be same gradient as text
   opacity: 0.7; // opacity is 0,7. On hover it will change.
@@ -188,6 +200,35 @@ ul {
   flex: 2;
 }
 
+.barStyle {
+  fill: #04a8b4; // Default fill color
+
+  &:hover {
+    fill: #04a8b4; // Set the hover fill color if needed
+  }
+
+  &.recharts-bar-active {
+    fill: transparent !important; // Set the fill to transparent for the activeBar
+  }
+}
+
+.custom-tooltip {
+  margin: '0px 40px 100px 500px';
+  background: '#04a8b4';
+  width: '300px';
+  height: '400px';
+  padding: '20px';
+  display: 'flex';
+  flex-direction: 'column';
+  justify-content: 'flex-start';
+  align-items: 'center';
+}
+// .recharts-axis-label {
+//   fill: $blue; // Color
+//   font-family: 'Rubik', sans-serif; // Font family
+//   font-size: 14px; // Font size
+//   // Add other styling properties as needed
+// }
 
 .navBar {
   display: flex;
@@ -310,7 +351,8 @@ ul {
 }
 
 .albumCard {
-  background: linear-gradient($lightBlue, $skyeBlue);
+background: rgb(0, 133, 255);
+  background: linear-gradient(16deg, rgba(238, 0, 255, 0.2) 0%,  rgba(0, 133, 255, 1) 100%);
   width: 500px;
   height: 515px;
   display: flex;
