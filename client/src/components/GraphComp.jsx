@@ -10,7 +10,7 @@ const GraphComp = () => {
   const [data, setData] = useState([]);
   const dispatch = useDispatch();
 
-  const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.year);
+  const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.chosen);
   const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
   const { arrData: topTracksByYear, status: statusTopTracksByYear, error: errorTopTracksByYear } = useSelector(state => state.topTracksByYear);
 

@@ -221,7 +221,7 @@ ul {
     }
 }
 
-.TopTracks {
+.TopTracksContainer {
   color: $white;
   font-family: $font-family-mono;
   width: 422px;
@@ -240,7 +240,7 @@ ul {
   100% { left: -100%; }
 }
 
-.TopTracks li {
+.TopTracksContainer li {
   border: 0.3px solid rgba(255, 255, 255, 0.7);
   display: flex;
   width: 400px;
@@ -259,7 +259,7 @@ ul {
     }
 }
 
-.scrollWrapper {
+.trackScrollWrapper {
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -288,13 +288,45 @@ ul {
   }
 }
 
-.trackListAndAlbum {
+.TopTracksAndImageContainer {
   display: flex;
   justify-content: space-around;
   align-items: flex-start;
   @media (max-width: 1055px) {
     flex-direction: column;
     align-items: center;
+  }
+}
+
+.trackImage {
+  h3 {
+    margin: 0;
+    text-align: end;
+    margin-bottom: 15px;
+    @media (max-width: 1055px) {
+      text-align: center;
+    }
+  }
+}
+
+.trackImageCard {
+  background: linear-gradient($lightBlue, $skyeBlue);
+  width: 500px;
+  height: 515px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+    img {
+        padding-top: 25px;
+        height: 400px;
+        width: 425px;
+        object-fit: cover;
+      }
+  h4 {
+    font-weight: 300;
+    text-align: end;
+    margin-right: -250px;
   }
 }
 
@@ -372,4 +404,42 @@ ul {
   font-family: $font-family-header;
   font-size: 28px;
   color: $white;
+}
+
+.topAlbumsDisplay {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+  justify-content: center;
+  align-items: center;
+  h3 {
+    width: 1010px;
+    height: 76px;
+    top: 3036px;
+    left: 359px;
+    font-family: $font-family-mono;
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 76px;
+    letter-spacing: 0em;
+    background: $gradient-text;
+    text-align: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.topAlbumContainer {
+    width: 980px; 
+    height: 988px; 
+    position: absolute;
+    top: 3164px;
+    left: 374px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
 }
