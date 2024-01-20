@@ -123,6 +123,7 @@ ul {
   }
   margin: auto;
   // width: 1300px;
+
   display: flex;
   flex-direction: column;
   // height: 100vh;
@@ -423,7 +424,7 @@ background: rgb(0, 133, 255);
   h3 {
     font-family: $font-family-header;
     font-weight: 800;
-    margin-top: 1em;
+    margin-top: 3em;
     margin-bottom: 1em;
     font-size: 60px;
     background: $white;
