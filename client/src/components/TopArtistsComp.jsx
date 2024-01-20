@@ -28,8 +28,8 @@ const TopArtistsComp = () => {
 
   return (
     <div className='artistsWrapper'>
-      <h3>Let's take a trip down memory lane</h3>
-      <h3>You were jammin' to:</h3>
+      {/* <h3>Let's take a trip down memory lane</h3> */}
+      <h3>You were jammin' to these artists:</h3>
       <div className='artists'>
         {status === 'succeeded' && mappedArtists.map((element, index) => (
           <React.Fragment key={index}>

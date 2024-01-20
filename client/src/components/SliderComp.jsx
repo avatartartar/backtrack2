@@ -63,13 +63,16 @@ const SliderComp = () => {
         gsap.to(".hide", {duration: 2, opacity: 0, y: -600, stagger: 0.05})
         gsap.from(".sliderContainer", {duration: 2, y: 0, stagger: 0.05}, "+5")
         gsap.to(".sliderContainer", {duration: 2, y: -400})
-        gsap.to("#landingAndSticky", {duration: 2, height: 400})
-        gsap.to(".slider", {duration: 2, width: '70%', ease: 'back.in'})
+        gsap.to("#landingAndSticky", {
+          duration: 2, height: 150, background: '#07004e', padding: '30px', marginTop: '0px'})
+        gsap.to(".slider", {duration: 2, width: '70%', opacity: 1, ease: 'power3.out'})
       }
     })
 
     const headings = document.querySelectorAll(".landing")
     gsap.set(headings, {y: "100%", opacity: 0});
+    gsap.set(".slider", {opacity: 0})
+    gsap.set('.currentYear', {duration: 0.02, ease: 'in'})
 
     headings.forEach((heading, index) => {
       tl.to(heading, {y: "0%", opacity: 1, duration: 2}, index * 0.75);
