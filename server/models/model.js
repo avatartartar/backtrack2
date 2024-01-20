@@ -134,7 +134,11 @@ const queries = {
     .eq('year', year)
   ),
 
-
+  getAlbumImageUrl: (albumNameArray) => executeQuery(async (supabase) => supabase
+    .from('tracks')
+    .select('album_name, image_url')
+    .in('album_name', albumNameArray)
+  )
 
   // Old query to get Top10TracksForYear. Does not use views.
 

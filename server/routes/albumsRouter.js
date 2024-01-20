@@ -7,9 +7,10 @@ router.get('/', albumsController.getTopAlbums, (req, res) => {
 });
 
 
-router.get('/ByYear', albumsController.getTopAlbumsByYear, (req, res) => {
+router.get('/ByYear', albumsController.getTopAlbumsByYear, albumsController.getAlbumsCoverArt, (req, res) => {
   return res.status(200).json(res.locals.topAlbumsByYear);
 });
+
 
 router.get('/topAlbumsByYearByMonth', albumsController.getTopAlbumsByYearByMonth, (req, res) => {
   return res.status(200).json(res.locals.topAlbumsByYearByMonth);
