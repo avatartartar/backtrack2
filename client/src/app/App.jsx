@@ -25,7 +25,7 @@ export function App() {
       <YearSliderComp/>
       <TopTracksComp/>
       <TopArtistsComp/>
-      {/* <TopAlbumComp/> */}
+      <TopAlbumComp/>
       <GraphComp/>
     </>
   )

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client';
 import '../../styles/index.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack } from '../features/slice.js';
+import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack, fetchTopAlbums } from '../features/slice.js';
 import gsap from 'gsap';
 
 const SliderComp = () => {
@@ -20,18 +20,20 @@ const SliderComp = () => {
         dispatch(setChosenTrack(action.payload[0]))
       }
     })
-    dispatch(fetchTopArtists(year)).then((action) => {
-      if (fetchTopArtists.fulfilled.match(action)) {
+
+    dispatch(fetchTopAlbums(year));
+    //COMMENTED OUT BECAUSE it was interfering with the fadeout animation. we want to fetch top artists only after the fadeout is complete
+    // dispatch(fetchTopArtists(year)).then((action) => {
+    //   if (fetchTopArtists.fulfilled.match(action)) {
     gsap.to('.eachArtist', {
       opacity: 0,
-      duration: 0.2,
+      duration: 0.3,
       onComplete: () => {
         dispatch(fetchTopArtists(year));
       }
     });
-      }
-    })
-  // dispatch(fetchTopAlbums(year))
+    //   }
+    // })
   }
 
   // Dispatch the fetch async thunks when the component mounts
