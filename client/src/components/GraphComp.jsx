@@ -12,15 +12,14 @@ const GraphComp = () => {
 
   const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.chosen);
   const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
-  const { arrData: topTracksByYear, status: statusTopTracksByYear, error: errorTopTracksByYear } = useSelector(state => state.topTracksByYear);
 
   // setting tracks to either topTracks or topTracksByYear depending on the year selected.
   // then this gets served to the component that renders the tracks.
-  const tracks = year === 0 ? topTracks : topTracksByYear;
+
 
   useEffect(() => {
-    if (tracks && tracks.length > 0) {
-      const topByYear = tracks.filter((track, index) =>  index < 10);
+    if (topTracks && topTracks.length > 0) {
+      const topByYear = topTracks.filter((track, index) =>  index < 10);
       const newData = topByYear.map((track) => ({
         name: track.name,
         minutes: track.playtime_minutes,
@@ -28,7 +27,7 @@ const GraphComp = () => {
 
       setData(newData);
     }
-  }, [year, tracks])
+  }, [year, topTracks])
 
 
   function CustomTooltip({ payload, label, active }) {
