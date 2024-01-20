@@ -74,7 +74,7 @@ const GraphComp = () => {
     <div className="graphWrapper">
       <h3>You listened to {totalTime} hours<br/> of your favorite songs</h3>
       <div className="chart">
-        <ResponsiveContainer width={1200} height={600}>
+        <ResponsiveContainer width='100%' height={600}>
           <BarChart
             layout="vertical"
             data={data}
