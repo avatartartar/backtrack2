@@ -11,18 +11,16 @@ const GraphComp = () => {
   const dispatch = useDispatch();
   const [totalTime, setTotalTime] = useState(null);
 
-  const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.year);
+  const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.chosen);
   const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
-  const { arrData: topTracksByYear, status: statusTopTracksByYear, error: errorTopTracksByYear } = useSelector(state => state.topTracksByYear);
 
   // setting tracks to either topTracks or topTracksByYear depending on the year selected.
   // then this gets served to the component that renders the tracks.
-  const tracks = year === 0 ? topTracks : topTracksByYear;
+
 
   useEffect(() => {
-    if (tracks && tracks.length > 0) {
-      console.log(tracks, 'tracks on line 23 in graphComp')
-      const topByYear = tracks.filter((track, index) =>  index < 10);
+    if (topTracks && topTracks.length > 0) {
+      const topByYear = topTracks.filter((track, index) =>  index < 10);
       const newData = topByYear.map((track) => ({
         name: track.name,
         minutes: track.playtime_minutes,
@@ -36,7 +34,7 @@ const GraphComp = () => {
       setTotalTime(hours);
       setData(newData);
     }
-  }, [year, tracks])
+  }, [year, topTracks])
 
 
   function CustomTooltip({ payload, label, active }) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import logo from '../../assets/logo.png';
-import { fetchTopTracks } from '../features/slice.js';
+import { fetchTopTracks, setChosenTrack} from '../features/slice.js';
 // import store from '../store/store.js';
 import { useDispatch, useSelector } from 'react-redux';
 import playIcon from '../../assets/play_icon.png';
@@ -9,48 +9,49 @@ import pauseIcon from '../../assets/pause_icon.png';
 
 
 const TopTracksComp = () => {
+
+  const {
+    year,
+    default: defaultYear,
+    status: statusYear,
+    error: errorYear
+  } = useSelector(state => state.chosen);
+
+  const {
+    name: chosenTrack,
+    image_url: chosenTrackImage,
+    artist_name: chosenTrackArtistName,
+    album_name: chosenTrackAlbumName,
+  } = useSelector(state => state.chosen.track);
+
+  const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
+
+  // setting tracks to either topTracks or topTracksByYear depending on the year selected.
+  // then this gets served to the component that renders the tracks.
+
   const dispatch = useDispatch();
   const [audio, setAudio] = useState(null);
   const [isClickedId, setIsClickedId] = useState(null);
   const [endClipTimeout, setEndClipTimeout] = useState(null);
 
-  const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.year);
-  const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
-  const { arrData: topTracksByYear, status: statusTopTracksByYear, error: errorTopTracksByYear } = useSelector(state => state.topTracksByYear);
-
-  // setting tracks to either topTracks or topTracksByYear depending on the year selected.
-  // then this gets served to the component that renders the tracks.
-  const tracks = year === 0 ? topTracks : topTracksByYear;
-
-  // console.log('status in topTracksComp from reducer:', status)
-
-  // if (status === 'loading') {
-  //   // console.log('loading tracks from state in TopTracksComp.jsx');
-  // }
-
-  if (statusTopTracks === 'failed') {
-    console.log('FAILED: loading tracks from state in topTracksComp.jsx');
+  const controlImage = (track) => {
+    console.log('controlImage in TopTracksComp.jsx');
+    dispatch(setChosenTrack(track))
   }
 
-  if (errorTopTracks) {
-    console.log('ERROR: loading tracks from state in TopTracksComp.jsx');
-  }
+  //
+  // useEffect(() => {
+  //   // Dispatch the fetchTracks async thunk when the component mounts
+  //   if (statusTopTracks === 'idle') {
+  //     dispatch(fetchTopTracks(year));
+  //   }
+  // }, [dispatch, statusTopTracks]);
 
-
-  useEffect(() => {
-    // Dispatch the fetchTracks async thunk when the component mounts
-    if (statusTopTracks === 'idle') {
-      dispatch(fetchTopTracks());
-    }
-  }, [dispatch, statusTopTracks]);
-
-
-   const controlAudio = (previewUrl, trackId) => {
+   const controlPlayback = (previewUrl, trackId, imageUrl, albumName, artistName) => {
 
     // For now, in the cases when the previewUrl is null as it sometimes is. 2024-01-12_05-10-PM PST.
     if (!previewUrl) return;
 
-    // function to fade the audio in or out
     const fadeAudio = (audio, increment, delay, callback) => {
       const fade = setInterval(() => {
         if((increment > 0 && audio.volume < 0.07) || (increment < 0 && audio.volume > 0.005)){
@@ -62,6 +63,20 @@ const TopTracksComp = () => {
         }
       }, delay);
     }
+
+    if (isClickedId === trackId && audio) {
+      fadeAudio(audio, -0.005, 125, () => {
+        audio.pause();
+        audio.currentTime = 0;
+        setIsClickedId(null);
+      });
+      return;
+    }
+
+    setIsClickedId(trackId);
+
+    // function to fade the audio in or out
+
 
     const playAudio = () => {
       setIsClickedId(trackId);
@@ -79,7 +94,7 @@ const TopTracksComp = () => {
           newAudio.currentTime = 0;
           setIsClickedId(null);
         });
-      }, 28000);
+      }, 20000);
 
       // Save the new audio and endClipTimeout in state
       setAudio(newAudio);
@@ -101,31 +116,59 @@ const TopTracksComp = () => {
       playAudio();
     }
   }
-
-  // Keith 2024-01-14_03-27-PM: changed the key 'preview' to 'audio_clip_url' for specificity.
+  function TrackElement({ track, controlPlayback, controlImage, isClickedId, setIsClickedId }) {
+    return (
+      <li>
+        <img src={playIcon} alt="" style={isClickedId === track.id ? {display: 'none'} : {display: 'block'}}/>
+        <img src={pauseIcon} alt="" style={isClickedId === track.id ? { display: 'block' } : { display: 'none' }} />
+        <div className="trackScrollWrapper">
+          <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
+            <div onClick={() => {
+              controlPlayback(track.audio_clip_url, track.id, track.image_url, track.album_name, track.artist_name)
+              &
+              controlImage(track)
+              if (isClickedId === track.id) {
+                setIsClickedId(null);
+              } else {
+                setIsClickedId(track.id);
+              }
+            }}>
+            {track.name} - {track.artist_name}
+            </div>
+            <div onClick={() => controlPlayback(track.audio_clip_url, track.id, track.image_url, track.album_name, track.artist_name)}>
+            {track.name} - {track.artist_name}
+            </div>
+          </div>
+        </div>
+      </li>
+    );
+  }
 
   return (
-    <div className="TopTracks">
-      <h3>TOP 10 TRACKS</h3>
+    <div className="TopTracksAndImageContainer">
+    <div className="TopTracksContainer">
+      <h3>Top 10 Tracks</h3>
       <ul>
-        {tracks.map(track => (
-          <li key={track.id}>
-            <img src={playIcon} alt="" style={isClickedId === track.id ? {display: 'none'} : {display: 'block'}}/>
-            <img src={pauseIcon} alt="" style={isClickedId === track.id ? { display: 'block' } : { display: 'none' }} />
-            <div className="scrollWrapper">
-              <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
-                <div onClick={() => controlAudio(track.audio_clip_url, track.id)}>
-                {track.name} - {track.artist_name}
-                </div>
-                <div onClick={() => controlAudio(track.audio_clip_url, track.id)}>
-                {track.name} - {track.artist_name}
-                </div>
-              </div>
-            </div>
-          </li>
-          ))}
+        {topTracks.map(track => (
+          <React.Fragment key={track.id}>
+          <TrackElement
+            track={track}
+            controlPlayback={controlPlayback}
+            controlImage={controlImage}
+            isClickedId={isClickedId}
+            setIsClickedId={setIsClickedId}
+          />
+         </React.Fragment>
+        ))}
       </ul>
     </div>
+    <div className="trackImage">
+      <div className="trackImageCard">
+        <img src={chosenTrackImage} alt="image" />
+        <h4>{chosenTrackArtistName} <br /> {chosenTrackAlbumName}</h4>
+      </div>
+    </div>
+  </div>
   )
 }
 
