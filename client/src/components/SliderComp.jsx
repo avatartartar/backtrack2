@@ -64,7 +64,8 @@ const SliderComp = () => {
         gsap.from(".sliderContainer", {duration: 2, y: 0, stagger: 0.05}, "+5")
         gsap.to(".sliderContainer", {duration: 2, y: -400})
         gsap.to("#landingAndSticky", {
-          duration: 2, height: 150, background: '#07004e', padding: '30px', marginTop: '0px'})
+          duration: 2, height: 150, padding: '30px', marginTop: '0px'})
+        gsap.to('#landingAndSticky', { duration: 2, background: '#07004e' }, "+3")
         gsap.to(".slider", {duration: 2, width: '70%', opacity: 1, ease: 'power3.out'})
       }
     })
