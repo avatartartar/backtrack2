@@ -1,10 +1,10 @@
-import { queries } from '../models/model.js';
+import { models } from '../models/model.js';
 
 const tracksController = {};
 
 tracksController.getTopTracks = async (req, res, next) => {
   try {
-    const data = await queries.getTopTracks();
+    const data = await models.getTopTracks();
     res.locals.topTracks = data;
     // console.log('topTracks in tracksController', topTracks);
     return next();
@@ -20,7 +20,7 @@ tracksController.getTopTracks = async (req, res, next) => {
 tracksController.getTopTracksByYear = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const data = await queries.getTopTracksByYear(year);
+    const data = await models.getTopTracksByYear(year);
     res.locals.topTracksByYear = data;
     // console.log('topTracksByYear.length in tracksController', data.length);
     return next();
@@ -33,7 +33,7 @@ tracksController.getTopTracksByYear = async (req, res, next) => {
 tracksController.getTopTracksByYearByMonth = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const data = await queries.getTopTracksByYearByMonth(year);
+    const data = await models.getTopTracksByYearByMonth(year);
     res.locals.topTracksByYearByMonth = data;
     return next();
 

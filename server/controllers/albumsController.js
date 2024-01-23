@@ -1,11 +1,11 @@
-import { queries } from '../models/model.js';
+import { models } from '../models/model.js';
 
 const albumsController = {};
 
 albumsController.getTopAlbums = async (req, res, next) => {
 
   try {
-    const topAlbums = await queries.getTopAlbums();
+    const topAlbums = await models.getTopAlbums();
     res.locals.topAlbums = topAlbums;
     return next();
 
@@ -19,7 +19,7 @@ albumsController.getTopAlbumsByYear = async (req, res, next) => {
   try {
     //we don't have a 'top_albums_by_year' only view, so calling 'top_albums_by_year_month'. when we add a query for 'top_albums_by_year', change
     //this query to use that
-    const topAlbumsByYear = await queries.getTopAlbumsByYearByMonth(year);
+    const topAlbumsByYear = await models.getTopAlbumsByYearByMonth(year);
     //we don't need 12 copies of the album data per year, so reduce
     let reducedTopAlbumsByYear = topAlbumsByYear.reduce((acc, { year, rank, album_name, yearly_playtime_minutes, yearly_playtime_ms, yearly_playtime_hours, album_id }) => {
       const json = JSON.stringify({ year, rank, album_name, yearly_playtime_minutes, yearly_playtime_ms, yearly_playtime_hours, album_id});
@@ -40,7 +40,7 @@ albumsController.getAlbumsCoverArt = async (req, res, next) => {
   const { topAlbumsByYear } = res.locals;
   const albumNameArray = topAlbumsByYear.map(({ album_name }) => album_name);
   try {
-    let albumNameAndImages = await queries.getAlbumImageUrl(albumNameArray);
+    let albumNameAndImages = await models.getAlbumImageUrl(albumNameArray);
     albumNameAndImages = albumNameAndImages.reduce((acc, curr) => {
       if (!acc.includes(curr)) return [...acc, curr];
       return acc;
@@ -60,7 +60,7 @@ albumsController.getAlbumsCoverArt = async (req, res, next) => {
 albumsController.getTopAlbumsByYearByMonth = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const topAlbumsByYearByMonth = await queries.getTopAlbumsByYearByMonth(year);
+    const topAlbumsByYearByMonth = await models.getTopAlbumsByYearByMonth(year);
     res.locals.topAlbumsByYearByMonth = topAlbumsByYearByMonth;
     return next();
 

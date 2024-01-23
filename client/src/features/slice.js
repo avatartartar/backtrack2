@@ -18,11 +18,12 @@ const chosenSlice = createSlice({
     year: 2024,
     defaultYear: 'all-time',
     track: {},
-    topTracks: [],
     status: "idle",
     error: ""
   },
   reducers: {
+    // keys are action types
+    // values are action creators
     setYear: (state, action) => {
       state.year = action.payload;
     },
@@ -32,37 +33,44 @@ const chosenSlice = createSlice({
   },
 });
 
-const slice = (endpoint, filter) => {
+const dataSlice = (endpoint, filter) => {
+
   const actions = createAsyncThunk(
+
     `fetch/${endpoint}`,
-    async (arg) => {
+    async (year) => {
       let url = `/${endpoint}/`;
-      if (arg != 2024) {
-        url = `${url}${filter}${arg}`;
+      if (year != 2024) {
+        url = `${url}${filter}${year}`;
       }
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Fetch request failed at endpoint ${url}`);
       }
       const responseJson = await response.json();
-
       return responseJson;
-
     }
   );
 
   const reducer = createSlice({
     name: endpoint,
     initialState,
-    reducers: {},
+    // extraReducers
+    // - Defines additional reducer functions for a slice.
+    // - Allows defining reducers for async actions (like below) in the current slice
+    // - Or reducers for actions of other slices.
+    // - Enhances the reducer logic of the current slice.
     extraReducers(builder) {
-      builder
+        // Redux Toolkit Builder
+// - Creates reusable, standardized slices of application state.
+// - Simplifies the typical Redux workflow.
+// - Auto-generates action creators and action types.
+        builder
         .addCase(actions.pending, (state, action) => {
           state.status = "loading";
         })
         .addCase(actions.fulfilled, (state, action) => {
           state.status = "succeeded";
-          // this catches the case where the data is an array or an object
           if (action.meta.arg === 2024) {
             state.year = "all-time";
             state.arrData = action.payload;
@@ -81,12 +89,12 @@ const slice = (endpoint, filter) => {
         })
     }
   });
-
   return { reducer, actions };
 }
-const { reducer: topTracksSlice, actions: fetchTopTracks } = slice('tracks', 'ByYear?year=');
-const { reducer: topAlbumsSlice, actions: fetchTopAlbums } = slice('albums', 'ByYear?year=');
-const { reducer: topArtistsSlice, actions: fetchTopArtists } = slice('artists', 'ByYear?year=');
+
+const { reducer: topTracksReducer, actions: fetchTopTracks } = dataSlice('tracks', 'ByYear?year=');
+const { reducer: topAlbumsReducer, actions: fetchTopAlbums } = dataSlice('albums', 'ByYear?year=');
+const { reducer: topArtistsReducer, actions: fetchTopArtists } = dataSlice('artists', 'ByYear?year=');
 
 const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
 const { setYear, setChosenTrack } = chosenActions;
@@ -95,9 +103,9 @@ export {
   fetchTopTracks,
   fetchTopAlbums,
   fetchTopArtists,
-  topTracksSlice,
-  topAlbumsSlice,
-  topArtistsSlice,
+  topTracksReducer,
+  topAlbumsReducer,
+  topArtistsReducer,
   setYear,
   setChosenTrack,
   chosenReducer

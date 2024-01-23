@@ -6,6 +6,7 @@ router.get('/', tracksController.getTopTracks, (req, res) => {
   console.log('in tracksRouter get /');
   return res.status(200).json(res.locals.topTracks);
 });
+
 //Ross added this to set up a route for front end slider to get tracks by year.
 router.get('/ByYear', tracksController.getTopTracksByYear, (req, res) => {
   console.log('in tracksRouter get /ByYear');
@@ -18,3 +19,5 @@ router.get('/topTracksByYearByMonth', tracksController.getTopTracksByYearByMonth
 
 // ES6 syntax
 export default router;
+
+
