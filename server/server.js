@@ -1,6 +1,6 @@
 // Importing express for the server and path for working with file pahts in Node.js.
 import express from 'express';
-import path from 'path';
+// import path from 'path';
 import dotenv from 'dotenv';
 // Importing cors middleware.
 import cors from 'cors';

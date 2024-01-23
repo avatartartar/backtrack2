@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import logo from '../../assets/logo.png';
-import { fetchTopTracks, setChosenTrack} from '../features/slice.js';
+import { setChosenTrack} from '../features/slice.js';
 // import store from '../store/store.js';
 import { useDispatch, useSelector } from 'react-redux';
 import playIcon from '../../assets/play_icon.png';
@@ -150,15 +150,14 @@ const TopTracksComp = () => {
       <h3>Top 10 Tracks</h3>
       <ul>
         {topTracks.map(track => (
-          <React.Fragment key={track.id}>
           <TrackElement
+            key={track.id}
             track={track}
             controlPlayback={controlPlayback}
             controlImage={controlImage}
             isClickedId={isClickedId}
             setIsClickedId={setIsClickedId}
           />
-         </React.Fragment>
         ))}
       </ul>
     </div>

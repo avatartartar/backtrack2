@@ -1,10 +1,10 @@
-import { queries } from '../models/model.js';
+import { models } from '../models/model.js';
 
 const artistsController = {};
 
 artistsController.getTopArtists = async (req, res, next) => {
   try {
-    const topArtists = await queries.getTopArtists();
+    const topArtists = await models.getTopArtists();
     res.locals.topArtists = topArtists;
     return next();
 
@@ -16,7 +16,7 @@ artistsController.getTopArtists = async (req, res, next) => {
 artistsController.getTopArtistsByYear = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const topArtistsByYear = await queries.getTopArtistsByYear(year);
+    const topArtistsByYear = await models.getTopArtistsByYear(year);
     res.locals.topArtistsByYear = topArtistsByYear;
     return next();
 
@@ -28,7 +28,7 @@ artistsController.getTopArtistsByYear = async (req, res, next) => {
 artistsController.getTopArtistsByYearByMonth = async (req, res, next) => {
   const { year } = req.query;
   try {
-    const topArtistsByYearByMonth = await queries.getTopArtistsByYearByMonth(year);
+    const topArtistsByYearByMonth = await models.getTopArtistsByYearByMonth(year);
     res.locals.topArtistsByYearByMonth = topArtistsByYearByMonth;
     return next();
 
