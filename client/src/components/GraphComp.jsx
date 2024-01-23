@@ -1,8 +1,23 @@
+/**
+* @file GraphComp.jsx
+* @description: Renders a bar chart visualization for the user's top tracks playtime.
+  It includes a custom tooltip for displaying track details and calculates the total hours listened.
+* @requires react: Utilizes React for component structure, hooks for state management, and lifecycle.
+* @requires recharts: For creating the responsive bar chart and custom tooltip.
+* @requires react-redux: To dispatch actions and access the Redux store state.
+* @requires '../../styles/index.scss': Styles for the graph and tooltip components.
+* @imports
+* - useSelector, useDispatch from 'react-redux': Hooks for accessing and updating the Redux store.
+* - LabelList, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer from 'recharts': Components and elements for constructing the bar chart.
+* @methods
+* - CustomTooltip: Renders a tooltip with track details when a bar is hovered.
+* @consumers
+* - client/src/app/App.jsx
+*/
+
 import React, { useEffect, useState, PureComponent } from 'react';
-import backtrack from '../../assets/logo.png'
 import { LabelList, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import '../../styles/index.scss'
-// import { fetchTopTracksByYear } from '../features/slice.js';
 import { useDispatch, useSelector } from 'react-redux';
 
 
@@ -40,19 +55,19 @@ const GraphComp = () => {
   function CustomTooltip({ payload, label, active }) {
     if (active) {
       return (
-        <div className="custom-tooltip" 
-        style={{ 
-          margin: '0px 0px 100px 500px', 
-          background: 'linear-gradient(16deg, rgba(52,13,91, 1) 0%,  rgba(0, 133, 255, 1) 100%)', 
-          width: '300px', 
-          heigth: '400px', 
-          padding: '20px', 
-          display: 'flex', 
+        <div className="custom-tooltip"
+        style={{
+          margin: '0px 0px 100px 500px',
+          background: 'linear-gradient(16deg, rgba(52,13,91, 1) 0%,  rgba(0, 133, 255, 1) 100%)',
+          width: '300px',
+          heigth: '400px',
+          padding: '20px',
+          display: 'flex',
           textTransform: 'uppercase',
           fontSize: '24px',
           textAlign: 'start',
-          flexDirection: 'column', 
-          justifyContent: 'flex-start', 
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
           alignItems: 'flex-start',
           }}>
           <img src={payload[0].payload.album} alt="" />
@@ -89,12 +104,12 @@ const GraphComp = () => {
             <XAxis stroke="#fff" dataKey="minutes" type="number" tick={{ fill: '#efefef'}} />
             <YAxis type="category" tick={false} axisLine={false} />
             <Tooltip content={<CustomTooltip />} />
-            <Bar 
-              gap={10} 
-              barSize={40} 
-              className="barStyle" 
-              dataKey="minutes" 
-              fill="#04a8b4" 
+            <Bar
+              gap={10}
+              barSize={40}
+              className="barStyle"
+              dataKey="minutes"
+              fill="#04a8b4"
               // activeBar={{fill: '#000'}}
               activeDot={null}
             >

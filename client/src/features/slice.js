@@ -1,8 +1,33 @@
+/**
+ * @file slice.js
+ * @description Defines Redux slices for managing application state related to tracks, albums, artists, and chosen items.
+ * Utilizes Redux Toolkit to create slices and async thunks for pinging the server for data.
+ *
+ * @requires @reduxjs/toolkit: Toolkit's createSlice and createAsyncThunk to define state and asynchronous actions.
+ *
+ * @methods
+ * - dataSlice: A factory function that creates a slice for a given endpoint with a dynamic name, initial state, and extra reducers to handle async actions.
+ * - fetchTopTracks: Async thunk action created by dataSlice for fetching top tracks.
+ * - fetchTopAlbums: Async thunk action created by dataSlice for fetching top albums.
+ * - fetchTopArtists: Async thunk action created by dataSlice for fetching top artists.
+ * - setYear: Reducer action for setting the year in the chosen slice's state.
+ * - setChosenTrack: Reducer action for setting the chosen track in the chosen slice's state.
+ *
+ * @slices
+ * - chosenSlice: Slice for managing state related to the chosen year and track.
+ * - topTracksReducer: Reducer function for the top tracks slice.
+ * - topAlbumsReducer: Reducer function for the top albums slice.
+ * - topArtistsReducer: Reducer function for the top artists slice.
+ * - chosenReducer: Reducer function for the chosen slice.
+ *
+ * @consumers
+ * - actions:
+ * - client/src/features/slice.js: Imports and dispatches the fetch and chosen functions.
+ * - client/src/components/TopTracksComp.jsx: Imports and dispatches the setChosenTrack function.
+ * - reducers:
+ * - client/src/store/store.js: Imports the reducers and combines them into a single reducer.
+ */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
-// Keith 2024-01-15_01-14-PM
-// refactored this file to have helper helper fetch and slice functions
-// that can be be resued for any slice. reduces code duplication.
 
 const initialState = {
   arrData: [],
@@ -62,9 +87,9 @@ const dataSlice = (endpoint, filter) => {
     // - Enhances the reducer logic of the current slice.
     extraReducers(builder) {
         // Redux Toolkit Builder
-// - Creates reusable, standardized slices of application state.
-// - Simplifies the typical Redux workflow.
-// - Auto-generates action creators and action types.
+        // - Creates reusable, standardized slices of application state.
+        // - Simplifies the typical Redux workflow.
+        // - Auto-generates action creators and action types.
         builder
         .addCase(actions.pending, (state, action) => {
           state.status = "loading";

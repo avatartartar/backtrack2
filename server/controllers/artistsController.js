@@ -1,3 +1,15 @@
+/**
+ * @file artistsController.js
+ * @description: Handling the logic related to artists. It interacts with the artists models to fetch data and sends the response to the client via the router.
+ * @imports '../models/model.js': It requires the models to interact with the database and fetch data related to artists.
+ * @object artistsController - Contains all the functions for handling artist-related requests.
+ * @methods
+ * - getTopArtists: This method fetches the top artists from the database and sends the response to the client.
+ * - getTopArtistsByYear: This method fetches the top artists for a specific year from the database and sends the response to the client.
+ * - getTopArtistsByYearByMonth: This method fetches the top artists for a specific year and month from the database and sends the response to the client.
+ * @consumers server/routes/artistsRouter.js : Sends requests to the /artists endpoint here
+ */
+
 import { models } from '../models/model.js';
 
 const artistsController = {};

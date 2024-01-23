@@ -1,7 +1,23 @@
+/**
+ * @file TopTracksComp.jsx
+ * @description: Displays the top tracks component and manages playback.
+ * It allows users to play a preview of the tracks, and displays the currently chosen track's title, artist, album, and album image.
+ * @requires react: For building the component using React hooks and lifecycle.
+ * @requires react-redux: To dispatch actions and select parts of the state from the Redux store.
+ * @imports
+ * - '../../assets/play_icon.png': Play button icon for the track list.
+ * - '../../assets/pause_icon.png': Pause button icon for the track list.
+ * - '../features/slice.js': It imports the setChosenTrack action to update the currently selected track in the Redux store.
+ * @methods
+ * - controlImage: Dispatches the setChosenTrack action with the selected track's details.
+ * - controlPlayback: Manages the playback of the track preview, including playing, pausing, and fading the audio in and out.
+ * - TrackElement: A functional component that renders an individual track item, handling its play/pause functionality and visual feedback.
+ * @consumers
+ * - client/src/app/App.jsx
+ */
 import React, { useEffect, useState } from 'react';
-import logo from '../../assets/logo.png';
-import { setChosenTrack} from '../features/slice.js';
-// import store from '../store/store.js';
+
+import { setChosenTrack} from '../features/slice.js';// import store from '../store/store.js';
 import { useDispatch, useSelector } from 'react-redux';
 import playIcon from '../../assets/play_icon.png';
 import pauseIcon from '../../assets/pause_icon.png';
@@ -38,14 +54,6 @@ const TopTracksComp = () => {
     console.log('controlImage in TopTracksComp.jsx');
     dispatch(setChosenTrack(track))
   }
-
-  //
-  // useEffect(() => {
-  //   // Dispatch the fetchTracks async thunk when the component mounts
-  //   if (statusTopTracks === 'idle') {
-  //     dispatch(fetchTopTracks(year));
-  //   }
-  // }, [dispatch, statusTopTracks]);
 
    const controlPlayback = (previewUrl, trackId, imageUrl, albumName, artistName) => {
 

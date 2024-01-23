@@ -1,5 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+/**
+ * @file TopArtistsComp.jsx
+ * @description: Displays a list of top artists for a given year, animating their appearance using GSAP.
+ * @requires react: For building the component using React hooks.
+ * @requires react-redux: To access the Redux state within the component.
+ * @requires gsap: For the animation of the artist elements.
+ * @requires @gsap/react: To use GSAP with React functional components.
+ * @imports
+ * - useSelector: To retrieve state data from the Redux store.
+ * - gsap: For creating timeline animations.
+ * - useGSAP: A custom hook to integrate GSAP animations with React.
+ * @methods
+ * - mapNameAndAddDashes: Takes an array of artist objects and returns a new array with artist names and dashes that then get rendered sequentially.
+ * @consumers
+ * - client/src/app/App.jsx
+ */
+import React from 'react';
+import { useSelector } from 'react-redux';
+
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -28,7 +45,6 @@ const TopArtistsComp = () => {
 
   return (
     <div className='artistsWrapper'>
-      {/* <h3>Let's take a trip down memory lane</h3> */}
       <h3>You were jammin' to these artists:</h3>
       <div className='artists'>
         {status === 'succeeded' && mappedArtists.map((element, index) => (

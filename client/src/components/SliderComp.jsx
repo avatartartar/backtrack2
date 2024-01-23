@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import ReactDOM from 'react-dom/client';
 import '../../styles/index.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack, fetchTopAlbums } from '../features/slice.js';
@@ -13,9 +12,11 @@ const SliderComp = () => {
 
 
   const fetchData = () => {
-    // the below .then on the dispatch then matching the fulfilled of dispatch to action allows us to wait for the fetchTopTracks to complete before dispatching the chosenTrack.
-    // trying to set the chosen track when the page first loads was resulting in an error, as TopTracks hadn't yet returned its promise.
-
+    // the below .then on the dispatch then matching the fulfilled of dispatch to action allows us to wait
+    // for the fetchTopTracks to complete before dispatching the chosenTrack.
+    // if setChosenTrack is disptached before fetchTopTracks is fulfilled, then chosenTrack will be undefined
+    // we want to define it when the page first loads so that there is an image and track name displayed
+    // in the right component of TrackComponent.
     dispatch(fetchTopTracks(year)).then((action) => {
       if (fetchTopTracks.fulfilled.match(action) & !chosenTrack.name) {
         dispatch(setChosenTrack(action.payload[0]))
@@ -23,9 +24,6 @@ const SliderComp = () => {
     })
 
     dispatch(fetchTopAlbums(year));
-    //COMMENTED OUT BECAUSE it was interfering with the fadeout animation. we want to fetch top artists only after the fadeout is complete
-    // dispatch(fetchTopArtists(year)).then((action) => {
-    //   if (fetchTopArtists.fulfilled.match(action)) {
     gsap.to('.eachArtist', {
       opacity: 0,
       duration: 0.3,
@@ -33,8 +31,6 @@ const SliderComp = () => {
         dispatch(fetchTopArtists(year));
       }
     });
-    //   }
-    // })
   }
 
   // Dispatch the fetch async thunks when the component mounts
@@ -50,13 +46,11 @@ const SliderComp = () => {
 
   function handleClick() {
     fetchData()
-
-
-    // dispatch other 'TopByYear' actions here
   }
 
-  // functionality for animation on load: All will disappear except
-  // for slider and header for slider after landing page is completed
+
+  // functionality for slider animation on load: All of this text/animation will disappear except
+  // for slider and header for slider after animation completes.
   useEffect(() => {
     const tl = gsap.timeline({
       defaults: {ease: "power1.out"},
@@ -83,12 +77,13 @@ const SliderComp = () => {
 
   return (
     <div id="landingAndSticky">
-      <h1 className="landing hide">Keith,</h1>
+      {/* hiding the below name now, as a quick attempt to delete it messed up the spacing of the slider container*/}
+      <h1 className="landing hide" style={{visibility: 'hidden'}}>Keith,</h1>
       <h1 className="landing hide">In your Spotify</h1>
       <h1 className="landing hide">Adventure,</h1>
       <h1 className="landing hide">Discover...</h1>
       <div className="landing sliderContainer">
-        {/* the terniary operator below allows us to use the 2024 year in the slider while displaying 'all-time'  */}
+        {/* the ternary operator below allows us to use the 2024 value in the slider while displaying the text 'all-time' */}
         <h1 className="sliderSubContainer">Your { year != 2024 ? year : 'all-time' } backtrack</h1>
         <input
           type="range"

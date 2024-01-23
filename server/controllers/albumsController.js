@@ -1,3 +1,16 @@
+/**
+ * @file albumsController.js
+ * @description: Handling the logic related to albums. It interacts with the albums models to fetch data and sends the response to the client via the router.
+ * @imports '../models/model.js': It requires the models to interact with the database and fetch data related to albums.
+ * @object albumsController - Contains all the functions for handling albums-related requests.
+ * @methods
+ * - getTopAlbums: This method fetches the top albums from the database and sends the response to the client.
+ * - getTopAlbumsByYear: This method fetches the top albums for a specific year from the database and sends the response to the client.
+ * - getAlbumsCoverArt: This method fetches the cover art for each album and adds it as a property on each album object.
+ * - getTopAlbumsByYearByMonth: This method fetches the top albums for a specific year and month from the database and sends the response to the client.
+ * @consumers server/routes/albumsRouter.js: Sends requests to the /albums endpoint here.
+ */
+
 import { models } from '../models/model.js';
 
 const albumsController = {};

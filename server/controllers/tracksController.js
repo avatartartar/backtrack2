@@ -1,6 +1,27 @@
+/**
+ * @file tracksController.js
+ * @description: Handling the logic related to tracks. It interacts with the tracks models to fetch data and sends the response to the client via the router.
+ * @imports '../models/model.js': It requires the models to interact with the database and fetch data related to tracks.
+ * @object tracksController - Contains all the functions for handling tracks-related requests.
+ * @methods
+ * - getTopTracks: Returns the top 10 tracks ordered by playtime.
+ * - getTopTracksByYear: Returns the top tracks of a specific year.
+ * - getTopTracksByYearByMonth - Returns the top tracks of a specific year by month.
+ * @consumers server/routes/tracksRouter.js: Sends requests to the /tracks endpoint here.
+ */
+
 import { models } from '../models/model.js';
 
 const tracksController = {};
+
+// const handleRequest = async (modelFunction, req, res) => {
+//   try {
+//     const data = await modelFunction();
+//     res.status(200).json(data);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 
 tracksController.getTopTracks = async (req, res, next) => {
   try {
@@ -14,9 +35,6 @@ tracksController.getTopTracks = async (req, res, next) => {
   }
 }
 
-//Ross added this to set up a route for front end slider to get tracks by year. right now the query times out each time. not using handleRequest
-//yet, as we are not responding to request yet, we are taking data to pass it on to them filter in another controller. didn't want to refactor the
-//whole codebase, so I created a custom controller just to get this working first.
 tracksController.getTopTracksByYear = async (req, res, next) => {
   const { year } = req.query;
   try {

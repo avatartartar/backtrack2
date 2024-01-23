@@ -1,6 +1,38 @@
+/**
+* @file model.js
+* @description:
+* This file contains the models for interacting with the Supabase database and Spotify API.
+* It gets called by the controllers in the controllers folder.
+*
+* @requires supabase-js - Used to create a Supabase client for interacting with the database.
+* @requires dotenv - Used to load environment variables from .env.server file.
+*
+* @imports spotifyTokenRefresh.js - Contains the getSpotifyToken function for getting Spotify API token.
+*   2024-01-23_02-20-PM:
+*   this is only needed if we're calling the Spotify API, which we're not doing at the moment as we've
+*   added a lot of that api data directly to the database, making api calls largely unnecessary.
+*
+* @function getTrackInfo - Fetches track information from the Spotify API.
+* @function handleRequest - Handles requests by executing a model function and returning the data or an error.
+* @function executeQuery - Executes a query callback and returns the data or throws an error.
+*
+* @object models - Contains all the model functions for querying the database.
+* @methods
+* - getTopTracks - Returns the top 10 tracks ordered by playtime.
+* - getTopArtists - Returns the top 10 artists ordered by playtime.
+* - getTopAlbums - Returns the top 10 albums ordered by playtime.
+* - getTopArtistsByYear - Returns the top artists of a specific year.
+* - getTopAlbumsByYear - Returns the top albums of a specific year.
+* - getTopTracksByYear - Returns the top tracks of a specific year.
+* - getTopArtistsByYearByMonth - Returns the top artists of a specific year by month.
+* - getTopAlbumsByYearByMonth - Returns the top albums of a specific year by month.
+* - getTopTracksByYearByMonth - Returns the top tracks of a specific year by month.
+* - getAlbumImageUrl - Returns the image URL of albums given an array of album names.
+
+* @consumers Used by the controllers in the controllers folder.
+*/
+
 import { createClient } from '@supabase/supabase-js'; // after installing the supabase-js package
-import fs from 'fs';
-import path from 'path';
 import dotenv from 'dotenv';
 // we import the getSpotifyToken function from the spotifyTokenRefresh.js file
 import { getSpotifyToken } from '../spotifyTokenRefresh.js';
@@ -15,29 +47,21 @@ const supaKey = process.env.SUPA_KEY;
 // Create Supabase client.
 const supabase = createClient(supaUrl, supaKey);
 
+
+// const getTrackInfo = async (uri) => {
+//   const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
+//     method: 'GET',
+
+//     // we call the getSpotifyToken function to get the token
+//     // which is either cached or gets refreshed (so to speak)
+//     headers: { 'Authorization': 'Bearer ' + await getSpotifyToken() },
+//   });
+//   // console.log('getTrackInfo response', response);
+//   return await response.json();
+// }
+
 // a helper function that executes a query callback and returns the data or throws an error
-// allows us to avoid repeating the same try/catch block in every model function
-const getTrackInfo = async (uri) => {
-  const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
-    method: 'GET',
-
-    // we call the getSpotifyToken function to get the token
-    // which is either cached or gets refreshed (so to speak)
-    headers: { 'Authorization': 'Bearer ' + await getSpotifyToken() },
-  });
-  // console.log('getTrackInfo response', response);
-  return await response.json();
-}
-
-const handleRequest = async (modelFunction, req, res) => {
-  try {
-    const data = await modelFunction();
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
+// allows us to avoid repeating the same block block in every model function
 const executeQuery = async (queryCallback) => {
   const { data, error } = await queryCallback(supabase);
   if (error) throw error;

@@ -1,4 +1,17 @@
-// Keith/spotifyTokenIntegration: 2024-01-13
+/**
+ * @file spotifyTokenRefresh.js
+ * @description This file is responsible for handling Spotify API token refresh.
+ * It ensures that a valid token is always available for API requests by refreshing the token when it is expired or not set.
+ * 2024-01-23: this is not currently getting used as we've added a lot of the spotify api data directly to the database.
+ *
+ * @requires 'dotenv': To load environment variables from the .env.server file.
+ * @requires 'node-fetch': To make HTTP requests to the Spotify token endpoint.
+ *
+ * @methods
+ * - refreshSpotifyToken: This private method is responsible for refreshing the Spotify token by making a POST request to the Spotify accounts service.
+ * - getSpotifyToken: This public method retrieves the current token, refreshing it if necessary, and returns a valid token for use in API requests.
+ */
+
 import path from 'path';
 import dotenv from 'dotenv';
 

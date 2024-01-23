@@ -1,3 +1,24 @@
+/**
+ * @file server.js
+ * @description This file is responsible for setting up the server, loading environment variables, enabling CORS, and mounting routers for handling routes related to tracks, artists, and albums.
+ * @requires 'express': Express.js framework for setting up the server.
+ * @requires 'dotenv': To load environment variables from .env.server file.
+ * @requires 'cors': Middleware to enable CORS.
+ *
+ * @imports './routes/tracksRouter.js': Router to handle routes related to tracks.
+ * @imports './routes/artistsRouter.js': Router to handle routes related to artists.
+ * @imports './routes/albumsRouter.js': Router to handle routes related to albums.
+ *
+ * @methods
+ * - express.json(): Middleware to parse incoming JSON request bodies.
+ * - express.urlencoded({ extended: true }): Middleware to parse incoming URL-encoded request bodies.
+ * - cors(corsOptions): Middleware to enable CORS for all origins.
+ * - app.use('/tracks', tracksRouter): Mounts the tracks router.
+ * - app.use('/artists', artistsRouter): Mounts the artists router.
+ * - app.use('/albums', albumsRouter): Mounts the albums router.
+ * - app.listen(PORT, callback): Starts the server on the specified PORT.
+ */
+
 // Importing express for the server and path for working with file pahts in Node.js.
 import express from 'express';
 // import path from 'path';
