@@ -19,6 +19,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import gsap from 'gsap';
 
+
 import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack, fetchTopAlbums } from '../features/slice.js';
 import '../../styles/index.scss';
 

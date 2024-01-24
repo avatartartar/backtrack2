@@ -31,6 +31,9 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
-    "recharts": "^2.10.4"
+    "jszip": "^3.10.1",
+    "papaparse": "^5.4.1",
+    "recharts": "^2.10.4",
+    "sqlite3": "^5.1.7"
   }
 }
