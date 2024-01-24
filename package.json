@@ -8,7 +8,7 @@
     "build-prod": "webpack --mode production",
     "start": "webpack serve --mode development",
     "both": "concurrently --kill-others-on-fail \"cd server && npm start\" \"npm start\"",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --verbose",
     "install-all": "npm install && cd client && npm install && cd ../server && npm install"
   },
   "keywords": [],
@@ -31,6 +31,15 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
-    "recharts": "^2.10.4"
+    "@testing-library/jest-dom": "^6.2.1",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-puppeteer": "^9.0.2",
+    "puppeteer": "^21.7.0",
+    "react-test-renderer": "^18.2.0",
+    "recharts": "^2.10.4",
+    "supertest": "^6.3.4"
   }
 }
