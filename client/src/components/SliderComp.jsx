@@ -1,15 +1,30 @@
+/**
+ * @file SliderComp.jsx
+ * @description: Provides an interactive slider for users to select a year and fetches the top tracks, artists, and albums from Spotify for that year.
+ *  It also handles the initial animation sequence when the component mounts.
+ * @requires react: For building the component using React hooks and lifecycle.
+ * @requires gsap: For creating and controlling animations.
+ * @requires react-redux: To dispatch actions and select state from the Redux store.
+ * @imports
+ * - '../../styles/index.scss': Styles for the component.
+ * - '../features/slice.js': Redux slice that contains actions and reducers for fetching and setting data related to Spotify's top tracks, artists, and albums.
+ * @methods
+ * - fetchData: Dispatches actions to fetch top tracks, artists, and albums, and handles the initial chosen track state.
+ * - handleSliderInput: Dispatches the setYear action with the value from the slider input.
+ * - handleClick: Invokes the fetchData method when the slider value is changed.
+ * @consumers
+ * - client/src/app/App.jsx
+ */
 import React, { useEffect, useState } from 'react'
-import '../../styles/index.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack, fetchTopAlbums } from '../features/slice.js';
 import gsap from 'gsap';
 
+import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack, fetchTopAlbums } from '../features/slice.js';
+import '../../styles/index.scss';
+
 const SliderComp = () => {
-
   const dispatch = useDispatch();
-
   const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
-
 
   const fetchData = () => {
     // the below .then on the dispatch then matching the fulfilled of dispatch to action allows us to wait
@@ -47,7 +62,6 @@ const SliderComp = () => {
   function handleClick() {
     fetchData()
   }
-
 
   // functionality for slider animation on load: All of this text/animation will disappear except
   // for slider and header for slider after animation completes.
