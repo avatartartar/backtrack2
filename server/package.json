@@ -16,7 +16,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "jszip": "^3.10.1",
     "nodemon": "^3.0.2",
-    "postgres": "^3.4.3"
+    "papaparse": "^5.4.1",
+    "postgres": "^3.4.3",
+    "sqlite3": "^5.1.7"
   }
 }
