@@ -17,7 +17,7 @@
  */
 import React, { useEffect, useState } from 'react';
 
-import { setChosenTrack} from '../features/slice.js';// import store from '../store/store.js';
+import { setChosenTrack} from '../features/slice.js';
 import { useDispatch, useSelector } from 'react-redux';
 import playIcon from '../../assets/play_icon.png';
 import pauseIcon from '../../assets/pause_icon.png';

@@ -19,10 +19,14 @@
 */
 
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import JSZip from 'jszip'; // Importing JSZip library for working with zip files
-import Papa from 'papaparse'; // Importing PapaParse library for parsing CSV data
+// import Papa from 'papaparse'; // Importing PapaParse library for parsing CSV data
+
+import { setJson } from '../features/slice.js';// import store from '../store/store.js';
 
 const ImportComp = () => {
+  const dispatch = useDispatch();
 
   const [isDragging, setIsDragging] = useState(false);
 
@@ -42,95 +46,68 @@ const ImportComp = () => {
   // Function to handle drop event
   const handleDrop = (event) => {
     console.log('dropped');
-    event.preventDefault();
-    setIsDragging(false);
+  event.preventDefault();
+  setIsDragging(false);
 
-    const file = event.dataTransfer.files[0]; // Get the dropped file from the event
-    const reader = new FileReader(); // Create a FileReader object to read the file contents
+  const file = event.dataTransfer.files[0]; // Get the dropped file from the event
+  const reader = new FileReader(); // Create a FileReader object to read the file contents
 
-    // Array to store each json file's conerted CSV data
-    const csvData = [];
-    let lastCsv = null; // Variable to store the last CSV data, which will be downloaded separately.
+  // Array to store each json file's data
+  const jsonData = [];
+  let lastJsonData = jsonData[jsonData.length - 2];
+  reader.onload = async function () {
+    const data = reader.result; // Get the file contents from the FileReader
+    const zip = new JSZip(); // Create a JSZip object to work with the zip file
+    const contents = await zip.loadAsync(data); // Load the zip file contents asynchronously
 
+    // Iterate through each file in the zip
+    contents.forEach(async (relativePath, zipEntry) => {
+      // Run the following code if the file ends with .json
+      if (relativePath.endsWith('.json')) {
+        const fileData = await zipEntry.async('text'); // Read the data from the zip file dropped in by the user
+        const parsedData = JSON.parse(fileData); // Parse the JSON data
+        jsonData.push(parsedData);
 
-    reader.onload = async function () {
-      const data = reader.result; // Get the file contents from the FileReader
-      const zip = new JSZip(); // Create a JSZip object to work with the zip file
-      const contents = await zip.loadAsync(data); // Load the zip file contents asynchronously
+      }
+    });
 
-      // Iterate through each file in the zip
-      contents.forEach(async (relativePath, zipEntry) => {
-        // Run the following code if the file ends with .json
-        if (relativePath.endsWith('.json')) {
+    console.log('conversion complete');
 
-          const fileData = await zipEntry.async('text'); // Read the data from the zip file dropped in by the user
-          const jsonData = JSON.parse(fileData); // Parse the JSON data
-
-          // Convert JSON to CSV using PapaParse library
-          const csv = Papa.unparse(jsonData); // Papa.unparse() converts JSON to CSV
-          lastCsv = csv;
-          csvData.push(csv);
-        }
-      });
-
-      console.log('conversion complete');
-
-      // Delay the execution of the following code by 5 seconds
       setTimeout(() => {
+        lastJsonData = jsonData.slice(-2)[0];
+        const lastArray = lastJsonData.slice(-1000);
+        // const selectedData = jsonData
+        const selectedData = lastJsonData
+
+        dispatch(setJson(selectedData));
+
+        // saves the data to a json file
+        // const selectedDataBlob = new Blob([JSON.stringify(selectedData)], { type: 'application/json' });
+        // const selectedDataUrl = URL.createObjectURL(selectedDataBlob);
+        // const selectedDataLink = document.createElement('a');
+        // selectedDataLink.href = selectedDataUrl;
+        // selectedDataLink.download = `${selectedData.name}.json`;
+        // document.body.appendChild(selectedDataLink);
+        // selectedDataLink.click();
 
         // Combine all CSV data into one file
-        const csvFile = csvData.join('\n');
-
-        // Create a new Blob object from the CSV data. A Blob object represents
-        // a file-like object of immutable, raw data. Blobs represent data that
-        // isn't necessarily in a JavaScript-native format.
-        const csvBlob = new Blob([csvFile], { type: 'text/csv' });
-
-        // Create a URL for the Blob object. The URL.createObjectURL() static
-        // method creates a DOMString containing a URL representing the object
-        // in the parameter. The URL lifetime is tied to the document in the
-        // window on which it was created. The new object URL represents the
-        // specified File object or Blob object.
-        const csvUrl = URL.createObjectURL(csvBlob);
-
-        // Create a new anchor element. The document.createElement() method
-        // creates the HTML element specified by tagName, or an HTMLUnknownElement
-        // if tagName isn't recognized.
-        const csvLink = document.createElement('a');
-
-        // Set the href of the anchor element to the Blob URL. The href property
-        // sets or returns the value of the href attribute of a link.
-        csvLink.href = csvUrl;
-
-        // Set the download attribute of the anchor element to the desired file name.
-        // The download attribute specifies that the target will be downloaded when
-        // a user clicks on the hyperlink.
-        csvLink.download = 'data.csv';
-
-        // Append the anchor element to the body of the document. The
-        // Node.appendChild() method adds a node to the end of the list of children
-        // of a specified parent node. If the given child is a reference to an
-        // existing node in the document, appendChild() moves it from its current
-        // position to the new position.
-        document.body.appendChild(csvLink);
-
-        // Programmatically click the anchor element to start the download. The
-        // HTMLElement.click() method simulates a mouse click on an element.
-        csvLink.click();
+        // const csvFile = csvData.join('\n');
+        // const csvBlob = new Blob([csvFile], { type: 'text/csv' });
+        // const csvUrl = URL.createObjectURL(csvBlob);
+        // const csvLink = document.createElement('a');
+        // csvLink.href = csvUrl;
+        // csvLink.download = 'data.csv';
+        // document.body.appendChild(csvLink);
+        // csvLink.click();
 
         // Repeat the process for the last CSV file
-        const lastCsvBlob = new Blob([lastCsv], { type: 'text/csv' });
-        const lastCsvUrl = URL.createObjectURL(lastCsvBlob);
-        const lastCsvLink = document.createElement('a');
-        lastCsvLink.href = lastCsvUrl;
-        lastCsvLink.download = 'last_data.csv';
-        document.body.appendChild(lastCsvLink);
-        lastCsvLink.click();
-
-        // when set to 1 second the file was incomplete. it works at 2 seconds on my computer.
-        // setting it to 3 in case anyone on the team's computer is slower than mine.
-        // the speed will vary with performance and file size.
-        // this was a quick way of going about this. we can find a a better way to do this.
+        // const lastCsvBlob = new Blob([lastCsv], { type: 'text/csv' });
+        // const lastCsvUrl = URL.createObjectURL(lastCsvBlob);
+        // const lastCsvLink = document.createElement('a');
+        // lastCsvLink.href = lastCsvUrl;
+        // lastCsvLink.download = 'last_data.csv';
+        // document.body.appendChild(lastCsvLink);
+        // lastCsvLink.click();
       }, 3000);
     };
 

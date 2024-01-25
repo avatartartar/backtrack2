@@ -17,15 +17,21 @@
  * - - client/src/components/GraphComp.jsx (tracks)
  */
 import { configureStore } from "@reduxjs/toolkit";
-import { topTracksReducer, topAlbumsReducer, topArtistsReducer, chosenReducer } from '../features/slice.js';
+import { topTracksReducer, topAlbumsReducer, topArtistsReducer, chosenReducer, jsonReducer } from '../features/slice.js';
 
 const store = configureStore({
   reducer: {
     topTracks: topTracksReducer.reducer,
     topAlbums: topAlbumsReducer.reducer,
     topArtists: topArtistsReducer.reducer,
-    chosen: chosenReducer
+    chosen: chosenReducer,
+    json: jsonReducer,
   },
+  // disable serializableCheck for now, which
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 export const logState = (store) => {

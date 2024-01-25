@@ -37,6 +37,9 @@ const initialState = {
   error: "",
 };
 
+
+
+
 const chosenSlice = createSlice({
   name: 'chosen',
   initialState: {
@@ -124,6 +127,23 @@ const { reducer: topArtistsReducer, actions: fetchTopArtists } = dataSlice('arti
 const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
 const { setYear, setChosenTrack } = chosenActions;
 
+const jsonSlice = createSlice({
+  name: 'json',
+  initialState: {
+    data: [],
+    status: "idle",
+    error: ""
+  },
+  reducers: {
+    setJson: (state, action) => {
+      state.data = action.payload;
+    }
+  },
+});
+
+const { reducer: jsonReducer, actions: jsonActions } = jsonSlice;
+const { setJson } = jsonActions;
+
 export {
   fetchTopTracks,
   fetchTopAlbums,
@@ -133,5 +153,7 @@ export {
   topArtistsReducer,
   setYear,
   setChosenTrack,
-  chosenReducer
+  chosenReducer,
+  jsonReducer,
+  setJson,
 };
