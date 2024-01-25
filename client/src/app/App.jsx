@@ -26,6 +26,8 @@ import TopArtistsComp from '../components/TopArtistsComp.jsx';
 import TopAlbumComp from '../components/TopAlbumComp.jsx';
 import TopTracksComp from '../components/TopTracksComp.jsx';
 import YearSliderComp from '../components/SliderComp.jsx';
+import SQLComp from '../components/SQLComp.jsx';
+// import SQLComp from '../components/SQLComp.jsx';
 
 import '../../styles/index.scss';
 
@@ -40,6 +42,7 @@ export function App() {
       <TopArtistsComp/>
       <TopAlbumComp/>
       <GraphComp/>
+      <SQLComp/>
     </>
   )
 }

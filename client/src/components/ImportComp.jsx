@@ -23,6 +23,7 @@ import JSZip from 'jszip'; // Importing JSZip library for working with zip files
 import Papa from 'papaparse'; // Importing PapaParse library for parsing CSV data
 
 const ImportComp = () => {
+
   const [isDragging, setIsDragging] = useState(false);
 
   // Function to handle drag over event
@@ -52,7 +53,7 @@ const ImportComp = () => {
     let lastCsv = null; // Variable to store the last CSV data, which will be downloaded separately.
 
 
-    reader.onload = async function() {
+    reader.onload = async function () {
       const data = reader.result; // Get the file contents from the FileReader
       const zip = new JSZip(); // Create a JSZip object to work with the zip file
       const contents = await zip.loadAsync(data); // Load the zip file contents asynchronously
@@ -83,7 +84,7 @@ const ImportComp = () => {
         // Create a new Blob object from the CSV data. A Blob object represents
         // a file-like object of immutable, raw data. Blobs represent data that
         // isn't necessarily in a JavaScript-native format.
-        const csvBlob = new Blob([csvFile], {type: 'text/csv'});
+        const csvBlob = new Blob([csvFile], { type: 'text/csv' });
 
         // Create a URL for the Blob object. The URL.createObjectURL() static
         // method creates a DOMString containing a URL representing the object
@@ -118,13 +119,14 @@ const ImportComp = () => {
         csvLink.click();
 
         // Repeat the process for the last CSV file
-        const lastCsvBlob = new Blob([lastCsv], {type: 'text/csv'});
+        const lastCsvBlob = new Blob([lastCsv], { type: 'text/csv' });
         const lastCsvUrl = URL.createObjectURL(lastCsvBlob);
         const lastCsvLink = document.createElement('a');
         lastCsvLink.href = lastCsvUrl;
         lastCsvLink.download = 'last_data.csv';
         document.body.appendChild(lastCsvLink);
         lastCsvLink.click();
+
         // when set to 1 second the file was incomplete. it works at 2 seconds on my computer.
         // setting it to 3 in case anyone on the team's computer is slower than mine.
         // the speed will vary with performance and file size.
