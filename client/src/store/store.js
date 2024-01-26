@@ -15,9 +15,23 @@
  * - - client/src/components/TopTracksComp.jsx
  * - - client/src/components/SliderComp.jsx (chosen)
  * - - client/src/components/GraphComp.jsx (tracks)
+ * - - client/src/components/ImportComp.jsx (json)
  */
 import { configureStore } from "@reduxjs/toolkit";
-import { topTracksReducer, topAlbumsReducer, topArtistsReducer, chosenReducer, jsonReducer } from '../features/slice.js';
+
+import {
+  topTracksReducer,
+  topAlbumsReducer,
+  topArtistsReducer,
+  chosenReducer,
+  jsonReducer,
+  // 2024-01-26_04-42-AM: not being used yet. made to store results of our offline query
+  // without affecting the topTracksReducer, topAlbumsReducer, topArtistsReducer stores (for now)
+  resultsReducer,
+  // 2024-01-26_04-42-AM: not being used yet. idea is to store queries here for easy access.
+  // not necessary for the app to function. might not even be preferable
+  queryReducer
+} from '../features/slice.js';
 
 const store = configureStore({
   reducer: {
@@ -26,14 +40,17 @@ const store = configureStore({
     topArtists: topArtistsReducer.reducer,
     chosen: chosenReducer,
     json: jsonReducer,
+    query: queryReducer,
+    results: resultsReducer
   },
-  // disable serializableCheck for now, which was preventing some functionality with storing json to the store
+  // 2024-01-24: disabling serializableCheck, for now, which I think was preventing some functionality with storing json to the store
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),
 });
 
+// when command+enter is pressed anywhere on the site, the state of the entire store is logged to the console.
 export const logState = (store) => {
   console.log('store:', store.getState());
   // useful when the store is small

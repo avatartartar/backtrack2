@@ -10,13 +10,11 @@
 */
 import React from 'react';
 import logo from '../../assets/logo.png';
-import ImportComp from './ImportComp.jsx';
 
 const NavbarComp = () => {
   return (
     <div className="navBar">
       <img src={logo}/>
-      <ImportComp/>
     </div>
   )
 }

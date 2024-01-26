@@ -1,50 +1,98 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import initSqlJs from 'sql.js';
 import SQLWasm from '/node_modules/sql.js/dist/sql-wasm.wasm';
 
-const SQLComp = () => {
-  const dispatch = useDispatch();
+import { saveAs } from 'file-saver';
 
-  // this is the json data from ImportComp.jsx, which gets stored in the redux store
+import DataContext from './DataContext.jsx';
+
+import { setJson } from '../features/slice.js';
+
+
+const SqlLoadComp = () => {
+
+// useContext is a hook for sharing data between components without having to explicitly pass a prop through every level of the tree.
+// it works by creating a context object and passing it to the useContext hook.
+// every component that needs access to the context object must be wrapped in the <DataContext.Provider> component.
+// we do that in SqlParentComp.jsx
+
+// in this case, it returns the sqlFile and setSqlFile values
+// which are null at first.
+// if and when a sqlFile is dropped onto the site, the setSqlFile function is invoked
+// updating the sqlFIle variable to the dropped-in file.
+// the sqlFile variable in each component that invokes it via useContext immediately receives the updated variable, i.e. the file.
+  const { sqlFile } = useContext(DataContext);
+
+
+  // this is the json data of the parsed spotify data from ImportComp.jsx, which was stored in the redux store
   const {
     data: reduxJson,
     status: status,
     error: error
   } = useSelector(state => state.json);
 
+
+  // local state to store the SQL.js database.
+  // storing in the redux store was causing an error and is
+  // not optimal bc the db is large and would be duplicated on each page refresh if stored in the redux store
+  // or so it seems
   const [db, setDb] = useState(null);
-  const [runInterval, setRunInterval] = useState([]);
-  let tableStartTime = null;
 
+
+  const dispatch = useDispatch();
+
+  // if the db file that we generate is dropped onto the site, this useEffect is invoked.
+  // it loads that file into the SQL.js database and sets the db local state to that database.
+  useEffect(() => {
+    const loadSqlFile = async () => {
+      if (sqlFile) {
+        try {
+          // initializes a SQL.js instance asynchronously using the initSqlJs function.
+          const SQL = await initSqlJs({ locateFile: () => SQLWasm });
+          // creates a new database with the sqlFile binary data
+          const db = new SQL.Database(sqlFile); // Load the binary data
+          // sets the db local state to the database
+          setDb(db);
+          // sets the isTableCreated flag to true so that the SqlResults component (in this file) is rendered
+          setIsTableCreated(true);
+        } catch (error) {
+          console.error('Error processing SQL file:', error);
+        }
+      }
+    };
+
+    loadSqlFile();
+  }, [sqlFile]); // Adds sqlFile as a dependency, i.e. the effect only runs when sqlFile changes
+
+  // an array to store the intervals in addInterval
   let intervals = [];
-
+  // addInterval:
+  // allows us to see the time it takes to run each step of the sql process.
+  // works by invoking it with a label, which counts as an interval and is logged to the console.
+  // invoke with no argument to log to the console the total time to run the process.
   const addInterval = (label) => {
     const currentDate = new Date().getTime();
     intervals = [...intervals, { time: currentDate, label }];
     const lastInterval = intervals[intervals.length - 1].time;
-
     if (label && intervals.length >= 2) {
       const durationBetweenIntervals = lastInterval - intervals[intervals.length - 2].time;
       const duration = durationBetweenIntervals > 1000 ? `${durationBetweenIntervals / 1000} seconds` : `${durationBetweenIntervals}ms`;
       console.log(`${duration} ${intervals[intervals.length - 1].label}`);
     }
-
     if (!label) {
       const firstInterval = intervals[0].time;
       const durationFromFirstToLast = (lastInterval - firstInterval) / 1000;
       console.log(`${durationFromFirstToLast} to finish Table`);
     }
-
-    setRunInterval(intervals);
   };
 
   // sets to true when the table is created
   // when true, the SqlResults component is rendered
   const [isTableCreated, setIsTableCreated] = useState(false);
 
-   const saveJsonAsFile = () => {
+  const saveJsonAsFile = () => {
     const selectedData = reduxJson
     const selectedDataBlob = new Blob([JSON.stringify(selectedData)], { type: 'application/json' });
     const selectedDataUrl = URL.createObjectURL(selectedDataBlob);
@@ -53,7 +101,7 @@ const SQLComp = () => {
     selectedDataLink.download = `${selectedData.name}.json`;
     document.body.appendChild(selectedDataLink);
     selectedDataLink.click();
-   }
+  }
 
   const makeSql = async() => {
     // Check that reduxJson is defined and has at least one element
@@ -82,7 +130,6 @@ const SQLComp = () => {
       // i.e., the names of the fields in the JSON data
       const columns = Object.keys(reduxJson[0]).join(', ');
       // Create the table using the columns variable for the field names
-      tableStartTime = Date.now();
       newDb.run(`CREATE TABLE sessions (${columns})`);
 
       let errorRecords = []; // Array to store records that cause errors
@@ -96,6 +143,7 @@ const SQLComp = () => {
 
       // Insert each json object into the table as a row
       addInterval('to create the columns');
+
       reduxJson.forEach(row => {
         rowIndex++;
         const keys = Object.keys(row);
@@ -144,11 +192,6 @@ const SQLComp = () => {
       });
       const countNotAdded = errorRecords.length + duplicateCount + nullCount;
       const rowCount = newDb.exec("SELECT COUNT(*) as count FROM sessions");
-
-
-      console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
-      console.log(rowCount[0].values[0][0], 'rows added to Table');
-      console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);;
       addInterval('to insert the rows');
       // executes a SQL query to count the rows in the sessions table
 
@@ -190,10 +233,16 @@ const SQLComp = () => {
       setDb(newDb);
       // Sets isTableCreated to true so that the SqlResults component is rendered
       setIsTableCreated(true);
-      const tableEndTime = Date.now();
 
+      // logging the duration of the table creation/population process to the console
       addInterval();
 
+      // clears the redux store of the json data, freeing up tons of memory
+      dispatch(setJson([]));
+
+      console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
+      console.log(rowCount[0].values[0][0], 'rows added to Table');
+      console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
 
     }
 
@@ -201,18 +250,28 @@ const SQLComp = () => {
       console.error(err);
     }
   };
+
   // when reduxJson changes, makeSql is called
   useEffect(() => {
     if (reduxJson && reduxJson.length > 0) {
       // saveJsonAsFile();
       addInterval('to invoke makeSql');
+      console.log('invoking makeSql');
       makeSql();
     }
   }, [reduxJson]); // Adds reduxJson as a dependency, i.e. only runs when reduxJson changes
 
+  // a function to download the SQL database as a binary file
+    const downloadSql = () => {
+      const sqlData = db.export();
+      // octet-stream means binary file type
+      const sqlBlob = new Blob([sqlData], { type: 'application/octet-stream' });
+      // asks the user where to save the file
+      saveAs(sqlBlob, 'my_spotify_history_database.sql');
+    }
+
   // a placeholder component that renders the results of the SQL query
   function ResultsTable({ columns, values }) {
-    // addInterval('ResultsTable: before return');
     const tableRef = useRef(null);
 
     useEffect(() => {
@@ -251,19 +310,8 @@ const SQLComp = () => {
     // for storing the results of the query in local state
     const [results, setResults] = useState([]);
 
-    // addInterval('SqlResults: before query');
     useEffect(() => {
-        // runs a SQL query to get the most recent 50 tracks by RÜFÜS DU SOL
-        // however, right now (2024-01-25_02-19-AM) we're only getting 16,000 records of the 160,000 total,
-        // so the results are incomplete.
-        // db.exec in sql.js. db.all in sqlite3.
-        // const res = db.exec(`
-        //   SELECT track_name, artist_name, album_name, track_uri, ts
-        //   FROM sessions
-        //   WHERE artist_name = 'RÜFÜS DU SOL'
-        //   ORDER BY ts DESC
-        //   LIMIT 50
-        // `);
+      // a query for demo purposes. gets the top 10 tracks all-time by total time played.
         const res = db.exec(`
         select
         track_name,
@@ -285,8 +333,6 @@ const SQLComp = () => {
         // storing the results in local state
         setResults(res);
     }, [db]); // Adds db as a dependency, i.e. the effect only runs when db changes
-    // addInterval('SqlResults: after query');
-    // addInterval('SqlResults: before return');
     return (
       <div>
         {/* maps over the results array and renders a ResultsTable component for each result */}
@@ -300,6 +346,22 @@ const SQLComp = () => {
   }
   return (
     <div>
+        {isTableCreated && (
+          <button
+            style={{
+              width: '500px',
+              height: '50px',
+              margin: '0 auto',
+              cursor: 'pointer',
+              border: '1px solid black',
+              padding: '8px',
+              alignSelf: 'center',
+            }}
+            onClick={downloadSql}
+          >
+            Download your Spotify History Database!
+          </button>
+        )}
         {/* if isTableCreated flag is true, passes the db prop to the <SqlResults /> component and renders it*/}
         {isTableCreated && <SqlResults db={db} />}
     </div>
@@ -307,4 +369,4 @@ const SQLComp = () => {
 
 }
 
-export default SQLComp
+export default SqlLoadComp
