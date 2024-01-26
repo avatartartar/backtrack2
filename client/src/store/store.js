@@ -27,7 +27,7 @@ const store = configureStore({
     chosen: chosenReducer,
     json: jsonReducer,
   },
-  // disable serializableCheck for now, which
+  // disable serializableCheck for now, which was preventing some functionality with storing json to the store
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,

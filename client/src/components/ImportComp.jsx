@@ -45,74 +45,56 @@ const ImportComp = () => {
 
   // Function to handle drop event
   const handleDrop = (event) => {
-    console.log('dropped');
-  event.preventDefault();
-  setIsDragging(false);
+    event.preventDefault();
+    setIsDragging(false);
 
-  const file = event.dataTransfer.files[0]; // Get the dropped file from the event
-  const reader = new FileReader(); // Create a FileReader object to read the file contents
+    const file = event.dataTransfer.files[0]; // Get the dropped file from the event
+    const reader = new FileReader(); // Create a FileReader object to read the file contents
 
-  // Array to store each json file's data
-  const jsonData = [];
-  let lastJsonData = jsonData[jsonData.length - 2];
-  reader.onload = async function () {
-    const data = reader.result; // Get the file contents from the FileReader
-    const zip = new JSZip(); // Create a JSZip object to work with the zip file
-    const contents = await zip.loadAsync(data); // Load the zip file contents asynchronously
+    // Check if the file is a zip file with the title "my_spotify_data.zip"
+    if (file.type !== 'application/zip') {
+      console.log('Invalid file format');
+      return;
+    }
+    if (file.name !== 'my_spotify_data.zip') {
+      console.log('Invalid file name. Expected "my_spotify_data.zip"');
+      return;
+    }
 
-    // Iterate through each file in the zip
-    contents.forEach(async (relativePath, zipEntry) => {
-      // Run the following code if the file ends with .json
-      if (relativePath.endsWith('.json')) {
-        const fileData = await zipEntry.async('text'); // Read the data from the zip file dropped in by the user
-        const parsedData = JSON.parse(fileData); // Parse the JSON data
-        jsonData.push(parsedData);
+    const timeDropped = Date.now();
+    console.log('Zip file dropped');
 
-      }
-    });
+    // Array to store each json file's data
+    let jsonData = [];
+    reader.onload = async function () {
+      const data = reader.result; // Get the file contents from the FileReader
+      const zip = new JSZip(); // Create a JSZip object to work with the zip file
+      const contents = await zip.loadAsync(data); // Load the zip file contents asynchronously
 
-    console.log('conversion complete');
+      // Iterate through each file in the zip
+      contents.forEach(async (relativePath, zipEntry) => {
+        // Run the following code if the file ends with .json
+        if (relativePath.endsWith('.json')) {
+          const fileData = await zipEntry.async('text'); // Read the data from the zip file dropped in by the user
+          const parsedData = JSON.parse(fileData); // Parse the JSON data
+          jsonData = jsonData.concat(parsedData);
+        }
+      });
+
+      const timeParsed = Date.now();
+      const timeElapsed = timeParsed - timeDropped;
+      console.log(`${timeElapsed}ms to parse my_spotify_data.zip`);
+
 
       setTimeout(() => {
-        lastJsonData = jsonData.slice(-2)[0];
-        const lastArray = lastJsonData.slice(-1000);
-        // const selectedData = jsonData
-        const selectedData = lastJsonData
-
-        dispatch(setJson(selectedData));
-
-        // saves the data to a json file
-        // const selectedDataBlob = new Blob([JSON.stringify(selectedData)], { type: 'application/json' });
-        // const selectedDataUrl = URL.createObjectURL(selectedDataBlob);
-        // const selectedDataLink = document.createElement('a');
-        // selectedDataLink.href = selectedDataUrl;
-        // selectedDataLink.download = `${selectedData.name}.json`;
-        // document.body.appendChild(selectedDataLink);
-        // selectedDataLink.click();
-
-        // Combine all CSV data into one file
-        // const csvFile = csvData.join('\n');
-        // const csvBlob = new Blob([csvFile], { type: 'text/csv' });
-        // const csvUrl = URL.createObjectURL(csvBlob);
-        // const csvLink = document.createElement('a');
-        // csvLink.href = csvUrl;
-        // csvLink.download = 'data.csv';
-        // document.body.appendChild(csvLink);
-        // csvLink.click();
-
-        // Repeat the process for the last CSV file
-        // const lastCsvBlob = new Blob([lastCsv], { type: 'text/csv' });
-        // const lastCsvUrl = URL.createObjectURL(lastCsvBlob);
-        // const lastCsvLink = document.createElement('a');
-        // lastCsvLink.href = lastCsvUrl;
-        // lastCsvLink.download = 'last_data.csv';
-        // document.body.appendChild(lastCsvLink);
-        // lastCsvLink.click();
+        // const lastArray = jsonData.slice(-1000);
+        console.log('dispatching json data to Redux store');
+        dispatch(setJson(jsonData));
       }, 3000);
     };
 
-    reader.readAsArrayBuffer(file);
-  };
+      reader.readAsArrayBuffer(file);
+    };
 
   return (
     <div

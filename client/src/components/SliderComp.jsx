@@ -67,36 +67,42 @@ const SliderComp = () => {
   // functionality for slider animation on load: All of this text/animation will disappear except
   // for slider and header for slider after animation completes.
   useEffect(() => {
+    // commenting out portions are to make testing easier during development
     const tl = gsap.timeline({
       defaults: {ease: "power1.out"},
       onComplete: () => {
-        gsap.to(".hide", {duration: 2, opacity: 0, y: -600, stagger: 0.05})
-        gsap.from(".sliderContainer", {duration: 2, y: 0, stagger: 0.05}, "+5")
-        gsap.to(".sliderContainer", {duration: 2, y: -400})
+        // gsap.to(".hide", {duration: 2, opacity: 0, y: -600, stagger: 0.05})
+        // gsap.from(".sliderContainer", {duration: 2, y: 0, stagger: 0.05}, "+5")
+        // the movement of the slider container
+        // gsap.to(".sliderContainer", {duration: 2, y: -400})
         gsap.to("#landingAndSticky", {
           duration: 2, height: 150, padding: '30px', marginTop: '0px'})
-        gsap.to('#landingAndSticky', { duration: 2, background: '#07004e' }, "+3")
+          // the background color behind the "Your ... Backtrack" and the slider
+        gsap.to('#landingAndSticky', { duration: 0, background: '#07004e' }, )
+        // the slider
         gsap.to(".slider", {duration: 2, width: '70%', opacity: 1, ease: 'power3.out'})
       }
     })
 
-    const headings = document.querySelectorAll(".landing")
-    gsap.set(headings, {y: "100%", opacity: 0});
+
+    // const headings = document.querySelectorAll(".landing")
+    // gsap.set(headings, {y: "100%", opacity: 0});
     gsap.set(".slider", {opacity: 0})
     gsap.set('.currentYear', {duration: 0.02, ease: 'in'})
 
-    headings.forEach((heading, index) => {
-      tl.to(heading, {y: "0%", opacity: 1, duration: 2}, index * 0.75);
-    })
+    // headings.forEach((heading, index) => {
+    //   tl.to(heading, {y: "0%", opacity: 1, duration: 2}, index * 0.75);
+    // })
   }, [])
 
   return (
     <div id="landingAndSticky">
       {/* hiding the below name now, as a quick attempt to delete it messed up the spacing of the slider container*/}
-      <h1 className="landing hide" style={{visibility: 'hidden'}}>Keith,</h1>
-      <h1 className="landing hide">In your Spotify</h1>
-      <h1 className="landing hide">Adventure,</h1>
-      <h1 className="landing hide">Discover...</h1>
+      {/* <h1 className="landing hide" style={{visibility: 'hidden'}}>Keith,</h1>
+      {/* hiding to make testing easier}
+      <h1 className="landing hide" style={{visibility: 'hidden'}}>In your Spotify</h1>
+      <h1 className="landing hide" style={{visibility: 'hidden'}}>Adventure,</h1>
+      <h1 className="landing hide" style={{visibility: 'hidden'}}>Discover...</h1> */}
       <div className="landing sliderContainer">
         {/* the ternary operator below allows us to use the 2024 value in the slider while displaying the text 'all-time' */}
         <h1 className="sliderSubContainer">Your { year != 2024 ? year : 'all-time' } backtrack</h1>
