@@ -56,6 +56,13 @@ module.exports = (env, argv) => {
         // Specifies file extensions ('.js' and '.jsx') that webpack will resolve when importing files.
         resolve: {
             extensions: ['.js', '.jsx'],
+            fallback: {
+                "crypto": require.resolve("crypto-browserify"),
+                "stream": require.resolve("stream-browserify"),
+                "fs": require.resolve("browserify-fs"),
+                "path": require.resolve("path-browserify"),
+                "util": require.resolve("util/")
+            }
         },
         stats: {
             errorDetails: true,
@@ -80,6 +87,10 @@ module.exports = (env, argv) => {
                     test: /\.(png|svg|jpg|jpeg|gif)$/i,
                     type: 'asset/resource',
                 },
+                {
+                    test: /\.wasm$/,
+                    type: 'asset/resource',
+                }
             ],
         },
         plugins: [

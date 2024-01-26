@@ -37,6 +37,9 @@ const initialState = {
   error: "",
 };
 
+
+
+
 const chosenSlice = createSlice({
   name: 'chosen',
   initialState: {
@@ -57,6 +60,10 @@ const chosenSlice = createSlice({
     },
   },
 });
+
+
+const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
+const { setYear, setChosenTrack } = chosenActions;
 
 const dataSlice = (endpoint, filter) => {
 
@@ -121,8 +128,84 @@ const { reducer: topTracksReducer, actions: fetchTopTracks } = dataSlice('tracks
 const { reducer: topAlbumsReducer, actions: fetchTopAlbums } = dataSlice('albums', 'ByYear?year=');
 const { reducer: topArtistsReducer, actions: fetchTopArtists } = dataSlice('artists', 'ByYear?year=');
 
-const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
-const { setYear, setChosenTrack } = chosenActions;
+const jsonSlice = createSlice({
+  name: 'json',
+  initialState: {
+    data: [],
+    status: "idle",
+    error: ""
+  },
+  reducers: {
+    setJson: (state, action) => {
+      state.data = action.payload;
+    }
+  },
+});
+
+
+
+const { reducer: jsonReducer, actions: jsonActions } = jsonSlice;
+const { setJson } = jsonActions;
+
+const querySlice = createSlice({
+  name: 'query',
+  initialState: {
+    queries: {
+      tracks:{
+        allTime: '',
+        byYear: ''
+      },
+      albums:{
+        allTime: '',
+        byYear: ''
+      },
+      artists:{
+        allTime: '',
+        byYear: ''
+      }
+    },
+    status: "idle",
+    error: ""
+  },
+  reducers: {
+    setQuery: (state, action) => {
+      state.queries[action.meta.arg] = action.payload;
+    }
+  },
+});
+
+const { reducer: queryReducer, actions: queryActions } = querySlice;
+const { setQuery } = queryActions;
+
+
+const resultsSlice = createSlice({
+ name: 'results',
+ initialState: {
+   results: {
+      tracks: {
+        allTime: [],
+        byYear: []
+      },
+      albums: {
+        allTime: [],
+        byYear: []
+      },
+      artists: {
+        allTime: [],
+        byYear: []
+      }
+   }
+  },
+  reducers: {
+    setResults: (state, action) => {
+      state.results[action.meta.arg] = action.payload;
+    }
+  },
+});
+
+const { reducer: resultsReducer, actions: resultsActions } = resultsSlice;
+const { setResults } = resultsActions;
+
 
 export {
   fetchTopTracks,
@@ -133,5 +216,11 @@ export {
   topArtistsReducer,
   setYear,
   setChosenTrack,
-  chosenReducer
+  chosenReducer,
+  jsonReducer,
+  setJson,
+  queryReducer,
+  setQuery,
+  resultsReducer,
+  setResults
 };
