@@ -1,5 +1,6 @@
 // DataContext.jsx
 import React from 'react';
+import db from './db.js'; // Dexie instance
 
 // useContext is a hook for sharing data between components without having to explicitly pass a prop through every level of the tree.
 // it works by creating a context object and passing it to the useContext hook.
@@ -16,6 +17,7 @@ const DataContext = React.createContext(
   { sqlFile: null, setSqlFile: () => {},
     db: null, setDb: () => {},
     dbBool: false, setDbBool: () => {},
+    
   }
 );
 

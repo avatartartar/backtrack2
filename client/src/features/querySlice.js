@@ -37,6 +37,7 @@ const querySlice = createSlice({
         allTime: '',
         byYear: ''
       },
+
     status: "idle",
     error: ""
   },

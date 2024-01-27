@@ -49,7 +49,12 @@ const SqlLoadComp = () => {
   // not optimal bc the db is large and would be duplicated on each page refresh if stored in the redux store
   // or so it seems
 
-
+  // const binaryArray = newDb.export();
+  // db.userDatabases.add({ data: binaryArray }).then(() => {
+  //   console.log('Database stored in IndexedDB using Dexie');
+  // }).catch((error) => {
+  //   console.error('Error storing database:', error);
+  // });
 
   const dispatch = useDispatch();
 
@@ -242,7 +247,6 @@ const SqlLoadComp = () => {
       setDb(newDb)
       setDbBool(true);
       dispatch(setJson([]));
-
 
       // logging the duration of the table creation/population process to the console
       // addInterval();

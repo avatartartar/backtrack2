@@ -28,6 +28,7 @@ import TopTracksComp from '../components/TopTracksComp.jsx';
 import YearSliderComp from '../components/SliderComp.jsx';
 // import SqlLoadComp from '../components/SqlLoadComp.jsx';
 import SqlParentComp from '../components/SqlParentComp.jsx';
+import LandingComp from '../components/LandingComp.jsx';
 
 import '../../styles/index.scss';
 
@@ -35,6 +36,7 @@ export function App() {
 
   return (
     <>
+      <LandingComp/>
       <LogStateComp/>
       <NavbarComp/>
       <YearSliderComp/>

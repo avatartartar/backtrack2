@@ -1,23 +1,14 @@
 // SqlResultsComp.js
 // not being used atm 2024-01-26_04-37-AM
 
-import React, { useEffect, useContext, useRef, useCallback, useState } from 'react';
+import React, { useEffect, useContext, useRef, useState } from 'react';
 import DataContext from './DataContext.jsx';
 import { useDispatch, useSelector } from "react-redux";
 
 import { setResults } from '../features/slice.js';
 
 function SqlResultsComp() {
-  const dispatch = useDispatch();
 
-  // a place to store and fetch queries themselves
-  const { tracks, albums, artists } = useSelector(state => state.query);
-  const tracksAllTimeQuery = tracks.allTime;
-  // const albumsAllTimeQuery = albums.allTime;
-  // const artistsAllTimeQuery = artists.allTime;
-
-  // a place to store and fetch results of queries
-  const results = useSelector((state) => state.results.recent);
 
   // getting the db and a boolen of it from the shared context with the other sqlComponents
   const { db, dbBool } = useContext(DataContext);
@@ -31,70 +22,97 @@ function SqlResultsComp() {
     saveAs(sqlBlob, 'my_spotify_history_database.sql');
   }
 
+  const dispatch = useDispatch();
+
+  // a place to store and fetch queries themselves
+  const { tracks, albums, artists } = useSelector(state => state.query);
+  const tracksAllTimeQuery = tracks.allTime;
+  // const albumsAllTimeQuery = albums.allTime;
+  // const artistsAllTimeQuery = artists.allTime;
+
+  // a place to store and fetch results of queries
+  const results = useSelector((state) => state.results.recent);
+  const [lastLocalQuery, setLastLocalQuery] = useState('');
+
   function ResultsTable({ columns, values }) {
     console.log('resultsTable is rendering');
 
     return (
-        <table style={{ width: '100%', color: 'black', borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', color: 'white', backgroundColor: 'black', borderCollapse: 'collapse' }}>
             <thead>
-                <tr>
-                    {columns.map((column, index) => (
-                        <th key={index} style={{ border: '1px solid black', padding: '8px' }}>{column}</th>
-                    ))}
-                </tr>
+                <tr>{columns.map((column, index) => (
+                        <th key={index} style={{ border: '1px solid white', padding: '8px' }}>{column}</th>
+                    ))}</tr>
             </thead>
             <tbody>
                 {values.map((value, index) => (
-                    <tr key={index}>
-                        {value.map((cell, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '8px' }}>{cell}</th>
-                        ))}
-                    </tr>
+                    <tr key={index}>{value.map((cell, index) => (
+                            <th key={index} style={{ border: '1px solid white', padding: '8px' }}>{cell}</th>
+                        ))}</tr>
                 ))}
             </tbody>
         </table>
     );
-  }
+    }
+function SqlResults() {
+    const [localQuery, setLocalQuery] = useState('');
 
-  function SqlResults() {
+
     // a function to execute the query and store the results in the store
     const executeQuery = () => {
-        const res = db.exec(tracksAllTimeQuery);
-        // not yet built out. stores in the recent array at the moment
-        dispatch(setResults(res))
+        try {
+            setLastLocalQuery(localQuery);
+            const res = db.exec(localQuery);
+            dispatch(setResults(res));
+
+        } catch (error) {
+            console.error('Error executing query:', error);
+            alert('Error executing query. Check the console for more details.');
+        }
     };
 
     const executeRef = useRef(null);
-    // scrolls to the execute button when that component mounts (which is when the db is loaded)
+    // // scrolls to the execute button when that component mounts (which is when the db is loaded)
     useEffect(() => {
         executeRef.current.scrollIntoView({ behavior: 'smooth' });
     }, []);
 
     return (
-        <div>
+        <div ref={executeRef} >
+            <textarea
+        value={localQuery}
+        onChange={(e) => setLocalQuery(e.target.value)}
+        style={{ width: '100%', height: '500px', marginBottom: '10px', color: 'white', backgroundColor: 'black'}}
+        placeholder="Type your SQL query here"
+            />
+
             <button
-                ref={executeRef}
                 style={{
                     width: '500px',
                     height: '50px',
                     margin: '0 auto',
                     cursor: 'pointer',
-                    border: '1px solid black',
+                    border: '1px solid',
                     padding: '8px',
                     alignSelf: 'center',
+                    color: 'white',
+                    backgroundColor: 'black'
                 }}
                 onClick={executeQuery}
             >
                 Execute Query
             </button>
-            {/* we need this to conditionally render based upon whether there has been any change to results,
-            otherwise it tries to map an empty array and errors */}
+            {lastLocalQuery && (
+                <div style={{ marginTop: '0 auto', color: 'white', backgroundColor: 'black', padding: '8px' }}>
+                <strong>Query:</strong> {lastLocalQuery}
+                </div>
+            )}
             {results && results.map((result, index) => (
                 <ResultsTable key={index} columns={result.columns} values={result.values} />
             ))}
         </div>
     );
-  }
+}
 
   return (
       <div>
@@ -105,9 +123,11 @@ function SqlResultsComp() {
                       height: '50px',
                       margin: '0 auto',
                       cursor: 'pointer',
-                      border: '1px solid black',
+                      border: '1px solid',
                       padding: '8px',
                       alignSelf: 'center',
+                      color: 'white',
+                      backgroundColor: 'black'
                   }}
                   onClick={downloadSql}
               >
