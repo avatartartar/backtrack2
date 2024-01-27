@@ -29,17 +29,6 @@
  */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const initialState = {
-  arrData: [],
-  objData: {},
-  year: "",
-  status: "idle",
-  error: "",
-};
-
-
-
-
 const chosenSlice = createSlice({
   name: 'chosen',
   initialState: {
@@ -66,9 +55,7 @@ const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
 const { setYear, setChosenTrack } = chosenActions;
 
 const dataSlice = (endpoint, filter) => {
-
   const actions = createAsyncThunk(
-
     `fetch/${endpoint}`,
     async (year) => {
       let url = `/${endpoint}/`;
@@ -86,7 +73,13 @@ const dataSlice = (endpoint, filter) => {
 
   const reducer = createSlice({
     name: endpoint,
-    initialState,
+    initialState:{
+      arrData: [],
+      objData: {},
+      year: "",
+      status: "idle",
+      error: "",
+    },
     // extraReducers
     // - Defines additional reducer functions for a slice.
     // - Allows defining reducers for async actions (like below) in the current slice
@@ -143,7 +136,6 @@ const jsonSlice = createSlice({
 });
 
 
-
 const { reducer: jsonReducer, actions: jsonActions } = jsonSlice;
 const { setJson } = jsonActions;
 
@@ -179,9 +171,11 @@ const { setQuery } = queryActions;
 
 
 const resultsSlice = createSlice({
- name: 'results',
- initialState: {
-   results: {
+  name: 'results',
+  initialState: {
+  all:[],
+  recent: {},
+    results: {
       tracks: {
         allTime: [],
         byYear: []
@@ -194,11 +188,17 @@ const resultsSlice = createSlice({
         allTime: [],
         byYear: []
       }
-   }
+    }
   },
   reducers: {
     setResults: (state, action) => {
-      state.results[action.meta.arg] = action.payload;
+      console.log('setResults action.payload:', action.payload);
+      state.recent = action.payload;
+      // state.all.push(action.payload);
+      // if (action.meta.arg){
+      // state.results[action.meta.arg][action.meta.arg2] = action.payload;
+      // // state.results[action.meta.arg] = action.payload;
+      // }
     }
   },
 });

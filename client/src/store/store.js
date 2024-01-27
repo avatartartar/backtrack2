@@ -30,7 +30,7 @@ import {
   resultsReducer,
   // 2024-01-26_04-42-AM: not being used yet. idea is to store queries here for easy access.
   // not necessary for the app to function. might not even be preferable
-  queryReducer
+  // queryReducer
 } from '../features/slice.js';
 
 const store = configureStore({
@@ -40,8 +40,8 @@ const store = configureStore({
     topArtists: topArtistsReducer.reducer,
     chosen: chosenReducer,
     json: jsonReducer,
-    query: queryReducer,
-    results: resultsReducer
+    results: resultsReducer,
+    // query: queryReducer,
   },
   // 2024-01-24: disabling serializableCheck, for now, which I think was preventing some functionality with storing json to the store
   middleware: (getDefaultMiddleware) =>

@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux';
 import JSZip from 'jszip'; // Importing JSZip library for working with zip files
 import DataContext from './DataContext.jsx';
 
-import { setJson } from '../features/slice.js';// import store from '../store/store.js';
+import { setJson } from '../features/slice.js';
 
 const ImportComp = () => {
   const { setSqlFile } = useContext(DataContext);

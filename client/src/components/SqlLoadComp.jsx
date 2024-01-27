@@ -23,7 +23,17 @@ const SqlLoadComp = () => {
 // if and when a sqlFile is dropped onto the site, the setSqlFile function is invoked
 // updating the sqlFIle variable to the dropped-in file.
 // the sqlFile variable in each component that invokes it via useContext immediately receives the updated variable, i.e. the file.
-  const { sqlFile } = useContext(DataContext);
+  const {
+    sqlFile,
+    db,
+    setDb,
+    dbBool,
+    setDbBool,
+    // setResults
+  } = useContext(DataContext);
+
+  // const { results } = useContext(DataContext);
+  // const { setResults } = useContext(DataContext);
 
 
   // this is the json data of the parsed spotify data from ImportComp.jsx, which was stored in the redux store
@@ -38,7 +48,7 @@ const SqlLoadComp = () => {
   // storing in the redux store was causing an error and is
   // not optimal bc the db is large and would be duplicated on each page refresh if stored in the redux store
   // or so it seems
-  const [db, setDb] = useState(null);
+
 
 
   const dispatch = useDispatch();
@@ -52,11 +62,12 @@ const SqlLoadComp = () => {
           // initializes a SQL.js instance asynchronously using the initSqlJs function.
           const SQL = await initSqlJs({ locateFile: () => SQLWasm });
           // creates a new database with the sqlFile binary data
-          const db = new SQL.Database(sqlFile); // Load the binary data
+          const newDb = new SQL.Database(sqlFile); // Load the binary data
           // sets the db local state to the database
-          setDb(db);
-          // sets the isTableCreated flag to true so that the SqlResults component (in this file) is rendered
-          setIsTableCreated(true);
+          setDb(newDb)
+          setDbBool(true);
+          console.log('db set in SqlLoadComp.jsx');
+          dispatch(setJson([]));
         } catch (error) {
           console.error('Error processing SQL file:', error);
         }
@@ -90,7 +101,6 @@ const SqlLoadComp = () => {
 
   // sets to true when the table is created
   // when true, the SqlResults component is rendered
-  const [isTableCreated, setIsTableCreated] = useState(false);
 
   const saveJsonAsFile = () => {
     const selectedData = reduxJson
@@ -230,15 +240,17 @@ const SqlLoadComp = () => {
       }
       addInterval('to rename the columns');
       // Updates the db local state after inserting the data and renaming the columns
-      setDb(newDb);
-      // Sets isTableCreated to true so that the SqlResults component is rendered
-      setIsTableCreated(true);
+      setDb(newDb)
+      setDbBool(true);
+      console.log('db set');
+      dispatch(setJson([]));
+
 
       // logging the duration of the table creation/population process to the console
       addInterval();
 
       // clears the redux store of the json data, freeing up tons of memory
-      dispatch(setJson([]));
+
 
       console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
       console.log(rowCount[0].values[0][0], 'rows added to Table');
@@ -246,127 +258,23 @@ const SqlLoadComp = () => {
 
     }
 
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // when reduxJson changes, makeSql is called
-  useEffect(() => {
-    if (reduxJson && reduxJson.length > 0) {
-      // saveJsonAsFile();
-      addInterval('to invoke makeSql');
-      console.log('invoking makeSql');
-      makeSql();
-    }
-  }, [reduxJson]); // Adds reduxJson as a dependency, i.e. only runs when reduxJson changes
-
-  // a function to download the SQL database as a binary file
-    const downloadSql = () => {
-      const sqlData = db.export();
-      // octet-stream means binary file type
-      const sqlBlob = new Blob([sqlData], { type: 'application/octet-stream' });
-      // asks the user where to save the file
-      saveAs(sqlBlob, 'my_spotify_history_database.sql');
-    }
-
-  // a placeholder component that renders the results of the SQL query
-  function ResultsTable({ columns, values }) {
-    const tableRef = useRef(null);
-
-    useEffect(() => {
-      tableRef.current.scrollIntoView({ behavior: 'smooth' });
-    }, []);
-
-    return (
-      // `border-collapse`: specifies whether a table's borders should be collapsed into a single border or separated
-      <table ref={tableRef} style={{ width: '100%', color: 'black', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            {/* maps over the columns array and renders a table header for each column */}
-            {columns.map((column, index) => (
-              <th key={index} style={{ border: '1px solid black', padding: '8px' }}>{column}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {/* maps over the values array and renders a table row for each row of data */}
-          {values.map((value, index) => (
-            <tr key={index}>
-              {value.map((cell, index) => (
-              <th key={index} style={{ border: '1px solid black', padding: '8px' }}>{cell}</th>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
+  } catch (err) {
+    console.error(err);
   }
+};
 
-  // a random query and the results rendered to test/demo
-  // destructuring the db prop directly from the props object passed in.
-  function SqlResults({ db }) {
-
-    // for storing the results of the query in local state
-    const [results, setResults] = useState([]);
-
-    useEffect(() => {
-      // a query for demo purposes. gets the top 10 tracks all-time by total time played.
-        const res = db.exec(`
-        select
-        track_name,
-        artist_name,
-        sum(ms_played) / 3600000 as total_hours_played,
-        sum(ms_played) / 86400000 as total_days_played,
-        sum(ms_played) as total_ms_played
-      from
-        sessions
-      where
-       artist_name is not null
-      group by
-        track_name,
-        artist_name
-      order by
-        total_ms_played desc
-      limit
-        10`);
-        // storing the results in local state
-        setResults(res);
-    }, [db]); // Adds db as a dependency, i.e. the effect only runs when db changes
-    return (
-      <div>
-        {/* maps over the results array and renders a ResultsTable component for each result */}
-        {results.map((result, index) => (
-          // the ResultsTable component is passed the columns and values props
-          <ResultsTable key={index} columns={result.columns} values={result.values} />
-        ))}
-      </div>
-    );
-
+// when reduxJson changes, makeSql is called
+useEffect(() => {
+  if (reduxJson && reduxJson.length > 0) {
+    // saveJsonAsFile();
+    addInterval('to invoke makeSql');
+    console.log('invoking makeSql');
+    makeSql();
   }
-  return (
-    <div>
-        {isTableCreated && (
-          <button
-            style={{
-              width: '500px',
-              height: '50px',
-              margin: '0 auto',
-              cursor: 'pointer',
-              border: '1px solid black',
-              padding: '8px',
-              alignSelf: 'center',
-            }}
-            onClick={downloadSql}
-          >
-            Download your Spotify History Database!
-          </button>
-        )}
-        {/* if isTableCreated flag is true, passes the db prop to the <SqlResults /> component and renders it*/}
-        {isTableCreated && <SqlResults db={db} />}
-    </div>
-  );
+}, [reduxJson]); // Adds reduxJson as a dependency, i.e. only runs when reduxJson changes
 
+
+  return null;
 }
 
 export default SqlLoadComp
