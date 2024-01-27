@@ -27,6 +27,11 @@ const SliderComp = () => {
   const dispatch = useDispatch();
   const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
 
+  useEffect(() => {
+    // Scroll to the top of the page on component mount
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const fetchData = () => {
     // the below .then on the dispatch then matching the fulfilled of dispatch to action allows us to wait
     // for the fetchTopTracks to complete before dispatching the chosenTrack.
