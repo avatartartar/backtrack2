@@ -28,10 +28,9 @@ import {
   // 2024-01-26_04-42-AM: not being used yet. made to store results of our offline query
   // without affecting the topTracksReducer, topAlbumsReducer, topArtistsReducer stores (for now)
   resultsReducer,
-  // 2024-01-26_04-42-AM: not being used yet. idea is to store queries here for easy access.
-  // not necessary for the app to function. might not even be preferable
-  // queryReducer
 } from '../features/slice.js';
+
+import { queryReducer } from '../features/querySlice.js';
 
 const store = configureStore({
   reducer: {
@@ -41,7 +40,7 @@ const store = configureStore({
     chosen: chosenReducer,
     json: jsonReducer,
     results: resultsReducer,
-    // query: queryReducer,
+    query: queryReducer,
   },
   // 2024-01-24: disabling serializableCheck, for now, which I think was preventing some functionality with storing json to the store
   middleware: (getDefaultMiddleware) =>

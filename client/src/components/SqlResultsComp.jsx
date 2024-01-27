@@ -9,11 +9,17 @@ import { setResults } from '../features/slice.js';
 
 function SqlResultsComp() {
   const dispatch = useDispatch();
+
+  // a place to store and fetch queries themselves
+  const { tracks, albums, artists } = useSelector(state => state.query);
+  const tracksAllTimeQuery = tracks.allTime;
+  // const albumsAllTimeQuery = albums.allTime;
+  // const artistsAllTimeQuery = artists.allTime;
+
+  // a place to store and fetch results of queries
   const results = useSelector((state) => state.results.recent);
-  const [ localResults, setLocalResults ] = useState(null);
-  const [showResults, setShowResults] = useState(false); // New state to control the display of results
 
-
+  // getting the db and a boolen of it from the shared context with the other sqlComponents
   const { db, dbBool } = useContext(DataContext);
 
   // a function to download the SQL database as a binary file
@@ -26,17 +32,10 @@ function SqlResultsComp() {
   }
 
   function ResultsTable({ columns, values }) {
-    const resultsRef = useRef(null);
     console.log('resultsTable is rendering');
-    console.log('columns: ', columns);
-    console.log('values: ', values);
-
-    useEffect(() => {
-        resultsRef.current.scrollIntoView({ behavior: 'smooth' });
-    }, []);
 
     return (
-        <table ref={resultsRef} style={{ width: '100%', color: 'black', borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', color: 'black', borderCollapse: 'collapse' }}>
             <thead>
                 <tr>
                     {columns.map((column, index) => (
@@ -58,39 +57,15 @@ function SqlResultsComp() {
   }
 
   function SqlResults() {
-    const executeQuery = async () => {
-        console.log('executeQuery in SqlResultsComp.jsx is running');
-        const res = await db.exec(`
-            select
-            track_name,
-            artist_name,
-            sum(ms_played) / 3600000 as total_hours_played,
-            sum(ms_played) / 86400000 as total_days_played,
-            sum(ms_played) as total_ms_played
-            from
-            sessions
-            where
-            artist_name is not null
-            group by
-            track_name,
-            artist_name
-            order by
-            total_ms_played desc
-            limit
-            10`
-        );
-        console.log('res: ', res);
-        setLocalResults(res);
+    // a function to execute the query and store the results in the store
+    const executeQuery = () => {
+        const res = db.exec(tracksAllTimeQuery);
+        // not yet built out. stores in the recent array at the moment
         dispatch(setResults(res))
-        setShowResults(true); // Set to true to show results after query execution
-        // .then(() => {
-        //   console.log('dispatched results to store');
-        // }
-        // );
     };
 
     const executeRef = useRef(null);
-
+    // scrolls to the execute button when that component mounts (which is when the db is loaded)
     useEffect(() => {
         executeRef.current.scrollIntoView({ behavior: 'smooth' });
     }, []);
@@ -112,7 +87,9 @@ function SqlResultsComp() {
             >
                 Execute Query
             </button>
-            {showResults && results.map((result, index) => (
+            {/* we need this to conditionally render based upon whether there has been any change to results,
+            otherwise it tries to map an empty array and errors */}
+            {results && results.map((result, index) => (
                 <ResultsTable key={index} columns={result.columns} values={result.values} />
             ))}
         </div>
@@ -121,7 +98,7 @@ function SqlResultsComp() {
 
   return (
       <div>
-          {dbBool && (
+          {db && (
               <button
                   style={{
                       width: '500px',
@@ -137,7 +114,7 @@ function SqlResultsComp() {
                   Download your Spotify History Database!
               </button>
           )}
-          {dbBool && <SqlResults />}
+          {db && <SqlResults />}
       </div>
   );
               }

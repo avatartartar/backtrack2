@@ -33,7 +33,7 @@ const chosenSlice = createSlice({
   name: 'chosen',
   initialState: {
     year: 2024,
-    defaultYear: 'all-time',
+    defaultYear: 'AllTime',
     track: {},
     status: "idle",
     error: ""
@@ -49,7 +49,6 @@ const chosenSlice = createSlice({
     },
   },
 });
-
 
 const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
 const { setYear, setChosenTrack } = chosenActions;
@@ -97,9 +96,9 @@ const dataSlice = (endpoint, filter) => {
         .addCase(actions.fulfilled, (state, action) => {
           state.status = "succeeded";
           if (action.meta.arg === 2024) {
-            state.year = "all-time";
+            state.year = "AllTime";
             state.arrData = action.payload;
-            state.objData["all-time"] = action.payload;
+            state.objData["AllTime"] = action.payload;
          }
           else{
             state.year = action.meta.arg;
@@ -139,42 +138,12 @@ const jsonSlice = createSlice({
 const { reducer: jsonReducer, actions: jsonActions } = jsonSlice;
 const { setJson } = jsonActions;
 
-const querySlice = createSlice({
-  name: 'query',
-  initialState: {
-    queries: {
-      tracks:{
-        allTime: '',
-        byYear: ''
-      },
-      albums:{
-        allTime: '',
-        byYear: ''
-      },
-      artists:{
-        allTime: '',
-        byYear: ''
-      }
-    },
-    status: "idle",
-    error: ""
-  },
-  reducers: {
-    setQuery: (state, action) => {
-      state.queries[action.meta.arg] = action.payload;
-    }
-  },
-});
-
-const { reducer: queryReducer, actions: queryActions } = querySlice;
-const { setQuery } = queryActions;
-
 
 const resultsSlice = createSlice({
   name: 'results',
   initialState: {
   all:[],
-  recent: {},
+  recent: [],
     results: {
       tracks: {
         allTime: [],
@@ -219,8 +188,6 @@ export {
   chosenReducer,
   jsonReducer,
   setJson,
-  queryReducer,
-  setQuery,
   resultsReducer,
   setResults
 };

@@ -78,26 +78,26 @@ const SqlLoadComp = () => {
   }, [sqlFile]); // Adds sqlFile as a dependency, i.e. the effect only runs when sqlFile changes
 
   // an array to store the intervals in addInterval
-  let intervals = [];
+  // let intervals = [];
   // addInterval:
   // allows us to see the time it takes to run each step of the sql process.
   // works by invoking it with a label, which counts as an interval and is logged to the console.
   // invoke with no argument to log to the console the total time to run the process.
-  const addInterval = (label) => {
-    const currentDate = new Date().getTime();
-    intervals = [...intervals, { time: currentDate, label }];
-    const lastInterval = intervals[intervals.length - 1].time;
-    if (label && intervals.length >= 2) {
-      const durationBetweenIntervals = lastInterval - intervals[intervals.length - 2].time;
-      const duration = durationBetweenIntervals > 1000 ? `${durationBetweenIntervals / 1000} seconds` : `${durationBetweenIntervals}ms`;
-      console.log(`${duration} ${intervals[intervals.length - 1].label}`);
-    }
-    if (!label) {
-      const firstInterval = intervals[0].time;
-      const durationFromFirstToLast = (lastInterval - firstInterval) / 1000;
-      console.log(`${durationFromFirstToLast} to finish Table`);
-    }
-  };
+  // const addInterval = (label) => {
+  //   const currentDate = new Date().getTime();
+  //   intervals = [...intervals, { time: currentDate, label }];
+  //   const lastInterval = intervals[intervals.length - 1].time;
+  //   if (label && intervals.length >= 2) {
+  //     const durationBetweenIntervals = lastInterval - intervals[intervals.length - 2].time;
+  //     const duration = durationBetweenIntervals > 1000 ? `${durationBetweenIntervals / 1000} seconds` : `${durationBetweenIntervals}ms`;
+  //     console.log(`${duration} ${intervals[intervals.length - 1].label}`);
+  //   }
+  //   if (!label) {
+  //     const firstInterval = intervals[0].time;
+  //     const durationFromFirstToLast = (lastInterval - firstInterval) / 1000;
+  //     console.log(`${durationFromFirstToLast} to finish Table`);
+  //   }
+  // };
 
   // sets to true when the table is created
   // when true, the SqlResults component is rendered
@@ -128,11 +128,11 @@ const SqlLoadComp = () => {
       // the SQLWasm data file is provided to us by the sql.js library.
       // and is needed to instantiate the SQL.js object.
       const SQL = await initSqlJs({ locateFile: () => SQLWasm });
-      addInterval('to load the wasm file');
+      // addInterval('to load the wasm file');
 
       // creates a new empty database
       const newDb = new SQL.Database();
-      addInterval('to initialize the sql database');
+      // addInterval('to initialize the sql database');
 
         // Check that reduxJson is defined and has at least one element
     if (reduxJson && reduxJson.length > 0) {
@@ -152,7 +152,7 @@ const SqlLoadComp = () => {
       let nullCount = 0; // Variable to store the number of rows with null values
 
       // Insert each json object into the table as a row
-      addInterval('to create the columns');
+      // addInterval('to create the columns');
 
       reduxJson.forEach(row => {
         rowIndex++;
@@ -202,7 +202,7 @@ const SqlLoadComp = () => {
       });
       const countNotAdded = errorRecords.length + duplicateCount + nullCount;
       const rowCount = newDb.exec("SELECT COUNT(*) as count FROM sessions");
-      addInterval('to insert the rows');
+      // addInterval('to insert the rows');
       // executes a SQL query to count the rows in the sessions table
 
       // creating a map to rename the columns
@@ -234,27 +234,25 @@ const SqlLoadComp = () => {
         try {
           newDb.run(`ALTER TABLE sessions RENAME COLUMN ${key} TO ${fieldMap[key]}`);
         } catch (error) {
-          console.error(`Error renaming column ${key} to ${fieldMap[key]}`);
-          console.error(error);
+          console.error(`Error renaming column ${key} to ${fieldMap[key]}`, error);
         }
       }
-      addInterval('to rename the columns');
+      // addInterval('to rename the columns');
       // Updates the db local state after inserting the data and renaming the columns
       setDb(newDb)
       setDbBool(true);
-      console.log('db set');
       dispatch(setJson([]));
 
 
       // logging the duration of the table creation/population process to the console
-      addInterval();
+      // addInterval();
 
       // clears the redux store of the json data, freeing up tons of memory
 
 
-      console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
-      console.log(rowCount[0].values[0][0], 'rows added to Table');
-      console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
+      // console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
+      // console.log(rowCount[0].values[0][0], 'rows added to Table');
+      // console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
 
     }
 
@@ -263,11 +261,11 @@ const SqlLoadComp = () => {
   }
 };
 
-// when reduxJson changes, makeSql is called
+// if/when reduxJson changes, makeSql is called
 useEffect(() => {
   if (reduxJson && reduxJson.length > 0) {
     // saveJsonAsFile();
-    addInterval('to invoke makeSql');
+    // addInterval('to invoke makeSql');
     console.log('invoking makeSql');
     makeSql();
   }
