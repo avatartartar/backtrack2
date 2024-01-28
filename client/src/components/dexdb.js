@@ -35,8 +35,44 @@ dexdb.version(1).stores({
       sesh_day,
       sesh_month
     `,
+    tracks:`
+      ++id,
+      track_uri,
+      track_name,
+      artist_name,
+      album_name,
+      explicit,
+      popularity,
+      duration_ms,
+      track_number,
+      disc_number,
+      album_uri,
+      album_id,
+      album_release_date,
+      album_name,
+      album_images
+    `,
+    artists:`
+      ++id,
+      artist_uri,
+      artist_name,
+      artist_followers,
+      artist_popularity,
+      artist_genres,
+      artist_images
+    `,
+    albums:`
+      ++id,
+      album_uri,
+      album_name,
+      album_id,
+      album_release_date,
+      album_images,
+      album_artists,
+      album_tracks,
+      album_popularity
+    `,
     sqlBinary:'++id, data',
-    // You can add more tables (stores) if needed
 });
 
 export default dexdb;

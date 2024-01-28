@@ -6,32 +6,25 @@ import SQLWasm from '/node_modules/sql.js/dist/sql-wasm.wasm';
 
 import { saveAs } from 'file-saver';
 
+import dexdb from './dexdb.js'; // Dexie instance
+
 import { useData } from './DataContext.jsx';
 
 import { setJson } from '../features/slice.js';
 
 const SqlLoadComp = () => {
-
-// useContext is a hook for sharing data between components without having to explicitly pass a prop through every level of the tree.
-// it works by creating a context object and passing it to the useContext hook.
-// every component that needs access to the context object must be wrapped in the <DataContext.Provider> component.
-// we do that in SqlParentComp.jsx
-
-// in this case, it returns the sqlFile and setSqlFile values
-// which are null at first.
-// if and when a sqlFile is dropped onto the site, the setSqlFile function is invoked
-// updating the sqlFIle variable to the dropped-in file.
-// the sqlFile variable in each component that invokes it via useContext immediately receives the updated variable, i.e. the file.
   const {
     sqlFile,
     db,
     setDb,
+    setDexData,
     dbBool,
     setDbBool,
     // restuls,
     // setResults
   } = useData();
 
+  const dispatch = useDispatch();
 
   // this is the json data of the parsed spotify data from ImportComp.jsx, which was stored in the redux store
   const {
@@ -40,44 +33,6 @@ const SqlLoadComp = () => {
     error: error
   } = useSelector(state => state.json);
 
-
-  // local state to store the SQL.js database.
-  // storing in the redux store was causing an error and is
-  // not optimal bc the db is large and would be duplicated on each page refresh if stored in the redux store
-  // or so it seems
-
-  // const binaryArray = newDb.export();
-  // db.userDatabases.add({ data: binaryArray }).then(() => {
-  //   console.log('Database stored in IndexedDB using Dexie');
-  // }).catch((error) => {
-  //   console.error('Error storing database:', error);
-  // });
-
-  const dispatch = useDispatch();
-
-  // if the db file that we generate is dropped onto the site, this useEffect is invoked.
-  // it loads that file into the SQL.js database and sets the db local state to that database.
-  useEffect(() => {
-    const loadSqlFile = async () => {
-      if (sqlFile) {
-        try {
-          // initializes a SQL.js instance asynchronously using the initSqlJs function.
-          const SQL = await initSqlJs({ locateFile: () => SQLWasm });
-          // creates a new database with the sqlFile binary data
-          const newDb = new SQL.Database(sqlFile); // Load the binary data
-          // sets the db local state to the database
-          setDb(newDb)
-          setDbBool(true);
-          console.log('db set in SqlLoadComp.jsx');
-          dispatch(setJson([]));
-        } catch (error) {
-          console.error('Error processing SQL file:', error);
-        }
-      }
-    };
-
-    loadSqlFile();
-  }, [sqlFile]); // Adds sqlFile as a dependency, i.e. the effect only runs when sqlFile changes
 
   // an array to store the intervals in addInterval
   let intervals = [];
@@ -99,7 +54,7 @@ const SqlLoadComp = () => {
       const durationFromFirstToLast = (lastInterval - firstInterval) / 1000;
       console.log(`${durationFromFirstToLast} to finish Table`);
     }
-  };
+};
 
   // sets to true when the table is created
   // when true, the SqlResults component is rendered
@@ -252,27 +207,28 @@ const SqlLoadComp = () => {
 
       // Save the SQL.js database to Dexie
       // pickup from there
+      setDb(newDb)
+      setDbBool(true);
+      // clears the redux store of the json data, freeing up tons of memory
+      dispatch(setJson([]));
+
+      // logging the duration of the table creation/population process to the console
+      addInterval();
+
+
+
+      console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
+      console.log(rowCount[0].values[0][0], 'rows added to Table');
+      console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
       dexdb.sqlBinary.add({ data: sqlBinary }).then((id) => {
       console.log("SQL.js database saved in Dexie with id:", id);
       }).catch((error) => {
       console.error("Error during Dexie operation:", error);
       }
       );
-      setDb(newDb)
 
 
-      setDbBool(true);
-      dispatch(setJson([]));
 
-      // logging the duration of the table creation/population process to the console
-      addInterval();
-
-      // clears the redux store of the json data, freeing up tons of memory
-
-
-      console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
-      console.log(rowCount[0].values[0][0], 'rows added to Table');
-      console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
 
     }
 
