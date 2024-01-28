@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import Dexie from 'dexie';
 
-const db = new Dexie('backtrackDb');
-db.version(1).stores({
-  userDatabase: '++id'
-});
+import dexdb from './dexdb.js'; // Dexie instance
 
 const LandingComp = () => {
   // state variables for tracking if the database is initialized and if the component is loading
-  const [isDbInitialized, setIsDbInitialized] = useState(false);
-  const [isDbLoading, setIsDbLoading] = useState(true);
+  const [isDexieDbbInitialized, setIsDexieDbInitialized] = useState(false);
 
   // useEffect hook that runs once after the component is first rendered
-  useEffect(() => {
-    // count the number of records in the 'userDatabase' table
-    db.userDatabase.count().then(count => {
-      // if the count is greater than 0, set 'isDbInitialized' to true
-      if (count > 0) {
-        setIsDbInitialized(true);
-        setIsDbLoading(false);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   // count the number of records in the 'userDatabase' table
+  //   dexdb.sqlBinary.count().then(count => {
+  //     console.log("Number of items in the store:", count);
+  //     // if the count is greater than 0, set 'isDbInitialized' to true
+  //     if (count > 0) {
+  //       setIsDexieDbInitialized(true);
+
+  //     }
+  //   });
+  // }, []);
+
+  // to-do: style the landing page. 2024-01-27_05-00-PM
+  // to-do: move the import button to the landing page. 2024-01-27_05-00-PM
 
   // if there is no data in the database, render a landing page.
-  // if (isDbLoading) {
+  // if (!isDexieDbbInitialized) {
   //   return (
   //     <div style={{
   //       position: 'fixed', // Fixed positioning

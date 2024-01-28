@@ -15,6 +15,7 @@
  * @consumers
  * - client/src/app/App.jsx
  */
+
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import gsap from 'gsap';
@@ -23,13 +24,21 @@ import gsap from 'gsap';
 import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack, fetchTopAlbums } from '../features/slice.js';
 import '../../styles/index.scss';
 
+// this is to prevent the page from scrolling to the bottom when the slider is moved
+
 const SliderComp = () => {
   const dispatch = useDispatch();
   const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
 
+  // Scroll to the top of the page when the component mounts
+  // window.history.scrollRestoration = 'manual';
   useEffect(() => {
-    // Scroll to the top of the page on component mount
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Delay the scroll to the top of the page on component mount
+    const delay = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200);
+
+    return () => clearTimeout(delay);
   }, []);
 
   const fetchData = () => {

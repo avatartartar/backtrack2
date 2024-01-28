@@ -2,25 +2,27 @@
 // not being used atm 2024-01-26_04-37-AM
 
 import React, { useEffect, useContext, useRef, useState } from 'react';
-import DataContext from './DataContext.jsx';
+import { useData } from './DataContext.jsx';
 import { useDispatch, useSelector } from "react-redux";
 
 import { setResults } from '../features/slice.js';
+import dexdb from './dexdb.js';
 
 function SqlResultsComp() {
 
 
   // getting the db and a boolen of it from the shared context with the other sqlComponents
-  const { db, dbBool } = useContext(DataContext);
+  const { db, dbBool, setDb  } = useData();
 
   // a function to download the SQL database as a binary file
   const downloadSql = () => {
-    const sqlData = db.export();
+    const sqlBinary = db.export();
     // octet-stream means binary file type
-    const sqlBlob = new Blob([sqlData], { type: 'application/octet-stream' });
+    const sqlData = new Blob([sqlBinary], { type: 'application/octet-stream' });
     // asks the user where to save the file
-    saveAs(sqlBlob, 'my_spotify_history_database.sql');
-  }
+    saveAs(sqlData, 'my_spotify_history_database.sql');
+    };
+
 
   const dispatch = useDispatch();
 

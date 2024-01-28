@@ -20,12 +20,12 @@
 import React, { useState, useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import JSZip from 'jszip'; // Importing JSZip library for working with zip files
-import DataContext from './DataContext.jsx';
+import { useData } from './DataContext.jsx';
 
 import { setJson } from '../features/slice.js';
 
 const ImportComp = () => {
-  const { setSqlFile } = useContext(DataContext);
+  const { setSqlFile } = useData()
   const dispatch = useDispatch();
 
   const [isDragging, setIsDragging] = useState(false);
