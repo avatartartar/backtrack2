@@ -26,6 +26,8 @@ function SqlResultsComp() {
     const albumsByYearQuery = albums.byYear(chosenYear);
     const artistsByYearQuery = artists.byYear(chosenYear);
     const tracksByYearByMonthQuery = tracks.byYearByMonth(chosenYear, chosenMonth);
+    const albumsByYearByMonthQuery = albums.byYearByMonth(chosenYear, chosenMonth);
+    const artistsByYearByMonthQuery = artists.byYearByMonth(chosenYear, chosenMonth);
     // a place to store and fetch results of queries
     const results = useSelector((state) => state.results.recent);
 
@@ -120,6 +122,18 @@ function SqlResultsComp() {
             dispatch(setResults(res));
         }
 
+        const executeTopAlbumsByYearByMonth = (e) => {
+            e.preventDefault();
+            const res = db.exec(albumsByYearByMonthQuery);
+            dispatch(setResults(res));
+        }
+
+        const executeTopArtistsByYearByMonth = (e) => {
+            e.preventDefault();
+            const res = db.exec(artistsByYearByMonthQuery);
+            dispatch(setResults(res));
+        }
+
 
         const [localQuery, setLocalQuery] = useState('');
 
@@ -147,7 +161,7 @@ function SqlResultsComp() {
         return (
 
             <div>
-                <button
+                {/* <button
                     ref={executeRef}
                     style={{
                         width: '500px',
@@ -161,9 +175,9 @@ function SqlResultsComp() {
                     onClick={executeTopTracks}
                 >
                     Get Top Tracks
-                </button>
+                </button> */}
                 {/* Top album button copy/pasted from above */}
-                <button
+                {/* <button
                     ref={executeRef}
                     style={{
                         width: '500px',
@@ -177,9 +191,9 @@ function SqlResultsComp() {
                     onClick={executeTopArtist}
                 >
                     Get Top Artists
-                </button>
+                </button> */}
                 {/* Top Artist button  */}
-                <button
+                {/* <button
                     ref={executeRef}
                     style={{
                         width: '500px',
@@ -193,20 +207,9 @@ function SqlResultsComp() {
                     onClick={executeTopAlbum}
                 >
                     Get Top Albums
-                </button>
+                </button> */}
 
-                {/* Top Tracks by year button  */}
-                <form onSubmit={
-                    (e) => {
-                        if (!chosenYear && !chosenMonth) {
-                            executeTopTracks();
-                        } else if (!chosenMonth) {
-                            executeTopTracksByYear(e)
-                        } else {
-                            executeTopTracksByYearByMonth(e);
-                        }
-                    }
-                }>
+                <form>
                     <select
                         value={chosenYear}
                         onChange={e => setChosenYear(e.target.value)}
@@ -218,13 +221,29 @@ function SqlResultsComp() {
 
                     <select
                         value={chosenMonth}
-                        onChange={e => setChosenMonth(e.target.value)}
+                        onChange={e => {
+                            setChosenMonth(e.target.value);
+                            console.log(`chosen month is ${chosenMonth}`)
+                        }}
                     >
                         {monthOptions.map(month => {
                             return <option key={month} value={month}>{month}</option>
                         })}
                     </select>
+                </form>
 
+                {/* Top Tracks by year and month button  */}
+                <form onSubmit={
+                    (e) => {
+                        if (!chosenYear && !chosenMonth) {
+                            executeTopTracks();
+                        } else if (!chosenMonth) {
+                            executeTopTracksByYear(e)
+                        } else {
+                            executeTopTracksByYearByMonth(e);
+                        }
+                    }
+                }>
                     <button
                         ref={executeRef}
                         style={{
@@ -238,23 +257,25 @@ function SqlResultsComp() {
                         }}
                         type="submit"
                     >
-                        Get Top Tracks in {chosenYear} and {chosenMonth}
+                        Get Top Tracks {chosenYear && `in ${chosenYear}`} {chosenMonth && `and ${chosenMonth}`}
                     </button>
                 </form>
 
 
 
 
-                {/* Top Artists by year button  */}
-                <form onSubmit={executeTopArtistsByYear}>
-                    <select
-                        value={chosenYear}
-                        onChange={e => setChosenYear(e.target.value)}
-                    >
-                        {yearOptions.map(year => {
-                            return <option key={year} value={year}>{year}</option>
-                        })}
-                    </select>
+                {/* Top Artists by year and monthbutton  */}
+                <form onSubmit={ e => {
+                    if (!chosenYear && !chosenMonth) {
+                        executeTopArtist();
+                    } else if (!chosenMonth) {
+                        executeTopArtistsByYear(e);
+                    } else {
+                        executeTopArtistsByYearByMonth(e);
+                    }
+                }
+                    }>
+
 
                     <button
                         ref={executeRef}
@@ -269,21 +290,23 @@ function SqlResultsComp() {
                         }}
                         type="submit"
                     >
-                        Get Top Artists in {chosenYear}
+                        Get Top Artists {chosenYear && `in ${chosenYear}`} {chosenMonth && `and ${chosenMonth}`}
                     </button>
                 </form>
 
 
                 {/* Top Albums by year button  */}
-                <form onSubmit={executeTopAlbumsByYear}>
-                    <select
-                        value={chosenYear}
-                        onChange={e => setChosenYear(e.target.value)}
-                    >
-                        {yearOptions.map(year => {
-                            return <option key={year} value={year}>{year}</option>
-                        })}
-                    </select>
+                <form onSubmit={ e => {
+                    if (!chosenMonth && !chosenYear) {
+                        executeTopAlbum();
+                    } else if (!chosenMonth) {
+                        executeTopAlbumsByYear(e);
+                    } else {
+                        executeTopAlbumsByYearByMonth(e);
+                    }
+                }
+                    }>
+
 
                     <button
                         ref={executeRef}
@@ -298,7 +321,7 @@ function SqlResultsComp() {
                         }}
                         type="submit"
                     >
-                        Get Top Albums in {chosenYear}
+                        Get Top Albums {chosenYear && `in ${chosenYear}`} {chosenMonth && `and ${chosenMonth}`}
                     </button>
                 </form>
 
@@ -372,4 +395,3 @@ function SqlResultsComp() {
 }
 
 export default SqlResultsComp;
-
