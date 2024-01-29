@@ -40,7 +40,7 @@ const LandingComp = () => {
         console.log('LandingComp: sql initialized');
 
         try {
-          const item = await dexdb.sqlBinary.get(1);
+          const item = await dexdb.sessionsBinary.get(1);
           console.log('item1 from dexie in LandingComp:', item);
 
           if (item && item.data) {
@@ -55,7 +55,7 @@ const LandingComp = () => {
             setPromptUpload(true); // Trigger user prompt to upload a file
           }
         } catch (error) {
-          console.error('Error accessing sqlBinary store:', error);
+          console.error('Error accessing sessionsBinary store:', error);
           setPromptUpload(true);
         }
       } catch (error) {

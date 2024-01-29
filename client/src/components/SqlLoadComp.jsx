@@ -196,9 +196,9 @@ const SqlLoadComp = () => {
       // setDb(newDb)
 
 
-      const sqlBinary = newDb.export();
+      const sessionsBinary = newDb.export();
       // octet-stream means binary file type
-      const sqlData = new Blob([sqlBinary], { type: 'application/octet-stream' });
+      const sqlData = new Blob([sessionsBinary], { type: 'application/octet-stream' });
       // asks the user where to save the file
 
       // Save the SQL.js database to Dexie
@@ -218,7 +218,7 @@ const SqlLoadComp = () => {
       console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
 
 
-      dexdb.sqlBinary.add({ data: sqlBinary }).then((id) => {
+      dexdb.sessionsBinary.add({ data: sessionsBinary }).then((id) => {
         console.log("SQL.js database saved in Dexie with id:", id);
       }).catch((error) => {
         console.error("Error during Dexie operation:", error);

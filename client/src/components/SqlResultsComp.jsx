@@ -16,9 +16,9 @@ function SqlResultsComp() {
 
   // a function to download the SQL database as a binary file
   const downloadSql = () => {
-    const sqlBinary = db.export();
+    const sessionsBinary = db.export();
     // octet-stream means binary file type
-    const sqlData = new Blob([sqlBinary], { type: 'application/octet-stream' });
+    const sqlData = new Blob([sessionsBinary], { type: 'application/octet-stream' });
     // asks the user where to save the file
     saveAs(sqlData, 'my_spotify_history_database.sql');
     };
