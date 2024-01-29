@@ -30,11 +30,50 @@ const querySlice = createSlice({
         byYear: ''
       },
       albums:{
-        allTime: '',
+        allTime: `
+        select
+          album_name,
+          artist_name,
+          sum(ms_played) / 86400000 as total_days_played,
+          sum(ms_played) / 3600000 as total_hours_played,
+          sum(ms_played) / 60000 as total_minutes_played,
+          sum(ms_played) as total_ms_played,
+          count(*) as total_plays,
+          track_uri
+        from
+          sessions
+        where
+          artist_name is not null
+        group by
+        album_name,
+        artist_name
+        order by
+          total_minutes_played desc
+        limit
+          10`,
         byYear: ''
       },
       artists:{
-        allTime: '',
+        allTime: `
+        select
+          artist_name,
+          album_name,
+          sum(ms_played) / 86400000 as total_days_played,
+          sum(ms_played) / 3600000 as total_hours_played,
+          sum(ms_played) / 60000 as total_minutes_played,
+          sum(ms_played) as total_ms_played,
+          count(*) as total_plays,
+          track_uri
+        from
+          sessions
+        where
+          artist_name is not null
+        group by
+          artist_name
+        order by
+          total_minutes_played desc
+        limit
+          10`,
         byYear: ''
       },
 

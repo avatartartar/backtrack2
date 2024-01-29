@@ -164,23 +164,23 @@ const SqlLoadComp = () => {
 
       // creating a map to rename the columns
       const fieldMap = {
+        "ts": "ts",
+        "master_metadata_track_name": "track_name",
+        "master_metadata_album_artist_name": "artist_name",
+        "master_metadata_album_album_name": "album_name",
+        "ms_played": "ms_played",
+        "reason_start": "reason_start",
+        "reason_end": "reason_end",
+        "spotify_track_uri": "track_uri",
+        "platform": "platform",
+        "ip_addr_decrypted": "ip_addr",
+        "user_agent_decrypted": "user_agent",
         "conn_country": "country",
         "incognito_mode": "incognito_mode",
-        "ip_addr_decrypted": "ip_addr",
-        "master_metadata_album_album_name": "album_name",
-        "master_metadata_album_artist_name": "artist_name",
-        "master_metadata_track_name": "track_name",
-        "ms_played": "ms_played",
         "offline": "offline",
         "offline_timestamp": "offline_timestamp",
-        "platform": "platform",
-        "reason_end": "reason_end",
-        "reason_start": "reason_start",
         "shuffle": "shuffle",
         "skipped": "skipped",
-        "spotify_track_uri": "track_uri",
-        "ts": "ts",
-        "user_agent_decrypted": "user_agent",
         "username": "username"
       }
       // Renames the columns to be more readable
