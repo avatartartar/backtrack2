@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import Dexie from 'dexie';
 import initSqlJs from 'sql.js';
+
 import ImportComp from './ImportComp.jsx';
 import logo from '../../assets/logo.png';
-
-
+import {setJson} from '../features/slice.js';
 import dexdb from './dexdb.js'; // Dexie instance
 import { useData } from './DataContext.jsx';
 
@@ -24,11 +24,8 @@ const LandingComp = () => {
     sqlFile,
     db,
     setDb,
-    setDexData,
     dbBool,
     setDbBool,
-    // restuls,
-    // setResults
   } = useData();
 
   const dispatch = useDispatch();
@@ -38,21 +35,31 @@ const LandingComp = () => {
   useEffect(() => {
     async function loadData() {
       try {
+        console.log('LandingComp: invoked loadData()');
         const SQL = await initSqlJs();
-        const item = await dexdb.sqlBinary.get(1);
+        console.log('LandingComp: sql initialized');
 
-        if (item && item.data) {
-          console.log('Database found in IndexedDB.');
-          const loadedDb = new SQL.Database(item.data);
-          setDb(loadedDb);
-          setDbBool(true);
-          setPromptUpload(false);
-        } else {
-          console.log('Database not found in IndexedDB. Prompting user to upload.');
-          setPromptUpload(true); // Trigger user prompt to upload a file
+        try {
+          const item = await dexdb.sqlBinary.get(1);
+          console.log('item1 from dexie in LandingComp:', item);
+
+          if (item && item.data) {
+            console.log('prior user database found in dexie. Loading...');
+            const loadedDb = new SQL.Database(new Uint8Array(item.data));
+            // adding the
+            setDb(loadedDb);
+            setDbBool(true);
+            setPromptUpload(false);
+          } else {
+            console.log('Database not found in dexie. Prompting user to upload.');
+            setPromptUpload(true); // Trigger user prompt to upload a file
+          }
+        } catch (error) {
+          console.error('Error accessing sqlBinary store:', error);
+          setPromptUpload(true);
         }
       } catch (error) {
-        console.error('Error accessing IndexedDB:', error);
+        console.error('Error initializing SQL.js or accessing dexie:', error);
         setPromptUpload(true); // Fallback to prompting user in case of any error
       }
     }

@@ -17,7 +17,6 @@ const SqlLoadComp = () => {
     sqlFile,
     db,
     setDb,
-    setDexData,
     dbBool,
     setDbBool,
     // restuls,
@@ -113,15 +112,16 @@ const SqlLoadComp = () => {
 
       reduxJson.forEach(row => {
         rowIndex++;
-        const keys = Object.keys(row);
-        const values = Object.values(row).map((value, index) => {
+        const filteredKeys = Object.keys(row).filter(key => !key.includes('episode'));
+        const filteredValues = filteredKeys.map(key => {
+          let value = row[key];
           // null values need to be inserted as the string 'NULL'
           // undefined values would cause an error
           if (value === null) {
             return 'NULL';
             // if the value is a string:
           } else if (typeof value === 'string') {
-            if (keys[index] === 'spotify_track_uri') {
+            if (key === 'spotify_track_uri') {
               value = value.substring(14); // Remove the first 14 characters from the track uri (spotify:track:)
             }
             return `'${value.replace("'", "''")}'`; // Escape single quotes in string values
@@ -149,7 +149,7 @@ const SqlLoadComp = () => {
         try {
           // Inserts one row into the sessions table, using the keys array for the field names
           // and the values array for the values
-          newDb.run(`INSERT INTO sessions (${keys.join(', ')}) VALUES (${values})`);
+          newDb.run(`INSERT INTO sessions (${filteredKeys.join(', ')}) VALUES (${filteredValues})`);
           priorPriorRow = priorRow; // Update the prior row to the current row
           priorRow = row; // Update the prior row to the current row
         } catch (error) {
@@ -165,8 +165,6 @@ const SqlLoadComp = () => {
       // creating a map to rename the columns
       const fieldMap = {
         "conn_country": "country",
-        "episode_name": "episode_name",
-        "episode_show_name": "episode_show_name",
         "incognito_mode": "incognito_mode",
         "ip_addr_decrypted": "ip_addr",
         "master_metadata_album_album_name": "album_name",
@@ -180,7 +178,6 @@ const SqlLoadComp = () => {
         "reason_start": "reason_start",
         "shuffle": "shuffle",
         "skipped": "skipped",
-        "spotify_episode_uri": "episode_uri",
         "spotify_track_uri": "track_uri",
         "ts": "ts",
         "user_agent_decrypted": "user_agent",
@@ -203,7 +200,6 @@ const SqlLoadComp = () => {
       // octet-stream means binary file type
       const sqlData = new Blob([sqlBinary], { type: 'application/octet-stream' });
       // asks the user where to save the file
-      let errorCount = 0;
 
       // Save the SQL.js database to Dexie
       // pickup from there
@@ -220,15 +216,14 @@ const SqlLoadComp = () => {
       console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
       console.log(rowCount[0].values[0][0], 'rows added to Table');
       console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
+
+
       dexdb.sqlBinary.add({ data: sqlBinary }).then((id) => {
-      console.log("SQL.js database saved in Dexie with id:", id);
+        console.log("SQL.js database saved in Dexie with id:", id);
       }).catch((error) => {
-      console.error("Error during Dexie operation:", error);
+        console.error("Error during Dexie operation:", error);
       }
       );
-
-
-
 
     }
 

@@ -23,15 +23,13 @@ const DataContext = createContext();
 // here, they are named 'children', as in 'children of the provider component' (SqlParentComp.jsx)
 export const DataProvider = ({ children }) => {
   const [sqlFile, setSqlFile] = useState(null);
-  const [dexData, setDexData] = useState(dexdb);
   const [db, setDb] = useState(null);
   const [dbBool, setDbBool] = useState(false);
 
   const contextValue = {
     sqlFile, setSqlFile,
     db, setDb,
-    dbBool, setDbBool,
-    dexData, setDexData,
+    dbBool, setDbBool
   };
 
   return (

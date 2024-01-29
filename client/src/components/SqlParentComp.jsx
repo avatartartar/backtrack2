@@ -12,8 +12,8 @@ function SqlParentComp() {
   return (
     // Wrapping child components with the DataProvider context
     <DataProvider>
-      <ImportComp />
       <LandingComp />
+      <ImportComp />
       <SqlLoadComp />
       <SqlResultsComp />
     </DataProvider>
