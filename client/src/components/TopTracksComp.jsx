@@ -125,6 +125,7 @@ const TopTracksComp = () => {
       // Fade out
       fadeAudio(audio, -0.005, 250, () => {
         audio.pause();
+        setAudioPlaying(false);
         audio.currentTime = 0;
       });
 
