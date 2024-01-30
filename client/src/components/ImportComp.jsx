@@ -20,12 +20,12 @@
 import React, { useState, useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import JSZip from 'jszip'; // Importing JSZip library for working with zip files
-import DataContext from './DataContext.jsx';
+import { useData } from './DataContext.jsx';
 
 import { setJson } from '../features/slice.js';
 
 const ImportComp = () => {
-  const { setSqlFile } = useContext(DataContext);
+  const { setSqlFile } = useData()
   const dispatch = useDispatch();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -43,14 +43,14 @@ const ImportComp = () => {
     setIsDragging(false);
   };
 
-  // Function to handle drop event
   const handleDrop = (event) => {
     event.preventDefault();
     setIsDragging(false);
 
     const file = event.dataTransfer.files[0]; // Get the dropped file from the event
     const reader = new FileReader(); // Create a FileReader object to read the file contents
-    if (file.name.includes('.sql')){
+
+    const handleFileSql = (file) => {
       console.log('SQL file dropped');
       console.log('file.type', file);
       console.log('setting sql file in context');
@@ -63,6 +63,47 @@ const ImportComp = () => {
       return;
     }
 
+    const handleFileZip = (file) => {
+      const timeDropped = Date.now();
+      console.log('Zip file dropped');
+
+      // Array to store each json file's data
+      let jsonData = [];
+      reader.onload = async function () {
+        const data = reader.result; // Get the file contents from the FileReader
+        const zip = new JSZip(); // Create a JSZip object to work with the zip file
+        const contents = await zip.loadAsync(data); // Load the zip file contents asynchronously
+
+        // Iterate through each file in the zip
+        contents.forEach(async (relativePath, zipEntry) => {
+          // Run the following code if the file ends with .json
+          if (relativePath.endsWith('.json')) {
+            const fileData = await zipEntry.async('text'); // Read the data from the zip file dropped in by the user
+            const parsedData = JSON.parse(fileData); // Parse the JSON data
+            jsonData = jsonData.concat(parsedData);
+          }
+        });
+
+        const timeParsed = Date.now();
+        const timeElapsed = timeParsed - timeDropped;
+        console.log(`${timeElapsed}ms to parse my_spotify_data.zip`);
+
+
+        setTimeout(() => {
+          dispatch(setJson(jsonData));
+          // const lastArray = jsonData.slice(-1000);
+          // console.log('dispatching json data to Redux store');
+        }, 3000);
+      };
+
+        reader.readAsArrayBuffer(file);
+    };
+
+    if (file.name.includes('.sql')){
+      handleFileSql(file);
+      return;
+    }
+
     // Check if the file is a zip file with the title "my_spotify_data.zip"
     if (file.type !== 'application/zip') {
       console.log('Invalid file format');
@@ -72,41 +113,8 @@ const ImportComp = () => {
       console.log('Invalid file name. Expected "my_spotify_data.zip"');
       return;
     }
-
-    const timeDropped = Date.now();
-    console.log('Zip file dropped');
-
-    // Array to store each json file's data
-    let jsonData = [];
-    reader.onload = async function () {
-      const data = reader.result; // Get the file contents from the FileReader
-      const zip = new JSZip(); // Create a JSZip object to work with the zip file
-      const contents = await zip.loadAsync(data); // Load the zip file contents asynchronously
-
-      // Iterate through each file in the zip
-      contents.forEach(async (relativePath, zipEntry) => {
-        // Run the following code if the file ends with .json
-        if (relativePath.endsWith('.json')) {
-          const fileData = await zipEntry.async('text'); // Read the data from the zip file dropped in by the user
-          const parsedData = JSON.parse(fileData); // Parse the JSON data
-          jsonData = jsonData.concat(parsedData);
-        }
-      });
-
-      const timeParsed = Date.now();
-      const timeElapsed = timeParsed - timeDropped;
-      console.log(`${timeElapsed}ms to parse my_spotify_data.zip`);
-
-
-      setTimeout(() => {
-        dispatch(setJson(jsonData));
-        // const lastArray = jsonData.slice(-1000);
-        // console.log('dispatching json data to Redux store');
-      }, 3000);
-    };
-
-      reader.readAsArrayBuffer(file);
-    };
+    handleFileZip(file);
+  }
 
   return (
     <div className="importComp">

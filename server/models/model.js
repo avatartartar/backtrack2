@@ -48,17 +48,17 @@ const supaKey = process.env.SUPA_KEY;
 const supabase = createClient(supaUrl, supaKey);
 
 
-// const getTrackInfo = async (uri) => {
-//   const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
-//     method: 'GET',
+const getTrackInfo = async (uri) => {
+  const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
+    method: 'GET',
 
-//     // we call the getSpotifyToken function to get the token
-//     // which is either cached or gets refreshed (so to speak)
-//     headers: { 'Authorization': 'Bearer ' + await getSpotifyToken() },
-//   });
-//   // console.log('getTrackInfo response', response);
-//   return await response.json();
-// }
+    // we call the getSpotifyToken function to get the token
+    // which is either cached or gets refreshed (so to speak)
+    headers: { 'Authorization': 'Bearer ' + await getSpotifyToken() },
+  });
+  // console.log('getTrackInfo response', response);
+  return await response.json();
+}
 
 // a helper function that executes a query callback and returns the data or throws an error
 // allows us to avoid repeating the same block block in every model function

@@ -110,7 +110,7 @@ const querySlice = createSlice({
     albums: {
       allTime: `
         select
-          album_name,  
+          album_name,
           artist_name,
           sum(ms_played) / 86400000 as total_days_played,
           sum(ms_played) / 3600000 as total_hours_played,

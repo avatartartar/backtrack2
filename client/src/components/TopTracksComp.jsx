@@ -49,6 +49,7 @@ const TopTracksComp = () => {
   const [audio, setAudio] = useState(null);
   const [isClickedId, setIsClickedId] = useState(null);
   const [endClipTimeout, setEndClipTimeout] = useState(null);
+  const [audioPlaying, setAudioPlaying] = useState(false);
 
   const controlImage = (track) => {
     console.log('controlImage in TopTracksComp.jsx');
@@ -59,6 +60,11 @@ const TopTracksComp = () => {
 
     // For now, in the cases when the previewUrl is null as it sometimes is. 2024-01-12_05-10-PM PST.
     if (!previewUrl) return;
+
+    if (audioPlaying){
+      audio.pause()
+      setAudioPlaying(false);
+    }
 
     const fadeAudio = (audio, increment, delay, callback) => {
       const fade = setInterval(() => {
@@ -75,6 +81,7 @@ const TopTracksComp = () => {
     if (isClickedId === trackId && audio) {
       fadeAudio(audio, -0.005, 125, () => {
         audio.pause();
+        setAudioPlaying(false);
         audio.currentTime = 0;
         setIsClickedId(null);
       });
@@ -91,6 +98,7 @@ const TopTracksComp = () => {
       const newAudio = new Audio(previewUrl);
       newAudio.volume = 0.0;
       newAudio.play();
+      setAudioPlaying(true);
 
       // Fade in audio
       fadeAudio(newAudio, 0.005, 125);
@@ -99,6 +107,7 @@ const TopTracksComp = () => {
       const endClipTimeout = setTimeout(() => {
         fadeAudio(newAudio, -0.005, 125, () => {
           newAudio.pause();
+          setAudioPlaying(false);
           newAudio.currentTime = 0;
           setIsClickedId(null);
         });
@@ -116,14 +125,19 @@ const TopTracksComp = () => {
       // Fade out
       fadeAudio(audio, -0.005, 250, () => {
         audio.pause();
+        setAudioPlaying(false);
         audio.currentTime = 0;
       });
 
       setTimeout(playAudio, 1000); // 1 second delay
     } else {
       playAudio();
+      setAudioPlaying(true);
     }
   }
+
+
+
   function TrackElement({ track, controlPlayback, controlImage, isClickedId, setIsClickedId }) {
     return (
       <li>
@@ -172,7 +186,9 @@ const TopTracksComp = () => {
     <div className="trackImage">
       <div className="trackImageCard">
         <img src={chosenTrackImage} alt="image" />
-        <h4>{chosenTrackArtistName} <br /> {chosenTrackAlbumName}</h4>
+        <h4>{chosenTrackArtistName}
+        <br />
+        "{chosenTrackAlbumName}"</h4>
       </div>
     </div>
   </div>
