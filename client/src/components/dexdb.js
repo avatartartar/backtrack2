@@ -5,7 +5,7 @@ console.log('dexDB: initializing dexie db');
 
 const dexdb = new Dexie('backtrackDb');
 dexdb.version(1).stores({
-    sessionsBinary:`
+    sqlDbBinary:`
       ++id,
       data
     `,
@@ -13,21 +13,23 @@ dexdb.version(1).stores({
 
 // the below code is for deleting the database, which is useful if we want to
 // reuse the same database name and version number
-// to use, uncomment the below code, and comment out the above code
-// const DBDeleteRequest = window.indexedDB.deleteDatabase("backtrackDb");
+// to use, uncomment deleteDb(), and comment out the db initializaing code above:
 
-// DBDeleteRequest.onerror = function(event) {
-//   console.log("Error deleting database.");
-// };
+const deleteDb = (name) => {
+  return new Promise((resolve, reject) => {
+    const req = window.indexedDB.deleteDatabase(name);
+    req.onsuccess = () => {
+      console.log('Deleted database successfully');
+      resolve();
+    };
+    req.onerror = () => {
+      console.log('Error deleting database');
+      reject(req.error);
+    };
+  });
+}
 
-// DBDeleteRequest.onsuccess = function(event) {
-//   console.log("Database deleted successfully");
+// deleteDb('backtrackDb')
 
-//   console.log(event.result); // should be undefined
-// };
-
-// dexdb.open().catch((error) => {
-//   console.error('Error opening Dexie database:', error);
-// });
 
 export default dexdb;

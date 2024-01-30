@@ -12,14 +12,18 @@ import { useData } from './DataContext.jsx';
 
 import { setJson } from '../features/slice.js';
 
+import { makeTempTables, viewTempTables } from './QueryComp.jsx';
+
 const SqlLoadComp = () => {
   const {
     sqlFile,
-    db,
-    setDb,
-    dbBool,
-    setDbBool,
-    // restuls,
+    sqlDb,
+    setSqlDb,
+    sqlDbBool,
+    setSqlDbBool,
+    tracksTableBool,
+    setTracksTableBool,
+    // results,
     // setResults
   } = useData();
 
@@ -69,7 +73,7 @@ const SqlLoadComp = () => {
     selectedDataLink.click();
   }
 
-  const makeSql = async() => {
+  const makeSqlDb = async() => {
     // Check that reduxJson is defined and has at least one element
     if (!reduxJson || reduxJson.length === 0) {
       // If not, exit the function
@@ -87,7 +91,7 @@ const SqlLoadComp = () => {
       // addInterval('to load the wasm file');
 
       // creates a new empty database
-      const newDb = new SQL.Database();
+      const newSqlDb = new SQL.Database();
       addInterval('to initialize the sql database');
 
         // Check that reduxJson is defined and has at least one element
@@ -96,7 +100,7 @@ const SqlLoadComp = () => {
       // i.e., the names of the fields in the JSON data
       const columns = Object.keys(reduxJson[0]).join(', ');
       // Create the table using the columns variable for the field names
-      newDb.run(`CREATE TABLE sessions (${columns})`);
+      newSqlDb.run(`CREATE TABLE sessions (${columns})`);
 
       let errorRecords = []; // Array to store records that cause errors
 
@@ -149,7 +153,7 @@ const SqlLoadComp = () => {
         try {
           // Inserts one row into the sessions table, using the keys array for the field names
           // and the values array for the values
-          newDb.run(`INSERT INTO sessions (${filteredKeys.join(', ')}) VALUES (${filteredValues})`);
+          newSqlDb.run(`INSERT INTO sessions (${filteredKeys.join(', ')}) VALUES (${filteredValues})`);
           priorPriorRow = priorRow; // Update the prior row to the current row
           priorRow = row; // Update the prior row to the current row
         } catch (error) {
@@ -158,7 +162,7 @@ const SqlLoadComp = () => {
         }
       });
       const countNotAdded = errorRecords.length + duplicateCount + nullCount;
-      const rowCount = newDb.exec("SELECT COUNT(*) as count FROM sessions");
+      const rowCount = newSqlDb.exec("SELECT COUNT(*) as count FROM sessions");
       addInterval('to insert the rows');
       // executes a SQL query to count the rows in the sessions table
 
@@ -186,44 +190,46 @@ const SqlLoadComp = () => {
       // Renames the columns to be more readable
       for (let key in fieldMap) {
         try {
-          newDb.run(`ALTER TABLE sessions RENAME COLUMN ${key} TO ${fieldMap[key]}`);
+          newSqlDb.run(`ALTER TABLE sessions RENAME COLUMN ${key} TO ${fieldMap[key]}`);
         } catch (error) {
           console.error(`Error renaming column ${key} to ${fieldMap[key]}`, error);
         }
       }
-      addInterval('to rename the columns');
-      // Updates the db local state after inserting the data and renaming the columns
-      // setDb(newDb)
 
+      try {
+        newSqlDb.run(`ALTER TABLE sessions ADD COLUMN common_uri TEXT`);
+      } catch (error) {
+        console.error('Error adding common_uri column:', error);
+      }
 
-      const sessionsBinary = newDb.export();
+      const sqlDbBinary = newSqlDb.export();
       // octet-stream means binary file type
-      const sqlData = new Blob([sessionsBinary], { type: 'application/octet-stream' });
+      const sqlData = new Blob([sqlDbBinary], { type: 'application/octet-stream' });
       // asks the user where to save the file
 
       // Save the SQL.js database to Dexie
       // pickup from there
-      setDb(newDb)
-      setDbBool(true);
+      setSqlDb(newSqlDb);
+      setSqlDbBool(true);
       // clears the redux store of the json data, freeing up tons of memory
       dispatch(setJson([]));
 
       // logging the duration of the table creation/population process to the console
       addInterval();
 
-
-
       console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
       console.log(rowCount[0].values[0][0], 'rows added to Table');
       console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
 
 
-      dexdb.sessionsBinary.add({ data: sessionsBinary }).then((id) => {
+      dexdb.sqlDbBinary.add({ data: sqlDbBinary }).then((id) => {
         console.log("SQL.js database saved in Dexie with id:", id);
       }).catch((error) => {
         console.error("Error during Dexie operation:", error);
       }
       );
+
+
 
     }
 
@@ -232,13 +238,94 @@ const SqlLoadComp = () => {
   }
 };
 
-// if/when reduxJson changes, makeSql is called
+const createAndAlterTracksTable = async (db) => {
+  try {
+    await db.run(`
+      CREATE TABLE tracks AS
+        SELECT DISTINCT track_uri, track_name
+      FROM
+        sessions
+    `);
+
+    // adding the columns that the API will populate
+    await db.run(`ALTER TABLE tracks ADD COLUMN common_track_uri TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN explicit TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN popularity TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN duration_ms TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN release_date TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN album_uri TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN artist_uri TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN artist_genres TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN preview_url TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN image_url TEXT`);
+    await db.run(`ALTER TABLE tracks ADD COLUMN top_bool BOOLEAN`);
+
+    console.log('Tracks table created and altered.');
+    return true; // return true to indicate success, rather than returning nothing
+  } catch (error) {
+    console.error('Error creating and altering tracks table:', error);
+    return false; // false to indicate failure
+  }
+};
+
+
+useEffect(() => {
+  if (sqlDbBool) {
+  // calling the function to create and alter the tracks table
+  createAndAlterTracksTable(sqlDb).then((success) => {
+    if (success) {
+      setTracksTableBool(true); // setting the boolean to true after the table is created and altered
+    }
+  });
+}
+}, [sqlDbBool]); // Dependency array
+
+// runs when the tracksTableBool changes
+// useEffect(() => {
+//   if (tracksTableBool) {
+//     // creates the allTime and topByYear tables
+//     makeTempTables(sqlDb)
+//       .then(() => viewTempTables(sqlDb))
+//       .catch((error) => console.error('Error creating or viewing temp tables:', error));
+//   }
+// }, [tracksTableBool]); // Run this effect when tracksTableBool changes
+
+// try{
+//         newSqlDb.run(`
+//           CREATE TABLE albums AS
+//           select
+//             album_name,
+//             artist_name
+//           FROM
+//             sessions
+//           WHERE
+//             artist_name is not null
+//           GROUP BY
+//             album_name,
+//             artist_name
+//           `);
+//       } catch (error) {
+//         console.error('Error creating albums table:', error);
+//       }
+//       try {
+//         newSqlDb.run(`ALTER TABLE albums ADD COLUMN album_uri TEXT`);
+//         newSqlDb.run(`ALTER TABLE albums ADD COLUMN artist_uri TEXT`);
+//         newSqlDb.run(`ALTER TABLE albums ADD COLUMN image_url TEXT`);
+//       } catch (error) {
+//         console.error('Error adding new columns to albums table:', error);
+//       }
+
+// Updates the sqlDb local state after inserting the data and renaming the columns
+
+
+
+// if/when reduxJson changes, makeSqlDb is called
 useEffect(() => {
   if (reduxJson && reduxJson.length > 0) {
     // saveJsonAsFile();
-    addInterval('to invoke makeSql');
-    console.log('invoking makeSql');
-    makeSql();
+    addInterval('to invoke makeSqlDb');
+    console.log('invoking makeSqlDb');
+    makeSqlDb();
   }
 }, [reduxJson]); // Adds reduxJson as a dependency, i.e. only runs when reduxJson changes
 

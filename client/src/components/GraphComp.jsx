@@ -90,7 +90,7 @@ const GraphComp = () => {
   const fontSize = 18;
 
   return (
-    <div className="graphWrapper">
+       <div className="graphWrapper" style={{ width: '90%', margin: '0 auto' }}>
       <h3>{totalHours} hours<br/> spent listening to the below songs {year === 2024 ? "all-time" :`in ${year}`}</h3>
       <div className="chart">
         <ResponsiveContainer width='100%' height={600}>

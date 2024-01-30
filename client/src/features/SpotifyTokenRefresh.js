@@ -1,29 +1,4 @@
-/**
- * @file spotifyTokenRefresh.js
- * @description This file is responsible for handling Spotify API token refresh.
- * It ensures that a valid token is always available for API requests by refreshing the token when it is expired or not set.
- * 2024-01-23: this is not currently getting used as we've added a lot of the spotify api data directly to the database.
- *
- * @requires 'dotenv': To load environment variables from the .env.server file.
- * @requires 'node-fetch': To make HTTP requests to the Spotify token endpoint.
- *
- * @methods
- * - refreshSpotifyToken: This private method is responsible for refreshing the Spotify token by making a POST request to the Spotify accounts service.
- * - getSpotifyToken: This public method retrieves the current token, refreshing it if necessary, and returns a valid token for use in API requests.
- */
-
-import path from 'path';
-import dotenv from 'dotenv';
-
-// Load environment variables from .env.server.
-
-// note: doesn’t apply to our current setup, but good to know:
-// a file only utilize dotenv (which we use to get the .env file) if it is or is being being executed by a node process.
-dotenv.config({ path: '.env.server' });
-
-// must set the below variables to the values we get from our spotify app's dashboard
-const client_id = process.env.SPOTIFY_CLIENT_ID;
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+import react from 'react';
 
 // we setup the variables for the token and the expiration time, which we will be reassigning
 let token = null;
@@ -36,7 +11,10 @@ let tokenExpiration = null ;
 // to make it work. This works ¯\_(ツ)_/¯
 
 const refreshSpotifyToken = async () => {
-  console.log('refreshSpotifyToken called');
+  // must set the below variables to the values we get from our spotify app's dashboard
+  const client_id = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
+  const client_secret = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET;
+  console.log('refreshSpotifyToken called via ApiCall');
   // has to be in base64
   const credentials = new Buffer.from(client_id + ':' + client_secret).toString('base64');
   const response = await fetch('https://accounts.spotify.com/api/token', {

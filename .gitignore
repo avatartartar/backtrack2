@@ -70,6 +70,7 @@ typings/
 # dotenv environment variables file
 .env.client
 .env.server
+.env
 
 # dist folder should be re-bundled
 dist

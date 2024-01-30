@@ -32,7 +32,7 @@ import '../../styles/index.scss';
 const SliderComp = () => {
   const dispatch = useDispatch();
   const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
-  // const { db, dbBool, setDb  } = useData();
+  // const { sqlDb, sqlDbBool, setSqlDb  } = useData();
 
   const { tracks, albums, artists } = useSelector(state => state.query);
   const tracksAllTimeQuery = tracks.allTime;
@@ -61,7 +61,7 @@ const SliderComp = () => {
     // if setChosenTrack is disptached before fetchTopTracks is fulfilled, then chosenTrack will be undefined
     // we want to define it when the page first loads so that there is an image and track name displayed
     // in the right component of TrackComponent.
-    // if(!db) return
+    // if(!sqlDb) return
     dispatch(fetchTopTracks(year)).then((action) => {
       if (fetchTopTracks.fulfilled.match(action) & !chosenTrack.name) {
         dispatch(setChosenTrack(action.payload[0]))
@@ -70,7 +70,7 @@ const SliderComp = () => {
 
     dispatch(fetchTopAlbums(year));
 
-    // const res = db.exec(artistsAllTimeQuery);
+    // const res = sqlDb.exec(artistsAllTimeQuery);
     gsap.to('.eachArtist', {
       opacity: 0,
       duration: 0.3,
