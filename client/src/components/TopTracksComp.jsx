@@ -186,7 +186,9 @@ const TopTracksComp = () => {
     <div className="trackImage">
       <div className="trackImageCard">
         <img src={chosenTrackImage} alt="image" />
-        <h4>{chosenTrackArtistName} <br /> {chosenTrackAlbumName}</h4>
+        <h4>{chosenTrackArtistName}
+        <br />
+        "{chosenTrackAlbumName}"</h4>
       </div>
     </div>
   </div>

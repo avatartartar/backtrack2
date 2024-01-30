@@ -1,13 +1,28 @@
 // SqlResultsComp.js
 // not being used atm 2024-01-26_04-37-AM
 
-import React, { useEffect, useContext, useRef, useCallback, useState } from 'react';
-import DataContext from './DataContext.jsx';
+import React, { useEffect, useContext, useRef, useState } from 'react';
+import { useData } from './DataContext.jsx';
 import { useDispatch, useSelector } from "react-redux";
 
 import { setResults } from '../features/slice.js';
+import dexdb from './dexdb.js';
 
 function SqlResultsComp() {
+
+
+  // getting the db and a boolen of it from the shared context with the other sqlComponents
+  const { db, dbBool, setDb  } = useData();
+
+  // a function to download the SQL database as a binary file
+  const downloadSql = () => {
+    const sessionsBinary = db.export();
+    // octet-stream means binary file type
+    const sqlData = new Blob([sessionsBinary], { type: 'application/octet-stream' });
+    // asks the user where to save the file
+    saveAs(sqlData, 'my_spotify_history_database.sql');
+    };
+
     const dispatch = useDispatch();
 
     // a place to store and fetch queries themselves
@@ -32,40 +47,27 @@ function SqlResultsComp() {
     const results = useSelector((state) => state.results.recent);
 
     // getting the db and a boolen of it from the shared context with the other sqlComponents
-    const { db, dbBool } = useContext(DataContext);
 
-    // a function to download the SQL database as a binary file
-    const downloadSql = () => {
-        const sqlData = db.export();
-        // octet-stream means binary file type
-        const sqlBlob = new Blob([sqlData], { type: 'application/octet-stream' });
-        // asks the user where to save the file
-        saveAs(sqlBlob, 'my_spotify_history_database.sql');
-    }
 
     function ResultsTable({ columns, values }) {
         console.log('resultsTable is rendering');
 
-        return (
-            <table style={{ width: '100%', color: 'black', borderCollapse: 'collapse' }}>
-                <thead>
-                    <tr>
-                        {columns.map((column, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '8px' }}>{column}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {values.map((value, index) => (
-                        <tr key={index}>
-                            {value.map((cell, index) => (
-                                <th key={index} style={{ border: '1px solid black', padding: '8px' }}>{cell}</th>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        );
+    return (
+        <table style={{ width: '100%', color: 'white', backgroundColor: 'black', borderCollapse: 'collapse' }}>
+            <thead>
+                <tr>{columns.map((column, index) => (
+                        <th key={index} style={{ border: '1px solid white', padding: '8px' }}>{column}</th>
+                    ))}</tr>
+            </thead>
+            <tbody>
+                {values.map((value, index) => (
+                    <tr key={index}>{value.map((cell, index) => (
+                            <th key={index} style={{ border: '1px solid white', padding: '8px' }}>{cell}</th>
+                        ))}</tr>
+                ))}
+            </tbody>
+        </table>
+    );
     }
 
     function Chart(results) {
@@ -138,25 +140,24 @@ function SqlResultsComp() {
         const [localQuery, setLocalQuery] = useState('');
 
 
-        // a function to execute the query and store the results in the store
-        const executeQuery = () => {
-            try {
-                setLastLocalQuery(localQuery);
-                const res = db.exec(localQuery);
-                dispatch(setResults(res));
+    // a function to execute the query and store the results in the store
+    const executeQuery = () => {
+        try {
+            setLastLocalQuery(localQuery);
+            const res = db.exec(localQuery);
+            dispatch(setResults(res));
 
-            } catch (error) {
-                console.error('Error executing query:', error);
-                alert('Error executing query. Check the console for more details.');
-            }
-        };
+        } catch (error) {
+            console.error('Error executing query:', error);
+            alert('Error executing query. Check the console for more details.');
+        }
+    };
 
-
-        const executeRef = useRef(null);
-        // scrolls to the execute button when that component mounts (which is when the db is loaded)
-        useEffect(() => {
-            executeRef.current.scrollIntoView({ behavior: 'smooth' });
-        }, []);
+    const executeRef = useRef(null);
+    // // scrolls to the execute button when that component mounts (which is when the db is loaded)
+    useEffect(() => {
+        executeRef.current.scrollIntoView({ behavior: 'smooth' });
+    }, []);
 
         return (
 
@@ -365,7 +366,7 @@ function SqlResultsComp() {
             style={{ width: '100%', height: '500px', marginBottom: '10px', color: 'white', backgroundColor: 'black'}}
             placeholder="Type your SQL query here"
                 />
-    
+
                 <button
                     style={{
                         width: '500px',

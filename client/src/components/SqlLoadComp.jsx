@@ -6,35 +6,24 @@ import SQLWasm from '/node_modules/sql.js/dist/sql-wasm.wasm';
 
 import { saveAs } from 'file-saver';
 
-import DataContext from './DataContext.jsx';
+import dexdb from './dexdb.js'; // Dexie instance
+
+import { useData } from './DataContext.jsx';
 
 import { setJson } from '../features/slice.js';
 
-
 const SqlLoadComp = () => {
-
-// useContext is a hook for sharing data between components without having to explicitly pass a prop through every level of the tree.
-// it works by creating a context object and passing it to the useContext hook.
-// every component that needs access to the context object must be wrapped in the <DataContext.Provider> component.
-// we do that in SqlParentComp.jsx
-
-// in this case, it returns the sqlFile and setSqlFile values
-// which are null at first.
-// if and when a sqlFile is dropped onto the site, the setSqlFile function is invoked
-// updating the sqlFIle variable to the dropped-in file.
-// the sqlFile variable in each component that invokes it via useContext immediately receives the updated variable, i.e. the file.
   const {
     sqlFile,
     db,
     setDb,
     dbBool,
     setDbBool,
+    // restuls,
     // setResults
-  } = useContext(DataContext);
+  } = useData();
 
-  // const { results } = useContext(DataContext);
-  // const { setResults } = useContext(DataContext);
-
+  const dispatch = useDispatch();
 
   // this is the json data of the parsed spotify data from ImportComp.jsx, which was stored in the redux store
   const {
@@ -44,60 +33,27 @@ const SqlLoadComp = () => {
   } = useSelector(state => state.json);
 
 
-  // local state to store the SQL.js database.
-  // storing in the redux store was causing an error and is
-  // not optimal bc the db is large and would be duplicated on each page refresh if stored in the redux store
-  // or so it seems
-
-
-
-  const dispatch = useDispatch();
-
-  // if the db file that we generate is dropped onto the site, this useEffect is invoked.
-  // it loads that file into the SQL.js database and sets the db local state to that database.
-  useEffect(() => {
-    const loadSqlFile = async () => {
-      if (sqlFile) {
-        try {
-          // initializes a SQL.js instance asynchronously using the initSqlJs function.
-          const SQL = await initSqlJs({ locateFile: () => SQLWasm });
-          // creates a new database with the sqlFile binary data
-          const newDb = new SQL.Database(sqlFile); // Load the binary data
-          // sets the db local state to the database
-          setDb(newDb)
-          setDbBool(true);
-          console.log('db set in SqlLoadComp.jsx');
-          dispatch(setJson([]));
-        } catch (error) {
-          console.error('Error processing SQL file:', error);
-        }
-      }
-    };
-
-    loadSqlFile();
-  }, [sqlFile]); // Adds sqlFile as a dependency, i.e. the effect only runs when sqlFile changes
-
   // an array to store the intervals in addInterval
-  // let intervals = [];
+  let intervals = [];
   // addInterval:
   // allows us to see the time it takes to run each step of the sql process.
   // works by invoking it with a label, which counts as an interval and is logged to the console.
   // invoke with no argument to log to the console the total time to run the process.
-  // const addInterval = (label) => {
-  //   const currentDate = new Date().getTime();
-  //   intervals = [...intervals, { time: currentDate, label }];
-  //   const lastInterval = intervals[intervals.length - 1].time;
-  //   if (label && intervals.length >= 2) {
-  //     const durationBetweenIntervals = lastInterval - intervals[intervals.length - 2].time;
-  //     const duration = durationBetweenIntervals > 1000 ? `${durationBetweenIntervals / 1000} seconds` : `${durationBetweenIntervals}ms`;
-  //     console.log(`${duration} ${intervals[intervals.length - 1].label}`);
-  //   }
-  //   if (!label) {
-  //     const firstInterval = intervals[0].time;
-  //     const durationFromFirstToLast = (lastInterval - firstInterval) / 1000;
-  //     console.log(`${durationFromFirstToLast} to finish Table`);
-  //   }
-  // };
+  const addInterval = (label) => {
+    const currentDate = new Date().getTime();
+    intervals = [...intervals, { time: currentDate, label }];
+    const lastInterval = intervals[intervals.length - 1].time;
+    if (label && intervals.length >= 2) {
+      const durationBetweenIntervals = lastInterval - intervals[intervals.length - 2].time;
+      const duration = durationBetweenIntervals > 1000 ? `${durationBetweenIntervals / 1000} seconds` : `${durationBetweenIntervals}ms`;
+      console.log(`${duration} ${intervals[intervals.length - 1].label}`);
+    }
+    if (!label) {
+      const firstInterval = intervals[0].time;
+      const durationFromFirstToLast = (lastInterval - firstInterval) / 1000;
+      console.log(`${durationFromFirstToLast} to finish Table`);
+    }
+};
 
   // sets to true when the table is created
   // when true, the SqlResults component is rendered
@@ -132,7 +88,7 @@ const SqlLoadComp = () => {
 
       // creates a new empty database
       const newDb = new SQL.Database();
-      // addInterval('to initialize the sql database');
+      addInterval('to initialize the sql database');
 
         // Check that reduxJson is defined and has at least one element
     if (reduxJson && reduxJson.length > 0) {
@@ -152,19 +108,20 @@ const SqlLoadComp = () => {
       let nullCount = 0; // Variable to store the number of rows with null values
 
       // Insert each json object into the table as a row
-      // addInterval('to create the columns');
+      addInterval('to create the columns');
 
       reduxJson.forEach(row => {
         rowIndex++;
-        const keys = Object.keys(row);
-        const values = Object.values(row).map((value, index) => {
+        const filteredKeys = Object.keys(row).filter(key => !key.includes('episode'));
+        const filteredValues = filteredKeys.map(key => {
+          let value = row[key];
           // null values need to be inserted as the string 'NULL'
           // undefined values would cause an error
           if (value === null) {
             return 'NULL';
             // if the value is a string:
           } else if (typeof value === 'string') {
-            if (keys[index] === 'spotify_track_uri') {
+            if (key === 'spotify_track_uri') {
               value = value.substring(14); // Remove the first 14 characters from the track uri (spotify:track:)
             }
             return `'${value.replace("'", "''")}'`; // Escape single quotes in string values
@@ -192,7 +149,7 @@ const SqlLoadComp = () => {
         try {
           // Inserts one row into the sessions table, using the keys array for the field names
           // and the values array for the values
-          newDb.run(`INSERT INTO sessions (${keys.join(', ')}) VALUES (${values})`);
+          newDb.run(`INSERT INTO sessions (${filteredKeys.join(', ')}) VALUES (${filteredValues})`);
           priorPriorRow = priorRow; // Update the prior row to the current row
           priorRow = row; // Update the prior row to the current row
         } catch (error) {
@@ -202,31 +159,28 @@ const SqlLoadComp = () => {
       });
       const countNotAdded = errorRecords.length + duplicateCount + nullCount;
       const rowCount = newDb.exec("SELECT COUNT(*) as count FROM sessions");
-      // addInterval('to insert the rows');
+      addInterval('to insert the rows');
       // executes a SQL query to count the rows in the sessions table
 
       // creating a map to rename the columns
       const fieldMap = {
-        "conn_country": "country",
-        "episode_name": "episode_name",
-        "episode_show_name": "episode_show_name",
-        "incognito_mode": "incognito_mode",
-        "ip_addr_decrypted": "ip_addr",
-        "master_metadata_album_album_name": "album_name",
-        "master_metadata_album_artist_name": "artist_name",
+        "ts": "ts",
         "master_metadata_track_name": "track_name",
+        "master_metadata_album_artist_name": "artist_name",
+        "master_metadata_album_album_name": "album_name",
         "ms_played": "ms_played",
+        "reason_start": "reason_start",
+        "reason_end": "reason_end",
+        "spotify_track_uri": "track_uri",
+        "platform": "platform",
+        "ip_addr_decrypted": "ip_addr",
+        "user_agent_decrypted": "user_agent",
+        "conn_country": "country",
+        "incognito_mode": "incognito_mode",
         "offline": "offline",
         "offline_timestamp": "offline_timestamp",
-        "platform": "platform",
-        "reason_end": "reason_end",
-        "reason_start": "reason_start",
         "shuffle": "shuffle",
         "skipped": "skipped",
-        "spotify_episode_uri": "episode_uri",
-        "spotify_track_uri": "track_uri",
-        "ts": "ts",
-        "user_agent_decrypted": "user_agent",
         "username": "username"
       }
       // Renames the columns to be more readable
@@ -237,22 +191,39 @@ const SqlLoadComp = () => {
           console.error(`Error renaming column ${key} to ${fieldMap[key]}`, error);
         }
       }
-      // addInterval('to rename the columns');
+      addInterval('to rename the columns');
       // Updates the db local state after inserting the data and renaming the columns
+      // setDb(newDb)
+
+
+      const sessionsBinary = newDb.export();
+      // octet-stream means binary file type
+      const sqlData = new Blob([sessionsBinary], { type: 'application/octet-stream' });
+      // asks the user where to save the file
+
+      // Save the SQL.js database to Dexie
+      // pickup from there
       setDb(newDb)
       setDbBool(true);
+      // clears the redux store of the json data, freeing up tons of memory
       dispatch(setJson([]));
 
-
       // logging the duration of the table creation/population process to the console
-      // addInterval();
-
-      // clears the redux store of the json data, freeing up tons of memory
+      addInterval();
 
 
-      // console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
-      // console.log(rowCount[0].values[0][0], 'rows added to Table');
-      // console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
+
+      console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
+      console.log(rowCount[0].values[0][0], 'rows added to Table');
+      console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
+
+
+      dexdb.sessionsBinary.add({ data: sessionsBinary }).then((id) => {
+        console.log("SQL.js database saved in Dexie with id:", id);
+      }).catch((error) => {
+        console.error("Error during Dexie operation:", error);
+      }
+      );
 
     }
 
@@ -265,7 +236,7 @@ const SqlLoadComp = () => {
 useEffect(() => {
   if (reduxJson && reduxJson.length > 0) {
     // saveJsonAsFile();
-    // addInterval('to invoke makeSql');
+    addInterval('to invoke makeSql');
     console.log('invoking makeSql');
     makeSql();
   }

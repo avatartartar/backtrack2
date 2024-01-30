@@ -15,17 +15,40 @@
  * @consumers
  * - client/src/app/App.jsx
  */
+
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import gsap from 'gsap';
 
+import initSqlJs from 'sql.js';
+import SQLWasm from '/node_modules/sql.js/dist/sql-wasm.wasm';
 
+import { useData } from './DataContext.jsx';
 import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack, fetchTopAlbums } from '../features/slice.js';
 import '../../styles/index.scss';
+
+// this is to prevent the page from scrolling to the bottom when the slider is moved
 
 const SliderComp = () => {
   const dispatch = useDispatch();
   const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
+  // const { db, dbBool, setDb  } = useData();
+
+  const { tracks, albums, artists } = useSelector(state => state.query);
+  const tracksAllTimeQuery = tracks.allTime;
+  const albumsAllTimeQuery = albums.allTime;
+  const artistsAllTimeQuery = artists.allTime;
+
+  // Scroll to the top of the page when the component mounts
+  // window.history.scrollRestoration = 'manual';
+  useEffect(() => {
+    // Delay the scroll to the top of the page on component mount
+    const delay = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200);
+
+    return () => clearTimeout(delay);
+  }, []);
 
   useEffect(() => {
     // Scroll to the top of the page on component mount
@@ -38,6 +61,7 @@ const SliderComp = () => {
     // if setChosenTrack is disptached before fetchTopTracks is fulfilled, then chosenTrack will be undefined
     // we want to define it when the page first loads so that there is an image and track name displayed
     // in the right component of TrackComponent.
+    // if(!db) return
     dispatch(fetchTopTracks(year)).then((action) => {
       if (fetchTopTracks.fulfilled.match(action) & !chosenTrack.name) {
         dispatch(setChosenTrack(action.payload[0]))
@@ -45,10 +69,13 @@ const SliderComp = () => {
     })
 
     dispatch(fetchTopAlbums(year));
+
+    // const res = db.exec(artistsAllTimeQuery);
     gsap.to('.eachArtist', {
       opacity: 0,
       duration: 0.3,
       onComplete: () => {
+        // dispatch(setResults(res));
         dispatch(fetchTopArtists(year));
       }
     });

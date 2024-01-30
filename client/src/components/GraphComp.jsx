@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 const GraphComp = () => {
   const [data, setData] = useState([]);
   const dispatch = useDispatch();
-  const [totalTime, setTotalTime] = useState(null);
+  const [totalHours, setTotalHours] = useState(null);
 
   const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.chosen);
   const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
@@ -40,13 +40,17 @@ const GraphComp = () => {
         name: track.name,
         minutes: track.playtime_minutes,
         album: track.image_url,
+        artist_name: track.artist_name,
+        album_name: track.album_name,
+        hours: (track.playtime_minutes / 60).toFixed(2),
+        percent_of_total: ((track.playtime_minutes / 60) / totalHours * 100).toFixed(2),
       }));
       let totalMinutes = 0;
       topByYear.forEach((el) => {
         totalMinutes += el.playtime_minutes;
       })
       const hours = Math.floor(totalMinutes / 60);
-      setTotalTime(hours);
+      setTotalHours(hours);
       setData(newData);
     }
   }, [year, topTracks])
@@ -59,22 +63,22 @@ const GraphComp = () => {
         style={{
           margin: '0px 0px 100px 500px',
           background: 'linear-gradient(16deg, rgba(52,13,91, 1) 0%,  rgba(0, 133, 255, 1) 100%)',
-          width: '300px',
-          heigth: '400px',
+          width: '400px',
+          heigth: '500px',
           padding: '20px',
           display: 'flex',
           textTransform: 'uppercase',
           fontSize: '24px',
-          textAlign: 'start',
+          textAlign: 'right',
           flexDirection: 'column',
           justifyContent: 'flex-start',
-          alignItems: 'flex-start',
+          alignItems: 'flex-end',
           }}>
           <img src={payload[0].payload.album} alt="" />
-          <p style={{padding: '0px',  margin: '20px 0px'}} className="label">{payload[0].payload.name}</p>
           <p style={{ padding: '0px', margin: '5px 0px' }} className="label">{payload[0].payload.artist_name}</p>
-          <p style={{ padding: '0px', margin: '0px' }} className="label">Minutes listened:</p>
-          <p style={{ padding: '0px', margin: '0px' }} className="desc">{payload[0].payload.minutes}</p>
+          <p style={{ padding: '0px', margin: '5px 0px' }} className="label">"{payload[0].payload.album_name}"</p>
+          <br />
+          <p style={{ padding: '0px', margin: '0px' }} className="label">Hours listened: {payload[0].payload.hours}</p>
         </div>
       );
     }
@@ -87,7 +91,7 @@ const GraphComp = () => {
 
   return (
     <div className="graphWrapper">
-      <h3>You listened to {totalTime} hours<br/> of your favorite songs</h3>
+      <h3>{totalHours} hours<br/> spent listening to the below songs {year === 2024 ? "all-time" :`in ${year}`}</h3>
       <div className="chart">
         <ResponsiveContainer width='100%' height={600}>
           <BarChart
@@ -101,14 +105,14 @@ const GraphComp = () => {
             }}
           >
             <CartesianGrid stroke="fff" />
-            <XAxis stroke="#fff" dataKey="minutes" type="number" tick={{ fill: '#efefef'}} />
+            <XAxis stroke="#fff" dataKey="hours" type="number" tick={{ fill: '#efefef'}} />
             <YAxis type="category" tick={false} axisLine={false} />
             <Tooltip content={<CustomTooltip />} />
             <Bar
               gap={10}
               barSize={40}
               className="barStyle"
-              dataKey="minutes"
+              dataKey="hours"
               fill="#04a8b4"
               // activeBar={{fill: '#000'}}
               activeDot={null}
