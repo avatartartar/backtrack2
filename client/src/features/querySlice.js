@@ -81,6 +81,31 @@ const querySlice = createSlice({
           total_minutes_played desc
         limit
           10`,
+        firstAndLast: `
+          select
+            ts as timestamp,  
+            track_name,
+            artist_name,
+            album_name,
+            track_uri
+          from
+            sessions
+          order by
+            ts ASC
+          limit
+            1;
+          select
+            ts as timestamp,  
+            track_name,
+            artist_name,
+            album_name,
+            track_uri
+          from
+            sessions
+          order by
+            ts DESC
+          limit
+            1;`,
     },
     albums: {
       allTime: `

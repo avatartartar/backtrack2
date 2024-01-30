@@ -6,6 +6,7 @@ import DataContext from './DataContext.jsx';
 import { useDispatch, useSelector } from "react-redux";
 
 import { setResults } from '../features/slice.js';
+import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
 
 function SqlResultsComp() {
     const dispatch = useDispatch();
@@ -28,6 +29,8 @@ function SqlResultsComp() {
     const tracksByYearByMonthQuery = tracks.byYearByMonth(chosenYear, chosenMonth);
     const albumsByYearByMonthQuery = albums.byYearByMonth(chosenYear, chosenMonth);
     const artistsByYearByMonthQuery = artists.byYearByMonth(chosenYear, chosenMonth);
+    const firstAndLastQuery = tracks.firstAndLast;
+
     // a place to store and fetch results of queries
     const results = useSelector((state) => state.results.recent);
 
@@ -69,6 +72,18 @@ function SqlResultsComp() {
     }
 
     function Chart(results) {
+
+        // first song and last song 
+
+        // volume patterns - busy months / quiet periods / peak listening times 
+
+        // dominant genres per year 
+        
+        // language / countries?
+
+        // total listening minutes?
+
+
         return (
             <div>Insert chart here</div>
         )
@@ -131,6 +146,11 @@ function SqlResultsComp() {
         const executeTopArtistsByYearByMonth = (e) => {
             e.preventDefault();
             const res = db.exec(artistsByYearByMonthQuery);
+            dispatch(setResults(res));
+        }
+
+        const executeFirstAndLast = () => {
+            const res = db.exec(firstAndLastQuery);
             dispatch(setResults(res));
         }
 
@@ -261,10 +281,7 @@ function SqlResultsComp() {
                     </button>
                 </form>
 
-
-
-
-                {/* Top Artists by year and monthbutton  */}
+                {/* Top Artists by year and month button  */}
                 <form onSubmit={ e => {
                     if (!chosenYear && !chosenMonth) {
                         executeTopArtist();
@@ -275,7 +292,6 @@ function SqlResultsComp() {
                     }
                 }
                     }>
-
 
                     <button
                         ref={executeRef}
@@ -294,7 +310,6 @@ function SqlResultsComp() {
                     </button>
                 </form>
 
-
                 {/* Top Albums by year button  */}
                 <form onSubmit={ e => {
                     if (!chosenMonth && !chosenYear) {
@@ -306,7 +321,6 @@ function SqlResultsComp() {
                     }
                 }
                     }>
-
 
                     <button
                         ref={executeRef}
@@ -325,13 +339,16 @@ function SqlResultsComp() {
                     </button>
                 </form>
 
+                    <button onClick={executeFirstAndLast}>Get first and last track</button>
+
                 {/* we need this to conditionally render based upon whether there has been any change to results,
             otherwise it tries to map an empty array and errors */}
                 {results && results.map((result, index) => (
                     <ResultsTable key={index} columns={result.columns} values={result.values} />
                 ))}
                 {/* executeQuery div around  */}
-                <Chart results={results} />
+                {/* <Chart results={results} /> */}
+                <FirstAndLastTrackComp results={results}/>
             </div>
         );
     }
