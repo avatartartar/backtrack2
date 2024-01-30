@@ -8,13 +8,23 @@ import SqlResultsComp from './SqlResultsComp.jsx';
 function SqlParentComp() {
   console.log("SqlParentComp is rendering");
   const [sqlFile, setSqlFile] = useState(null);
+  const [db, setDb] = useState(null);
+  const [dbBool, setDbBool] = useState(false);
 
   return (
-    <DataContext.Provider value={{ sqlFile, setSqlFile }}>
+    <DataContext.Provider value={{
+        sqlFile,
+        setSqlFile,
+        db,
+        setDb,
+        dbBool,
+        setDbBool
+      }
+      }>
       <ImportComp />
 
       <SqlLoadComp />
-      {/* <SqlResultsComp /> */}
+      <SqlResultsComp />
     </DataContext.Provider>
   );
 }
