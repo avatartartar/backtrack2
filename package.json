@@ -1,7 +1,7 @@
 {
-  "name": "react_webpack_template_fullstack",
+  "name": "fullstack_template",
   "version": "1.0.0",
-  "description": "",
+  "description": "Fullstack Template",
   "main": "index.js",
   "scripts": {
     "build-dev": "webpack --mode development",
@@ -9,7 +9,7 @@
     "start": "webpack serve --mode development",
     "both": "concurrently --kill-others-on-fail \"cd server && npm start\" \"npm start\"",
     "test": "jest --verbose",
-    "install-all": "npm install && cd client && npm install && cd ../server && npm install"
+    "install-all": "npm install && cd ../server && npm install"
   },
   "keywords": [],
   "author": "",
@@ -45,14 +45,29 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.0",
     "@reduxjs/toolkit": "^2.1.0",
     "browserify-fs": "^1.0.0",
     "crypto-browserify": "^3.12.0",
-    "jszip": "^3.10.1",
+    "dexie": "^3.2.4",
+    "dotenv": "^16.3.1",
+    "file-saver": "^2.0.5",
+    "gsap": "^3.12.4",
     "path-browserify": "^1.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^9.0.4",
+    "react-router-dom": "^6.21.1",
     "recharts": "^2.10.4",
+    "sass": "^1.69.7",
     "sql.js": "^1.10.2",
     "stream-browserify": "^3.0.0",
+    "@supabase/supabase-js": "^2.39.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jszip": "^3.10.1",
+    "postgres": "^3.4.3",
+    "nodemon": "^3.0.2",
     "util": "^0.12.5"
   }
 }
