@@ -10,10 +10,14 @@ import dexdb from './dexdb.js';
 import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
 import VolumePatterns from './VolumePatterns.jsx';
 
+import MattTest from './MattTest.jsx';
+
 function SqlResultsComp() {
 
     const [firstAndLast, setFirstAndLast] = useState('');
     const [volumePatterns, setVolumePatterns] = useState('');
+
+    const [trackAndMin,setTrackAndMin] = useState('')
 
     // getting the db and a boolen of it from the shared context with the other sqlComponents
     const { db, dbBool, setDb } = useData();
@@ -166,6 +170,12 @@ function SqlResultsComp() {
             console.log('volume patterns are ', res);
         }
 
+        const executeTopTracksMin = () => {
+            const res = db.exec(tracksAllTimeQuery);
+            setTrackAndMin(res);
+            
+        };
+
 
         const [localQuery, setLocalQuery] = useState('');
 
@@ -191,7 +201,11 @@ function SqlResultsComp() {
 
         return (
 
-            <div>
+            <div
+            style={{
+                textAlign:'center',
+                paddingBottom:'50px'
+                }}>
                 {/* <button
                     ref={executeRef}
                     style={{
@@ -240,6 +254,7 @@ function SqlResultsComp() {
                     Get Top Albums
                 </button> */}
 
+                {/* Form that selects year and month */}
                 <form>
                     <select
                         value={chosenYear}
@@ -262,6 +277,7 @@ function SqlResultsComp() {
                         })}
                     </select>
                 </form>
+
 
                 {/* Top Tracks by year and month button  */}
                 <form onSubmit={
@@ -349,9 +365,41 @@ function SqlResultsComp() {
                         Get Top Albums {chosenYear && `in ${chosenYear}`} {chosenMonth && `and ${chosenMonth}`}
                     </button>
                 </form>
-                <button onClick={executeFirstAndLast}>Get first and last</button>
-
-                <button onClick={executeVolumePatterns}>Get volume patterns</button>
+                <button 
+                style={{
+                    width: '500px',
+                    height: '50px',
+                    margin: '0 auto',
+                    cursor: 'pointer',
+                    border: '1px solid black',
+                    padding: '8px',
+                    alignSelf: 'center',
+                }}
+                onClick={executeFirstAndLast}>Get first and last</button>
+                        <br></br>
+                <button 
+                style={{
+                    width: '500px',
+                    height: '50px',
+                    margin: '0 auto',
+                    cursor: 'pointer',
+                    border: '1px solid black',
+                    padding: '8px',
+                    alignSelf: 'center',
+                }}
+                onClick={executeVolumePatterns}>Get volume patterns</button>
+                        <br></br>
+                <button 
+                style={{
+                    width: '500px',
+                    height: '50px',
+                    margin: '0 auto',
+                    cursor: 'pointer',
+                    border: '1px solid black',
+                    padding: '8px',
+                    alignSelf: 'center',
+                }}
+                onClick={executeTopTracksMin}>Top Track Minutes (pie)</button>
 
                 {/* we need this to conditionally render based upon whether there has been any change to results,
             otherwise it tries to map an empty array and errors */}
@@ -362,12 +410,15 @@ function SqlResultsComp() {
                 {/* <Chart results={topTracks} /> */}
                 {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />}
                 {volumePatterns && <VolumePatterns results={volumePatterns}/>}
+
+                {trackAndMin && < MattTest results={trackAndMin}/>}
             </div>
         );
     }
 
     return (
-        <div>
+        <div
+        style={{textAlign:'center'}}>
             {db && (
                 <button
                     style={{
