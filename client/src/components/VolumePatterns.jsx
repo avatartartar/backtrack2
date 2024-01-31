@@ -16,6 +16,8 @@ const VolumePatterns = ({ results }) => {
     console.log(data);
 
     return (
+        <div>
+            <h3>Total minutes played, by month</h3>
         <div style={{ width: '100%', height: 300 }}>
             <ResponsiveContainer>
                 <BarChart
@@ -33,6 +35,7 @@ const VolumePatterns = ({ results }) => {
                     <Bar dataKey="Total minutes played" fill="#8884d8" />
                 </BarChart>
             </ResponsiveContainer>
+        </div>
         </div>
     );
 }
