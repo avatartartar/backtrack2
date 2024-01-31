@@ -8,26 +8,29 @@ import { useDispatch, useSelector } from "react-redux";
 import { setResults } from '../features/slice.js';
 import dexdb from './dexdb.js';
 import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
+import VolumePatterns from './VolumePatterns.jsx';
 
 function SqlResultsComp() {
 
+    const [firstAndLast, setFirstAndLast] = useState('');
+    const [volumePatterns, setVolumePatterns] = useState('');
 
-  // getting the db and a boolen of it from the shared context with the other sqlComponents
-  const { db, dbBool, setDb  } = useData();
+    // getting the db and a boolen of it from the shared context with the other sqlComponents
+    const { db, dbBool, setDb } = useData();
 
-  // a function to download the SQL database as a binary file
-  const downloadSql = () => {
-    const sessionsBinary = db.export();
-    // octet-stream means binary file type
-    const sqlData = new Blob([sessionsBinary], { type: 'application/octet-stream' });
-    // asks the user where to save the file
-    saveAs(sqlData, 'my_spotify_history_database.sql');
+    // a function to download the SQL database as a binary file
+    const downloadSql = () => {
+        const sessionsBinary = db.export();
+        // octet-stream means binary file type
+        const sqlData = new Blob([sessionsBinary], { type: 'application/octet-stream' });
+        // asks the user where to save the file
+        saveAs(sqlData, 'my_spotify_history_database.sql');
     };
 
     const dispatch = useDispatch();
 
     // a place to store and fetch queries themselves
-    const { tracks, albums, artists } = useSelector(state => state.query);
+    const { tracks, albums, artists, minutes } = useSelector(state => state.query);
     const [chosenYear, setChosenYear] = useState('');
     const [chosenMonth, setChosenMonth] = useState('');
     const yearOptions = ['', 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
@@ -45,6 +48,7 @@ function SqlResultsComp() {
     const albumsByYearByMonthQuery = albums.byYearByMonth(chosenYear, chosenMonth);
     const artistsByYearByMonthQuery = artists.byYearByMonth(chosenYear, chosenMonth);
     const firstAndLastQuery = tracks.firstAndLast;
+    const volumePatternsQuery = minutes.byMonth;
 
     // a place to store and fetch results of queries
     const results = useSelector((state) => state.results.recent);
@@ -55,42 +59,40 @@ function SqlResultsComp() {
     function ResultsTable({ columns, values }) {
         console.log('resultsTable is rendering');
 
-    return (
-        <table style={{ width: '100%', color: 'white', backgroundColor: 'black', borderCollapse: 'collapse' }}>
-            <thead>
-                <tr>{columns.map((column, index) => (
+        return (
+            <table style={{ width: '100%', color: 'white', backgroundColor: 'black', borderCollapse: 'collapse' }}>
+                <thead>
+                    <tr>{columns.map((column, index) => (
                         <th key={index} style={{ border: '1px solid white', padding: '8px' }}>{column}</th>
                     ))}</tr>
-            </thead>
-            <tbody>
-                {values.map((value, index) => (
-                    <tr key={index}>{value.map((cell, index) => (
+                </thead>
+                <tbody>
+                    {values.map((value, index) => (
+                        <tr key={index}>{value.map((cell, index) => (
                             <th key={index} style={{ border: '1px solid white', padding: '8px' }}>{cell}</th>
                         ))}</tr>
-                ))}
-            </tbody>
-        </table>
-    );
+                    ))}
+                </tbody>
+            </table>
+        );
     }
-
-    function Chart(results) {
-
-        // first song and last song 
+    
+    function Chart({ results }) {
 
         // volume patterns - busy months / quiet periods / peak listening times 
-
+        
         // dominant genres per year 
         
         // language / countries?
-
+        
         // total listening minutes?
-
-
+        
+        
         return (
             <div>Insert chart here</div>
-        )
+            )
     }
-
+    
     function SqlResults() {
         // a function to execute the query and store the results in the store
         const executeTopTracks = () => {
@@ -111,14 +113,14 @@ function SqlResultsComp() {
             // not yet built out. stores in the recent array at the moment
             dispatch(setResults(res))
         };
-
+        
         const executeTopTracksByYear = (e) => {
             e.preventDefault();
             const res = db.exec(tracksByYearQuery);
             // not yet built out. stores in the recent array at the moment
             dispatch(setResults(res))
         };
-
+        
         const executeTopAlbumsByYear = (e) => {
             e.preventDefault();
             // const res = db.exec(tracksAllTimeQuery);
@@ -126,58 +128,66 @@ function SqlResultsComp() {
             // not yet built out. stores in the recent array at the moment
             dispatch(setResults(res))
         };
-
+        
         const executeTopArtistsByYear = (e) => {
             e.preventDefault();
             const res = db.exec(artistsByYearQuery);
             dispatch(setResults(res));
         }
-
+        
         const executeTopTracksByYearByMonth = (e) => {
             e.preventDefault();
             const res = db.exec(tracksByYearByMonthQuery);
             dispatch(setResults(res));
         }
-
+        
         const executeTopAlbumsByYearByMonth = (e) => {
             e.preventDefault();
             const res = db.exec(albumsByYearByMonthQuery);
             dispatch(setResults(res));
         }
-
+        
         const executeTopArtistsByYearByMonth = (e) => {
             e.preventDefault();
             const res = db.exec(artistsByYearByMonthQuery);
             dispatch(setResults(res));
         }
-
+        
         const executeFirstAndLast = () => {
             const res = db.exec(firstAndLastQuery);
-            dispatch(setResults(res));
+            // dispatch(setResults(res));
+            setFirstAndLast(res);
+            // console.log('first and last are ', res)
+        }
+    
+        const executeVolumePatterns = () => {
+            const res = db.exec(volumePatternsQuery);
+            setVolumePatterns(res);
+            console.log('volume patterns are ', res);
         }
 
 
         const [localQuery, setLocalQuery] = useState('');
 
 
-    // a function to execute the query and store the results in the store
-    const executeQuery = () => {
-        try {
-            setLastLocalQuery(localQuery);
-            const res = db.exec(localQuery);
-            dispatch(setResults(res));
+        // a function to execute the query and store the results in the store
+        const executeQuery = () => {
+            try {
+                setLastLocalQuery(localQuery);
+                const res = db.exec(localQuery);
+                dispatch(setResults(res));
 
-        } catch (error) {
-            console.error('Error executing query:', error);
-            alert('Error executing query. Check the console for more details.');
-        }
-    };
+            } catch (error) {
+                console.error('Error executing query:', error);
+                alert('Error executing query. Check the console for more details.');
+            }
+        };
 
-    const executeRef = useRef(null);
-    // // scrolls to the execute button when that component mounts (which is when the db is loaded)
-    useEffect(() => {
-        executeRef.current.scrollIntoView({ behavior: 'smooth' });
-    }, []);
+        const executeRef = useRef(null);
+        // // scrolls to the execute button when that component mounts (which is when the db is loaded)
+        useEffect(() => {
+            executeRef.current.scrollIntoView({ behavior: 'smooth' });
+        }, []);
 
         return (
 
@@ -283,7 +293,7 @@ function SqlResultsComp() {
                 </form>
 
                 {/* Top Artists by year and month button  */}
-                <form onSubmit={ e => {
+                <form onSubmit={e => {
                     if (!chosenYear && !chosenMonth) {
                         executeTopArtist();
                     } else if (!chosenMonth) {
@@ -292,7 +302,7 @@ function SqlResultsComp() {
                         executeTopArtistsByYearByMonth(e);
                     }
                 }
-                    }>
+                }>
 
                     <button
                         ref={executeRef}
@@ -312,7 +322,7 @@ function SqlResultsComp() {
                 </form>
 
                 {/* Top Albums by year button  */}
-                <form onSubmit={ e => {
+                <form onSubmit={e => {
                     if (!chosenMonth && !chosenYear) {
                         executeTopAlbum();
                     } else if (!chosenMonth) {
@@ -321,7 +331,7 @@ function SqlResultsComp() {
                         executeTopAlbumsByYearByMonth(e);
                     }
                 }
-                    }>
+                }>
 
                     <button
                         ref={executeRef}
@@ -339,8 +349,9 @@ function SqlResultsComp() {
                         Get Top Albums {chosenYear && `in ${chosenYear}`} {chosenMonth && `and ${chosenMonth}`}
                     </button>
                 </form>
+                <button onClick={executeFirstAndLast}>Get first and last</button>
 
-                    <button onClick={executeFirstAndLast}>Get first and last track</button>
+                <button onClick={executeVolumePatterns}>Get volume patterns</button>
 
                 {/* we need this to conditionally render based upon whether there has been any change to results,
             otherwise it tries to map an empty array and errors */}
@@ -348,8 +359,9 @@ function SqlResultsComp() {
                     <ResultsTable key={index} columns={result.columns} values={result.values} />
                 ))}
                 {/* executeQuery div around  */}
-                {/* <Chart results={results} /> */}
-                <FirstAndLastTrackComp results={results}/>
+                {/* <Chart results={topTracks} /> */}
+                {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />}
+                {volumePatterns && <VolumePatterns results={volumePatterns}/>}
             </div>
         );
     }

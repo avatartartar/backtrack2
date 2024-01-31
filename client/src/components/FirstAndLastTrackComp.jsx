@@ -1,32 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 const FirstAndLastTrackComp = ({ results }) => {
-    const { year } = useSelector(state => state.chosen);
     const [firstTrack, setFirstTrack] = useState('');
     const [firstArtist, setFirstArtist] = useState('');
     const [lastTrack, setLastTrack] = useState('');
     const [lastArtist, setLastArtist] = useState('');
+    const [firstPlay, setFirstPlay] = useState('');
+    const [lastPlay, setLastPlay] = useState('');
 
     useEffect(() => {
         if (results && results.length > 0 && results[0].values && results[0].values.length > 0) {
             setFirstTrack(results[0].values[0][1]);
             setFirstArtist(results[0].values[0][2]);
+            setFirstPlay(results[0].values[0][4]);
             setLastTrack(results[1].values[0][1]);
             setLastArtist(results[1].values[0][2]);
+            setLastPlay(results[1].values[0][4]);
         }
     }, [results]);
 
     return (
         <div className="topAlbumsDisplay">
-            <h3>First and Last Track</h3>
+            <h3>From the first song you ever played to the last</h3>
+            <div className="firstAndLastTrack">
             <div>
-                <img src="" alt=""></img>
-                <h4>{firstTrack}<br /> {firstArtist}</h4>
+                <img src="https://upload.wikimedia.org/wikipedia/en/d/d6/RayCharlesGreatestHits_1962ABC.jpg" alt="" width="500px"></img>
+                <h4>{firstTrack}<br /> {firstArtist}<br /> {firstPlay}</h4>
             </div>
             <div>
-                <img src="" alt=""></img>
-                <h4>{lastTrack}<br /> {lastArtist}</h4>
+                <img src="https://f4.bcbits.com/img/a4190282017_10.jpg" alt="" width="500px"></img>
+                <h4>{lastTrack}<br /> {lastArtist} <br /> {lastPlay}</h4>
+            </div>
             </div>
         </div>
     );

@@ -87,6 +87,7 @@ const querySlice = createSlice({
             track_name,
             artist_name,
             album_name,
+            strftime('%Y-%m-%d', ts) AS formatted_date,
             track_uri
           from
             sessions
@@ -99,6 +100,7 @@ const querySlice = createSlice({
             track_name,
             artist_name,
             album_name,
+            strftime('%Y-%m-%d', ts) AS formatted_date,
             track_uri
           from
             sessions
@@ -240,6 +242,16 @@ const querySlice = createSlice({
           total_minutes_played desc
         limit
           10`,
+    },
+    minutes: {
+      byMonth: `
+        select
+          strftime('%m', ts) as month,
+          sum(ms_played) / 60000 as total_minutes_played
+        from
+          sessions
+        group by
+          month`,
     },
     status: "idle",
     error: ""
