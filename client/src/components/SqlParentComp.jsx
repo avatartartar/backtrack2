@@ -8,12 +8,14 @@ import SqlLoadComp from './SqlLoadComp.jsx';
 import SqlResultsComp from './SqlResultsComp.jsx';
 import LandingComp from '../components/LandingComp.jsx';
 import ApiCall from '../components/ApiCall.jsx';
+import QueryComp from './QueryComp';
 
 function SqlParentComp() {
   return (
     // Wrapping child components with the DataProvider context
     <DataProvider>
       <ApiCall />
+      <QueryComp />
       <ImportComp />
       <LandingComp />
       <SqlLoadComp />

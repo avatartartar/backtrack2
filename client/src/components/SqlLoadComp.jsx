@@ -12,7 +12,7 @@ import { useData } from './DataContext.jsx';
 
 import { setJson } from '../features/slice.js';
 
-import { makeTempTables, viewTempTables } from './QueryComp.jsx';
+import { makeTempTables, viewTempTables } from '../features/querySlice.js';
 
 const SqlLoadComp = () => {
   const {
@@ -202,25 +202,41 @@ const SqlLoadComp = () => {
         console.error('Error adding common_uri column:', error);
       }
 
+
+      createAndAlterTracksTable(newSqlDb)
+      .then((success) => {
+        setTracksTableBool(true);
+        setSqlDb(newSqlDb);
+        setSqlDbBool(true);
+        dispatch(setJson([]));
+        return success;
+      })
+      .then(() => {
+        console.log('Now creating temp tables...');
+        dispatch(makeTempTables(newSqlDb))
+          .then(() => {
+            console.log('Temp tables created. Viewing temp tables...');
+            dispatch(viewTempTables(newSqlDb))
+              .catch((error) => console.error('Error viewing temp tables:', error));
+          })
+          .catch((error) => console.error('Error creating temp tables:', error));
+      })
+      .catch((error) => console.error('Error creating and altering tracks table:', error));
+
+      console.log('temp tables can be viewed in the console');
+
+      const tableNames = newSqlDb.exec("SELECT name FROM sqlite_master WHERE type='table'");
+      console.log("Table names in sqlDbBinary:", tableNames[0].values.map(row => row[0]));
+
       const sqlDbBinary = newSqlDb.export();
       // octet-stream means binary file type
       const sqlData = new Blob([sqlDbBinary], { type: 'application/octet-stream' });
       // asks the user where to save the file
 
-      // Save the SQL.js database to Dexie
-      // pickup from there
-      setSqlDb(newSqlDb);
-      setSqlDbBool(true);
-      // clears the redux store of the json data, freeing up tons of memory
-      dispatch(setJson([]));
-
       // logging the duration of the table creation/population process to the console
       addInterval();
 
-      console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
-      console.log(rowCount[0].values[0][0], 'rows added to Table');
-      console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
-
+      console.log('saving sql.js database to Dexie...');
 
       dexdb.sqlDbBinary.add({ data: sqlDbBinary }).then((id) => {
         console.log("SQL.js database saved in Dexie with id:", id);
@@ -229,7 +245,9 @@ const SqlLoadComp = () => {
       }
       );
 
-
+      console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
+      console.log(rowCount[0].values[0][0], 'rows added to Table');
+      console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
 
     }
 
@@ -269,24 +287,26 @@ const createAndAlterTracksTable = async (db) => {
 };
 
 
-useEffect(() => {
-  if (sqlDbBool) {
-  // calling the function to create and alter the tracks table
-  createAndAlterTracksTable(sqlDb).then((success) => {
-    if (success) {
-      setTracksTableBool(true); // setting the boolean to true after the table is created and altered
-    }
-  });
-}
-}, [sqlDbBool]); // Dependency array
+// useEffect(() => {
+//   if (sqlDbBool) {
+//   // calling the function to create and alter the tracks table
+//   createAndAlterTracksTable(sqlDb).then((success) => {
+//     if (success) {
+//       makeTempTables(sqlDb)
+//       .then(() => viewTempTables(sqlDb))
+//       .catch((error) => console.error('Error creating or viewing temp tables:', error));
+//       setTracksTableBool(true); // setting the boolean to true after the table is created and altered
+//     }
+//   });
+// }
+// }, [sqlDbBool]); // Dependency array
 
 // runs when the tracksTableBool changes
 // useEffect(() => {
 //   if (tracksTableBool) {
 //     // creates the allTime and topByYear tables
-//     makeTempTables(sqlDb)
-//       .then(() => viewTempTables(sqlDb))
-//       .catch((error) => console.error('Error creating or viewing temp tables:', error));
+
+
 //   }
 // }, [tracksTableBool]); // Run this effect when tracksTableBool changes
 

@@ -7,17 +7,35 @@ import { setResults } from '../features/slice.js';
 import dexdb from './dexdb.js';
 
 
-const QueryComp = {};
+const QueryComp = () => {
 
-QueryComp.makeTempTables = async (dbParam) => {
+const {
+  sqlFile,
+  sqlDb,
+  setSqlDb,
+  sqlDbBool,
+  setSqlDbBool,
+  tracksTableBool,
+  setTracksTableBool,
+  // results,
+  // setResults
+} = useData();
+}
+
+QueryComp.makeTempTables = async (db) => {
+  const { tracks, albums, artists } = useSelector(state => state.query);
+  console.log('makeTempTables invoked');
   const typeOptions = ['tracks', 'albums', 'artists'];
       const typeMap = { tracks, albums, artists };
   typeMap.forEach( async (typeObject) => {
     try {
+      console.log('trying to create allTime and byYear tables');
     // Appending the CREATE TABLE statement to our allTime query
     const allTimeQuery = `CREATE TABLE ${typeObject.name}_allTime AS ${typeObject.allTime}`;
-    await dbParam.exec(allTimeQuery);
-    await dbParam.exec(typeObject.joinTopYears);
+    await db.exec(allTimeQuery);
+    console.log(`Created table "${typeObject.name}_allTime".`);
+    await db.exec(typeObject.joinTopYears);
+    console.log(`Created table "${typeObject.name}_allTime".`);
   } catch (error) {
     console.error(`Error creating table "${typeObject.name}_allTime":`, error.message);
   }
@@ -25,7 +43,7 @@ QueryComp.makeTempTables = async (dbParam) => {
   );
 }
 
-QueryComp.viewTempTables = async (dbParam) => {
+QueryComp.viewTempTables = async (db) => {
   const tempTables = [
     'tracks_allTime',
     'albums_allTime',
@@ -36,7 +54,7 @@ QueryComp.viewTempTables = async (dbParam) => {
   ]
   tempTables.forEach( async (tableName) => {
   try {
-    const result = await dbParam.exec(`SELECT * FROM ${tableName};`);
+    const result = await db.exec(`SELECT * FROM ${tableName};`);
     if (result.length === 0) {
       // The query succeeded but returned no results,
       // meaning the table exists but is empty.
@@ -48,10 +66,10 @@ QueryComp.viewTempTables = async (dbParam) => {
   } catch (error) {
     console.error(`Error viewing table "${tableName}":`, error.message);
   }
-})
+  })
 };
 
-QueryComp.dropTempTables = (dbParam) => {
+QueryComp.dropTempTables = (sqlDb) => {
   const tempTables = [
     'tracks_allTime',
     'albums_allTime',
@@ -62,7 +80,7 @@ QueryComp.dropTempTables = (dbParam) => {
   ]
   tempTables.forEach((tableName) => {
   try {
-    dbParam.exec(`DROP TABLE ${tableName};`);
+    sqlDb.exec(`DROP TABLE ${tableName};`);
     console.log(`Dropped table "${tableName}".`);
   } catch (error) {
     console.error(`Error dropping table "${tableName}":`, error.message);
@@ -70,7 +88,7 @@ QueryComp.dropTempTables = (dbParam) => {
 })
 };
 
-QueryComp.executeFilter = async (type, month, chosenYear, dbParam, dispatch) => {
+QueryComp.executeFilter = async (type, month, chosenYear, sqlDb, dispatch) => {
   let res;
   console.log('type, year, month', type, month);
   console.log('chosenYear', chosenYear);
@@ -79,22 +97,22 @@ QueryComp.executeFilter = async (type, month, chosenYear, dbParam, dispatch) => 
       if (month) {
           return null;
       }
-      res = await dbParam.exec(typeObject.allTime);
+      res = await sqlDb.exec(typeObject.allTime);
       }
   else {
       if (!month) {
-          res = await dbParam.exec(typeObject.byYear(chosenYear));
+          res = await sqlDb.exec(typeObject.byYear(chosenYear));
       } else {
-          res = await dbParam.exec(typeObject.byYearByMonth(chosenYear, month));
+          res = await sqlDb.exec(typeObject.byYearByMonth(chosenYear, month));
       }
   }
   dispatch(setResults(res));
 };
 
-QueryComp.executeLiveQuery = async (localQuery, dbParam, dispatch, setLastLocalQuery) => {
+QueryComp.executeLiveQuery = async (localQuery, sqlDb, dispatch, setLastLocalQuery) => {
   try {
       setLastLocalQuery(localQuery);
-      const res = await dbParam.exec(localQuery);
+      const res = await sqlDb.exec(localQuery);
       dispatch(setResults(res));
 
   } catch (error) {
@@ -110,3 +128,5 @@ export const {
   executeFilter,
   executeLiveQuery
 } = QueryComp;
+
+export default QueryComp;

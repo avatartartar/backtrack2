@@ -1,5 +1,65 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+export const makeTempTables = createAsyncThunk(
+  'query/makeTempTables',
+  async (dbArg, { getState }) => {
+    const { tracks, albums, artists } = getState().query;
+    const typeMap = { tracks, albums, artists };
+    const typeOptions = ['tracks', 'albums', 'artists'];
+    console.log(`query/MakeTempTables: typeMap:`, typeMap);
+
+    // Use Promise.all with map instead of forEach
+    await Promise.all(typeOptions.map(async (typeOption) => {
+      const typeObject = typeMap[typeOption];
+      console.log('query/MakeTempTables: inside Promise.all map function. typeOption:', typeOption);
+
+      try {
+        console.log('query/MakeTempTables: inside the try, for the first time. trying to create allTime and byYear tables');
+        const allTimeQuery = `CREATE TABLE ${typeOption}_allTime AS ${typeObject.allTime}`;
+        await dbArg.exec(allTimeQuery);
+        console.log(`Created table "${typeOption}_allTime".`);
+        await dbArg.exec(typeObject.joinTopYears);
+        console.log(`Created table "${typeOption}_allTime".`);
+      } catch (error) {
+        console.error(`Error creating table "${typeOption}_allTime":`, error.message);
+      }
+    }));
+
+    // Return true after all tables have been created
+    return true;
+  }
+);
+
+export const viewTempTables = createAsyncThunk(
+  'query/viewTempTables',
+  async (dbArg, { getState }) => {
+  const tempTables = [
+    'tracks_allTime',
+    'albums_allTime',
+    'artists_allTime',
+    'top_tracks_by_year',
+    'top_albums_by_year',
+    'top_artists_by_year',
+  ]
+  const results = await Promise.all(tempTables.map(async (table) => {
+    try {
+      const result = await db.exec(`SELECT * FROM ${tableName};`);
+      if (result.length === 0) {
+        // The query succeeded but returned no results,
+        // meaning the table exists but is empty.
+        console.log(`Table "${tableName}" is empty.`);
+      } else {
+        console.log(`Contents of table "${tableName}":`);
+        console.table(result[0].values);
+      }
+    } catch (error) {
+      console.error(`Error viewing table "${tableName}":`, error.message);
+    }
+    })
+  );
+  return results;
+});
+
 
 const querySlice = createSlice({
   name: 'query',
@@ -432,15 +492,41 @@ const querySlice = createSlice({
     status: "idle",
     error: ""
   },
-  reducers: {
-    setQuery: (state, action) => {
-      state.queries[action.meta.arg] = action.payload;
-    }
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(makeTempTables.fulfilled, (state, action) => {
+        console.log('makeTempTables.fulfilled: action.payload:', action.payload);
+        state.status = "success";
+      })
+      .addCase(makeTempTables.pending, (state, action) => {
+        console.log('makeTempTables.pending: action.payload:', action.payload);
+        state.status = "loading";
+      })
+      .addCase(makeTempTables.rejected, (state, action) => {
+        console.log('makeTempTables.rejected: action.payload:', action.payload);
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(viewTempTables.fulfilled, (state, action) => {
+        console.log('viewTempTables.fulfilled: action.payload:', action.payload);
+        state.status = "success";
+      })
+      .addCase(viewTempTables.pending, (state, action) => {
+        console.log('viewTempTables.pending: action.payload:', action.payload);
+        state.status = "loading";
+      })
+      .addCase(viewTempTables.rejected, (state, action) => {
+        console.log('viewTempTables.rejected: action.payload:', action.payload);
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+
+      // Similarly, handle the state updates for the other async thunks
   },
 });
 
-const { reducer: queryReducer, actions: queryActions } = querySlice;
-const { setQuery } = queryActions;
+export const { reducer: queryReducer, actions } = querySlice;
 
 
 const apiSlice = (endpoint, filter) => {
@@ -497,8 +583,3 @@ const apiSlice = (endpoint, filter) => {
 }
 
 const { reducer: tracksApiReducer, actions: fetchTracksApi } = apiSlice('tracks/api');
-
-export {
-  queryReducer,
-  setQuery,
-};
