@@ -50,6 +50,42 @@ function SqlResultsComp() {
     // a place to store and fetch results of the most recent filterQuery
     const results = useSelector((state) => state.results.recent);
 
+    const executeFirstTrack = () => {
+        const res = sqlDb.exec(firstTrackQuery);
+        // dispatch(setResults(res));
+        setFirstTrack(res);
+        // console.log('first and last are ', res)
+    }
+
+    const executeFirstAndLast = () => {
+        const res = sqlDb.exec(firstAndLastQuery);
+        // dispatch(setResults(res));
+        setFirstAndLast(res);
+        // console.log('first and last are ', res)
+    }
+
+    const executeVolumePatterns = () => {
+        const res = sqlDb.exec(volumePatternsQuery);
+        setVolumePatterns(res);
+        // console.log('volume patterns are ', res);
+    }
+    const executeTotalMinPlayed = () => {
+        const res = sqlDb.exec(totalMinPlayedQuery);
+        setTotalMinPlayed(res);
+        // console.log('total min played are ', res)
+    }
+
+
+    // 2024-02-01_02-52-PM: the use of useEffect is causing some lag with the page load.
+    useEffect(() => {
+        if (sqlDb) {
+            // executeFirstTrack();
+            executeFirstAndLast();
+            executeVolumePatterns();
+            executeTotalMinPlayed();
+        }
+    }, [sqlDb]);
+
     // a function to download the SQL database as a binary file
     const downloadSqlDb = () => {
         const sqlDbBinary = sqlDb.export();
@@ -58,6 +94,7 @@ function SqlResultsComp() {
         // asks the user where to save the file
         saveAs(sqlData, 'my_spotify_history_database.sql');
     };
+
     function ResultsTable({ columns, values }) {
 
         return (
@@ -96,9 +133,8 @@ function SqlResultsComp() {
 
     function SqlResults() {
         const typeMap = { tracks, albums, artists };
-
-        // a helper function that takes in the type and month and executes the query from the store that matches both
-        // utilizes chosenYear from the redux store
+        // a helper function that takes in the type and month filters, and executes the query from the store that matches both.
+        // utilizes chosenYear from the redux store - that is, the year chosen on the slider.
         const executeFilter = (type, month) => {
             let res;
             console.log('type, year, month', type, month);
@@ -119,45 +155,12 @@ function SqlResultsComp() {
             }
             dispatch(setResults(res));
         };
-        const executeFirstTrack = () => {
-            const res = sqlDb.exec(firstTrackQuery);
-            // dispatch(setResults(res));
-            setFirstTrack(res);
-            // console.log('first and last are ', res)
-        }
-
-        const executeFirstAndLast = () => {
-            const res = sqlDb.exec(firstAndLastQuery);
-            // dispatch(setResults(res));
-            setFirstAndLast(res);
-            // console.log('first and last are ', res)
-        }
-
-        const executeVolumePatterns = () => {
-            const res = sqlDb.exec(volumePatternsQuery);
-            setVolumePatterns(res);
-            // console.log('volume patterns are ', res);
-        }
-        const executeTotalMinPlayed = () => {
-            const res = sqlDb.exec(totalMinPlayedQuery);
-            setTotalMinPlayed(res);
-            // console.log('total min played are ', res)
-        }
-
-        // 2024-01-31_10-34-PM: the implementation of this is causing lots of re-renders, slowing
-        // useEffect(() => {
-        //     if (sqlDb) {
-        //         // executeFirstAndLast();
-        //         executeFirstTrack();
-        //         executeVolumePatterns();
-        //         executeTotalMinPlayed();
-        //     }
-        // }, [sqlDb])
 
 
+
+
+        // START: DEVELOPMENT ONLY
         const [localQuery, setLocalQuery] = useState('');
-
-
     // a function to execute the query and store the results in the store
     const executeLiveQuery = () => {
         try {
@@ -170,6 +173,7 @@ function SqlResultsComp() {
                 alert('Error executing query. Check the console for more details.');
             }
         };
+    // END: DEVELOPMENT ONLY
 
     const executeRef = useRef(null);
     // // scrolls to the execute button when that component mounts (which is when the sqlDb is loaded)
@@ -225,12 +229,13 @@ function SqlResultsComp() {
                         Get Top {filteredType} {chosenYear === 2024 ? 'all-time' : `in ${chosenYear}` } {filteredMonth && `in ${filteredMonth}`}
                     </button>
                 </form>
-                <button onClick={executeTotalMinPlayed}>Get Total Min Played</button>
-                <button onClick={executeVolumePatterns}>Get Volume Patterns</button>
-                {/* <button onClick={executeFirstTrack}>Get First Track</button> */}
-                <button onClick={executeFirstAndLast}>Get First and Last Track</button>
-                {/* start: query testing area during development */}
 
+                {/* <button onClick={executeTotalMinPlayed}>Get Total Min Played</button> */}
+                {/* <button onClick={executeVolumePatterns}>Get Volume Patterns</button> */}
+                {/* <button onClick={executeFirstTrack}>Get First Track</button> */}
+                {/* <button onClick={executeFirstAndLast}>Get First and Last Track</button> */}
+
+                {/* START: DEVELOPMENT ONLY */}
                 <textarea
                     value={localQuery}
                     onChange={(e) => setLocalQuery(e.target.value)}
@@ -260,7 +265,7 @@ function SqlResultsComp() {
                      <strong>Query:</strong> {lastLocalQuery}
                 </div>
                  )}
-                {/* end: query testing area during development */}
+                {/* END: DEVELOPMENT ONLY */}
 
                 {/* we need this to conditionally render based upon whether there has been any change to results,
             otherwise it tries to map an empty array and errors */}
@@ -269,11 +274,10 @@ function SqlResultsComp() {
                 ))}
                 {/* executeQuery div around  */}
                 <Chart results={results} />
-                {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
-                {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
-                {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
+                {/* {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>} */}
+                {/* {volumePatterns && <VolumePatternsComp results={volumePatterns}/>} */}
                 {/* {firstTrack && < FirstTrackComp results={firstTrack} />} */}
-                {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />}
+                {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
 
             </div>
         );
