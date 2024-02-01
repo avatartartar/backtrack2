@@ -235,8 +235,8 @@ export const fillTopRecordsViaApi = createAsyncThunk(
     // }
     // console.log('artistSchema', artistSchema);
 
-    console.log('vacuuming...');
-    dbArg.run('VACUUM');
+    // console.log('vacuuming...');
+    // dbArg.run('VACUUM');
 
     // Update the top_tracks_allTime, top_tracks_by_year, and albums_by_year tables based on the updated tracks table
     // build these out next:

@@ -242,16 +242,9 @@ const SqlLoadComp = () => {
       console.log('Albums table created and altered.');
       addInterval('to create and alter albums table');
 
-      const artistsSuccess = await createAndAlterArtistsTable(newSqlDb);
-      if (artistsSuccess) { return; }
-      console.log('Artists table created and altered.');
-
-      setTracksTableBool(true);
-      // setSqlDb(newSqlDb);
-      addInterval('to set sqlDb');
-
-      setSqlDbBool(true);
-      dispatch(setJson([]));
+      // const artistsSuccess = await createAndAlterArtistsTable(newSqlDb);
+      // if (artistsSuccess) { return; }
+      // console.log('Artists table created and altered.');
 
       console.log('Now creating allTime and by_year tables...');
       try {
@@ -273,11 +266,6 @@ const SqlLoadComp = () => {
         // uncomment the line below to view the client tables in the console
         // await dispatch(viewClientTables(newSqlDb));
 
-        console.log('sqlDb creation complete. site fully functional for user. all that remains is to save the sqlDb to dexie');
-        setSqlDb(newSqlDb);
-        addInterval();
-
-
         // VACUUM reclaims unused space, as SQLite doesn't automatically give it back.
         // rather, it keeps it for future use.
         // the unvacuumed size apparently does not get stored in the dexie db.
@@ -297,6 +285,16 @@ const SqlLoadComp = () => {
         console.log("sqlDbBinary size:", (sqlDbBinary.length)/1000000, "MB");
         try {
           await dexdb.sqlDbBinary.add({ data: sqlDbBinary });
+          console.log('sqlDb creation complete. site fully functional for user. all that remains is to save the sqlDb to dexie');
+          setSqlDb(newSqlDb);
+          addInterval();
+
+          setTracksTableBool(true);
+          // setSqlDb(newSqlDb);
+          addInterval('to set sqlDb');
+
+          setSqlDbBool(true);
+          dispatch(setJson([]));
           console.log('sqlDbBinary database saved in Dexie/IndexedDb');
           addInterval('to add sqlDbBinary to dexie');
           console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
@@ -339,9 +337,9 @@ const createAndAlterTracksTable = async (dbArg) => {
 // console.log('Tracks table updated. Now adding columns...');
     // adding the columns that the API will populate
     await dbArg.exec(`
-      ALTER TABLE tracks ADD COLUMN all_uris TEXT;
       ALTER TABLE tracks ADD COLUMN preview_url TEXT;
       ALTER TABLE tracks ADD COLUMN image_url TEXT;
+      ALTER TABLE tracks ADD COLUMN all_uris TEXT;
       ALTER TABLE tracks ADD COLUMN explicit TEXT;
       ALTER TABLE tracks ADD COLUMN popularity TEXT;
       ALTER TABLE tracks ADD COLUMN duration_ms TEXT;
@@ -391,39 +389,39 @@ const createAndAlterTracksTable = async (dbArg) => {
       }
     }
 
-    const createAndAlterArtistsTable = async (dbArg) => {
-      try {
-          await dbArg.run(`
-          CREATE TABLE artists AS
-          SELECT
-            artist_name,
-            top_bool,
-            MIN(track_uri) AS rep_track_uri
-          FROM
-            sessions
-          WHERE
-            artist_name IS NOT NULL
-          GROUP BY
-            artist_name
-        `);
-      }
-      catch (error) {
-        console.error('Error creating artists table:', error);
-        return true; // true to indicate failure
-      }
-        try {
-          await dbArg.exec(`
-          ALTER TABLE artists ADD COLUMN artist_uri TEXT;
-          ALTER TABLE artists ADD COLUMN genres TEXT;
-          `);
+    // const createAndAlterArtistsTable = async (dbArg) => {
+    //   try {
+    //       await dbArg.run(`
+    //       CREATE TABLE artists AS
+    //       SELECT
+    //         artist_name,
+    //         top_bool,
+    //         MIN(track_uri) AS rep_track_uri
+    //       FROM
+    //         sessions
+    //       WHERE
+    //         artist_name IS NOT NULL
+    //       GROUP BY
+    //         artist_name
+    //     `);
+    //   }
+    //   catch (error) {
+    //     console.error('Error creating artists table:', error);
+    //     return true; // true to indicate failure
+    //   }
+    //     try {
+    //       await dbArg.exec(`
+    //       ALTER TABLE artists ADD COLUMN artist_uri TEXT;
+    //       ALTER TABLE artists ADD COLUMN genres TEXT;
+    //       `);
 
-          console.log('Artists table created and altered.');
-          return false; // return false to indicate success, rather than returning nothing
-        } catch (error) {
-          console.error('Error adding new columns to artists table:', error);
-          return true; // true to indicate failure
-        }
-      }
+    //       console.log('Artists table created and altered.');
+    //       return false; // return false to indicate success, rather than returning nothing
+    //     } catch (error) {
+    //       console.error('Error adding new columns to artists table:', error);
+    //       return true; // true to indicate failure
+    //     }
+    //   }
 
 
 // Updates the sqlDb local state after inserting the data and renaming the columns
