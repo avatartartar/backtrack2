@@ -1,8 +1,6 @@
 // DataContext.jsx
 import React, { createContext, useContext, useState } from 'react';
 
-import dexdb from './dexdb.js'; // Dexie instance
-
 // useContext is a hook for sharing data between components without having to explicitly pass a prop through every level of the tree.
 // it works by creating a context object and passing it to the useContext hook.
 // every component that needs access to the context object must be wrapped in the <DataContext.Provider> component.
@@ -23,13 +21,17 @@ const DataContext = createContext();
 // here, they are named 'children', as in 'children of the provider component' (SqlParentComp.jsx)
 export const DataProvider = ({ children }) => {
   const [sqlFile, setSqlFile] = useState(null);
-  const [db, setDb] = useState(null);
-  const [dbBool, setDbBool] = useState(false);
+  const [sqlDb, setSqlDb] = useState(null);
+  const [sqlDbBool, setSqlDbBool] = useState(false);
+  const [tracksTableBool, setTracksTableBool] = useState(false);
+  // const [albumsTable, setAlbumsTable] = useState(null);
 
   const contextValue = {
     sqlFile, setSqlFile,
-    db, setDb,
-    dbBool, setDbBool
+    sqlDb, setSqlDb,
+    sqlDbBool, setSqlDbBool,
+    tracksTableBool, setTracksTableBool,
+    // albumsTable, setAlbumsTable,
   };
 
   return (

@@ -1,32 +1,6 @@
-/**
- * @file spotifyTokenRefresh.js
- * @description This file is responsible for handling Spotify API token refresh.
- * It ensures that a valid token is always available for API requests by refreshing the token when it is expired or not set.
- * 2024-01-23: this is not currently getting used as we've added a lot of the spotify api data directly to the database.
- *
- * @requires 'dotenv': To load environment variables from the .env.server file.
- * @requires 'node-fetch': To make HTTP requests to the Spotify token endpoint.
- *
- * @methods
- * - refreshSpotifyToken: This private method is responsible for refreshing the Spotify token by making a POST request to the Spotify accounts service.
- * - getSpotifyToken: This public method retrieves the current token, refreshing it if necessary, and returns a valid token for use in API requests.
- */
-
-import path from 'path';
-import dotenv from 'dotenv';
-
-// Load environment variables from .env.server.
-
-// note: doesn’t apply to our current setup, but good to know:
-// a file only utilize dotenv (which we use to get the .env file) if it is or is being being executed by a node process.
-dotenv.config({ path: '.env.server' });
-
-// must set the below variables to the values we get from our spotify app's dashboard
-const client_id = process.env.SPOTIFY_CLIENT_ID;
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
 // we setup the variables for the token and the expiration time, which we will be reassigning
-let token = null;
+let token = null
 let tokenExpiration = null ;
 
 // Keith/spotifyTokenIntegration: 2024-01-13
@@ -36,9 +10,19 @@ let tokenExpiration = null ;
 // to make it work. This works ¯\_(ツ)_/¯
 
 const refreshSpotifyToken = async () => {
+  // must set the below variables to the values we get from our spotify app's dashboard
   console.log('refreshSpotifyToken called');
+  const client_id = process.env.REACT_APP_SPOTIFY_CLIENT_ID || 'default_client_id';
+  const client_secret = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET || 'default_client_secret';
+  client_id === 'default_client_id' ? console.log('ERROR. Client_id not pulled from env') : console.log('client_id', client_id);;
+  client_secret === 'default_client_secret' ? console.log('ERROR. Client_secret not pulled from env') : null;
+
   // has to be in base64
-  const credentials = new Buffer.from(client_id + ':' + client_secret).toString('base64');
+  // buffer is a node module not neccessarily available in the browser
+  // const credentials = Buffer.from(client_id + ':' + client_secret).toString('base64');
+  // so instead we use btoa, which is a browser method
+  const credentials = btoa(client_id + ':' + client_secret);
+  try {
   const response = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     body: 'grant_type=client_credentials',
@@ -47,13 +31,16 @@ const refreshSpotifyToken = async () => {
       'Authorization': `Basic ${credentials}`,
     },
   });
-
   const data = await response.json();
-
-  // Keith/spotifyTokenIntegration: 2024-01-13
   // returning the object from spotify to 'getSpotifyToken'
   // it has the following properties: access_token, token_type, expires_in
   return data;
+} catch (error) {
+  console.log('refreshSpotifyToken: 4: error', error);
+  return error;
+}
+
+
 };
 
 const getSpotifyToken = async () =>{
@@ -77,6 +64,7 @@ const getSpotifyToken = async () =>{
 
   }
   // The token is still valid
+  // console.log('getSpotifyToken: token', token);
   // Return it from the cache
   return token;
 }

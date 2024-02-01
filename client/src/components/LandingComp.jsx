@@ -22,10 +22,14 @@ const LandingComp = () => {
   // the sqlFile variable in each component that invokes it via useContext immediately receives the updated variable, i.e. the file.
   const {
     sqlFile,
-    db,
-    setDb,
-    dbBool,
-    setDbBool,
+    sqlDb,
+    setSqlDb,
+    sqlDbBool,
+    setSqlDbBool,
+    // tracksTable,
+    // setTracksTable,
+    // albumsTable,
+    // setAlbumsTable,
   } = useData();
 
   const dispatch = useDispatch();
@@ -40,22 +44,22 @@ const LandingComp = () => {
         console.log('LandingComp: sql initialized');
 
         try {
-          const item = await dexdb.sessionsBinary.get(1);
-          console.log('item1 from dexie in LandingComp:', item);
+          const sqlDbItem = await dexdb.sqlDbBinary.get(1);
+          console.log('sqlDbItem from dexie in LandingComp:', sqlDbItem);
 
-          if (item && item.data) {
+          if (sqlDbItem && sqlDbItem.data) {
             console.log('prior user database found in dexie. Loading...');
-            const loadedDb = new SQL.Database(new Uint8Array(item.data));
-            // adding the
-            setDb(loadedDb);
-            setDbBool(true);
+            const loadedSqlDb = new SQL.Database(new Uint8Array(sqlDbItem.data));
+
+            setSqlDb(loadedSqlDb);
+            setSqlDbBool(true);
             setPromptUpload(false);
           } else {
             console.log('Database not found in dexie. Prompting user to upload.');
             setPromptUpload(true); // Trigger user prompt to upload a file
           }
         } catch (error) {
-          console.error('Error accessing sessionsBinary store:', error);
+          console.error('Error accessing sqlDbBinary store:', error);
           setPromptUpload(true);
         }
       } catch (error) {
@@ -67,8 +71,8 @@ const LandingComp = () => {
     loadData();
   }, []);
 
-  // if the db file that we generate is dropped onto the site, this useEffect is invoked.
-  // it loads that file into the SQL.js database and sets the db local state to that database.
+  // if the sqlDb file that we generate and allow user to download is dropped onto the site, this useEffect is invoked.
+  // it loads that file into the SQL.js database and sets the sqlDb local state to that database.
   useEffect(() => {
     const loadSqlFile = async () => {
       if (sqlFile) {
@@ -76,11 +80,16 @@ const LandingComp = () => {
           // initializes a SQL.js instance asynchronously using the initSqlJs function.
           const SQL = await initSqlJs({ locateFile: () => SQLWasm });
           // creates a new database with the sqlFile binary data
-          const newDb = new SQL.Database(sqlFile); // Load the binary data
-          // sets the db local state to the database
-          setDb(newDb)
-          setDbBool(true);
-          console.log('db set in SqlLoadComp.jsx');
+          const newSqlDb = new SQL.Database(sqlFile); // Load the binary data
+          // sets the sqlDb local state to the database
+          setSqlDb(newSqlDb)
+
+          // adds the uploaded sql database to the dexie database
+          const sqlDbBinary = newSqlDb.export();
+          await dexdb.sqlDbBinary.add({ data: sqlDbBinary });
+
+          setSqlDbBool(true);
+          console.log('table set in SqlLoadComp.jsx');
           dispatch(setJson([]));
         } catch (error) {
           console.error('Error processing SQL file:', error);
@@ -96,7 +105,7 @@ const LandingComp = () => {
   return (
     <div>
       {/* Overlay */}
-      {(!dbBool) && (
+      {(!sqlDbBool) && (
         <div className="overlay">
           <img src={logo} alt="Logo" />
           <div className="loading-spinner"></div>
