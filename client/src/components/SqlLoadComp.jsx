@@ -16,7 +16,6 @@ import { makeClientTables, viewClientTables, syncTrackUris, fillTopRecordsViaApi
 
 const SqlLoadComp = () => {
   const {
-    sqlFile,
     sqlDb,
     setSqlDb,
     sqlDbBool,
@@ -55,7 +54,7 @@ const SqlLoadComp = () => {
     if (!label) {
       const firstInterval = intervals[0].time;
       const durationFromFirstToLast = (lastInterval - firstInterval) / 1000;
-      console.log(`${durationFromFirstToLast} seconds to finish making all Tables`);
+      console.log(`${durationFromFirstToLast} seconds to finish making all Tables and save to Dexie`);
     }
 };
 
@@ -216,19 +215,19 @@ const SqlLoadComp = () => {
         }
       };
       const renameColumnsSuccess = await renameColumnsInSessions();
-
+      addInterval('to rename columns in sessions table');
       const syncTrackUrisSuccess = await dispatch(syncTrackUris(newSqlDb));
       // if (syncTrackUrisSuccess) {
       //   console.log('syncTrackUrisSuccess failed in SQLoad');
       //   return; }
       console.log('syncTrackUrisSuccess complete in SQLoad');
       console.log('clientTables created.');
-
+      addInterval('to sync track uris');
 
       const tracksSuccess = await createAndAlterTracksTable(newSqlDb);
       if (tracksSuccess) { return; }
       console.log('Tracks table created and altered.');
-
+      addInterval('to create and alter tracks table');
 
 
       // const ogTrackUriDropped = await dropOgTrackUriFromSessions(newSqlDb);
@@ -236,16 +235,18 @@ const SqlLoadComp = () => {
       // console.log('Og track_uri dropped from sessions.');
 
       const dropOgTrackUriSuccess = await dropColumnFromTable(newSqlDb, 'sessions', 'og_track_uri');
-
+      addInterval('to drop og_track_uri from sessions');
 
 
       const albumsSuccess = await createAndAlterAlbumsTable(newSqlDb);
       if (albumsSuccess) { return; }
       console.log('Albums table created and altered.');
-
+      addInterval('to create and alter albums table');
 
       setTracksTableBool(true);
       setSqlDb(newSqlDb);
+      addInterval('to set sqlDb');
+
       setSqlDbBool(true);
       dispatch(setJson([]));
 
@@ -254,11 +255,13 @@ const SqlLoadComp = () => {
         // eslint says await doesn’t have any effect on dispatch below, but that’s incorrect. when await is not on the dispatch, the rest of the code below continues async. this causes the by_year tables - which are currently taking way too long to run; i think they can be optimized - to not get stored in the dexie db.
         // perhaps eslint is assuming that function dispatched doesn’t return a promise?
         await dispatch(makeClientTables(newSqlDb));
+        addInterval('to create allTime and by_year tables');
       } catch (error) {
         console.error('Error creating allTime and by_year tables:', error);
       }
       try {
         await dispatch(fillTopRecordsViaApi(newSqlDb));
+        addInterval('to fill top records via API');
         console.log('Top records filled via API.');
       } catch (error) {
         console.error('Error filling top records via API:', error);
@@ -270,21 +273,28 @@ const SqlLoadComp = () => {
         // rather, it keeps it for future use.
         // the unvauumed size does not get stored in the dexie db though. its taking up space in memory, but not in the db.
         // still, vacuum goes vroom vroom
-
+        console.log('sql creation complete. site fully functional for user. all that remains is to save the sqlDb to dexie');
         console.log('vacuuming...');
         newSqlDb.run('VACUUM');
-        console.log();
+        addInterval('to vacuum');
         console.log('VACUUM complete');
+        setSqlDb(newSqlDb);
+        addInterval('to setSqlDb after vacuuming');
 
         const sqlDbBinary = newSqlDb.export();
         console.log('clientTables created.');
         // console.log("SQL.js database binary size before vacuum", (sqlDbBinary.length)/1000000, "MB");
-
+        addInterval('to export sqlDb');
 
 
         console.log("SQL.js database binary size after vacuum", (sqlDbBinary.length)/1000000, "MB");
         try {
           await dexdb.sqlDbBinary.add({ data: sqlDbBinary });
+          addInterval('to add sqlDbBinary to dexie');
+          console.log('client tables can be viewed in the console');
+          console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
+          console.log(rowCount[0].values[0][0], 'rows added to Table');
+          console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
           console.log('SQL.js database saved in Dexie');
           addInterval();
         } catch (error) {
@@ -294,10 +304,6 @@ const SqlLoadComp = () => {
         console.error('Error creating client tables:', error);
       }
 
-      console.log('client tables can be viewed in the console');
-      console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
-      console.log(rowCount[0].values[0][0], 'rows added to Table');
-      console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
 
     }
 

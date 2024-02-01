@@ -65,9 +65,9 @@ export const makeClientTables = createAsyncThunk(
   }
 );
 
-const getTrackUris = async (db, tableName) => {
+const getTrackUris = async (dbArg, tableName) => {
   try {
-    const result = await db.exec(`SELECT DISTINCT track_uri FROM ${tableName}`);
+    const result = await dbArg.exec(`SELECT DISTINCT track_uri FROM ${tableName}`);
     return result[0].values.map(row => row[0]);
   } catch (error) {
     console.error(`Error fetching track URIs from ${tableName}:`, error);
@@ -86,7 +86,7 @@ const getTrackInfo = async (uri) => {
   return await response.json();
 }
 
-const updateTrackRecord = async (db, tableName, uri, trackData) => {
+const updateTrackRecord = async (dbArg, tableName, uri, trackData) => {
   try {
     const updateSql = `
       UPDATE ${tableName}
@@ -103,7 +103,7 @@ const updateTrackRecord = async (db, tableName, uri, trackData) => {
       WHERE track_uri = ?;
     `;
 
-    await db.run(updateSql, [
+    await dbArg.run(updateSql, [
       trackData.preview_url || null,
       trackData.album.images[1].url || null,
       trackData.popularity,
@@ -153,6 +153,8 @@ const trackObjectFormat = []
         console.log('trackObjectFormat', trackObjectFormat);
       }
     }
+    console.log('vacuuming...');
+    // dbArg.run('VACUUM');
     console.log('trackObjectFormat', trackObjectFormat);
     // Update the top_tracks_allTime and top_tracks_by_year tables based on the updated tracks table
     // build these out next:

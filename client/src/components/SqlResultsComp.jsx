@@ -15,13 +15,13 @@ function SqlResultsComp() {
   const { sqlDb } = useData();
 
   // a function to download the SQL database as a binary file
-//   const downloadSql = () => {
-//     const sqlDbBinary = sqlDb.export();
-//     // octet-stream means binary file type
-//     const sqlData = new Blob([sqlDbBinary], { type: 'application/octet-stream' });
-//     // asks the user where to save the file
-//     saveAs(sqlData, 'my_spotify_history_database.sql');
-//     };
+  const downloadSql = () => {
+    const sqlDbBinary = sqlDb.export();
+    // octet-stream means binary file type
+    const sqlData = new Blob([sqlDbBinary], { type: 'application/octet-stream' });
+    // asks the user where to save the file
+    saveAs(sqlData, 'my_spotify_history_database.sql');
+    };
 
     const dispatch = useDispatch();
 
@@ -210,7 +210,7 @@ function SqlResultsComp() {
 
     return (
         <div style={{ width: '80%', margin: '0 auto' }}>
-            {/* {sqlDb && (
+            {sqlDb && (
                 <button
                     style={{
                         width: '500px',
@@ -225,7 +225,7 @@ function SqlResultsComp() {
                 >
                     Download your Spotify History Database!
                 </button>
-            )} */}
+            )}
             {sqlDb && <SqlResults />}
         </div>
     );
