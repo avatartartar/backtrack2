@@ -9,13 +9,15 @@ import { setResults } from '../features/slice.js';
 import dexdb from './dexdb.js';
 // import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
 import FirstTrackComp from './FirstTrackComp.jsx';
-import VolumePatterns from './VolumePatterns.jsx';
+import VolumePatternsComp from './VolumePatternsComp.jsx';
+import TotalMinPlayedComp from './TotalMinPlayedComp.jsx';
 
 function SqlResultsComp() {
 
     // const [firstAndLast, setFirstAndLast] = useState('');
     const [firstTrack, setFirstTrack] = useState('');
     const [volumePatterns, setVolumePatterns] = useState('');
+    const [totalMinPlayed, setTotalMinPlayed] = useState('');
 
     // getting the sqlDb and a boolen of it from the shared context with the other sqlComponents
     const { sqlDb } = useData();
@@ -42,6 +44,8 @@ function SqlResultsComp() {
     const firstTrackQuery = tracks.first;
 
     const volumePatternsQuery = minutes.byMonth;
+    const totalMinPlayedQuery = minutes.total;
+
 
     // a place to store and fetch results of the most recent filterQuery
     const results = useSelector((state) => state.results.recent);
@@ -134,6 +138,20 @@ function SqlResultsComp() {
             setVolumePatterns(res);
             console.log('volume patterns are ', res);
         }
+        const executeTotalMinPlayed = () => {
+            const res = sqlDb.exec(totalMinPlayedQuery);
+            setTotalMinPlayed(res);
+            console.log('total min played are ', res)
+        }
+
+        useEffect(() => {
+            if (sqlDb) {
+                // executeFirstAndLast();
+                executeFirstTrack();
+                executeVolumePatterns();
+                executeTotalMinPlayed();
+            }
+        }, [sqlDb])
 
 
         const [localQuery, setLocalQuery] = useState('');
@@ -206,10 +224,6 @@ function SqlResultsComp() {
                         Get Top {filteredType} {chosenYear === 2024 ? 'all-time' : `in ${chosenYear}` } {filteredMonth && `in ${filteredMonth}`}
                     </button>
                 </form>
-                {/* <button onClick={executeFirstAndLast}>Get first and last</button> */}
-                <button onClick={executeFirstTrack}>Get First Track</button>
-
-                <button onClick={executeVolumePatterns}>Get volume patterns</button>
                 {/* start: query testing area during development */}
                 <textarea
                     value={localQuery}
@@ -251,7 +265,8 @@ function SqlResultsComp() {
                 {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
                 {firstTrack && < FirstTrackComp results={firstTrack} />}
 
-                {volumePatterns && <VolumePatterns results={volumePatterns}/>}
+                {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
+                {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
             </div>
         );
     }

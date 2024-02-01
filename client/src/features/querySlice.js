@@ -441,6 +441,13 @@ const querySlice = createSlice({
         10`,
     },
     minutes: {
+      total: `
+        select
+          sum(ms_played) / 86400000 as total_days_played,
+          sum(ms_played) / 3600000 as total_hours_played,
+          sum(ms_played) / 60000 as total_minutes_played
+        from
+          sessions`,
       byMonth: `
         select
           strftime('%m', ts) as month,

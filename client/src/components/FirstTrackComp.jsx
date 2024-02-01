@@ -19,9 +19,9 @@ const FirstTrackComp = ({ results }) => {
         <div className="topAlbumsDisplay">
             <h3>The first track you ever played</h3>
             <div className="firstAndLastTrack">
-            <div>
-                <img src="https://upload.wikimedia.org/wikipedia/en/d/d6/RayCharlesGreatestHits_1962ABC.jpg" alt="" width="500px"></img>
-                <h4>{firstTrack}<br /> {firstArtist}<br /> Played on {firstPlay}</h4>
+            <div className='trackImageCard'>
+                <img src="https://upload.wikimedia.org/wikipedia/en/d/d6/RayCharlesGreatestHits_1962ABC.jpg" alt="" width="300px"></img>
+                <h4>{firstTrack}<br /> {firstArtist}<br /> First played on {firstPlay}</h4>
             </div>
             </div>
         </div>
