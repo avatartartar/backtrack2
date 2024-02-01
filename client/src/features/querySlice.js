@@ -116,7 +116,7 @@ const updateTrackRecord = async (db, tableName, uri, trackData) => {
       uri
     ]);
 
-    console.log(`Updated track data for URI: ${uri} in table: ${tableName}`);
+    // console.log(`Updated track data for URI: ${uri} in table: ${tableName}`);
   } catch (error) {
     console.error(`Error updating track record for URI ${uri} in ${tableName}:`, error);
   }

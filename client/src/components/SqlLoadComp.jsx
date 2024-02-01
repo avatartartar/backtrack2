@@ -223,12 +223,12 @@ const SqlLoadComp = () => {
       //   return; }
       console.log('syncTrackUrisSuccess complete in SQLoad');
       console.log('clientTables created.');
-      // console.log("SQL.js database binary size before Tracks creation:", (newSqlDb.length)/1000000, "MB");
+
 
       const tracksSuccess = await createAndAlterTracksTable(newSqlDb);
       if (tracksSuccess) { return; }
       console.log('Tracks table created and altered.');
-      // console.log("SQL.js database binary size after Tracks creation:", (newSqlDb.length)/1000000, "MB");
+
 
 
       // const ogTrackUriDropped = await dropOgTrackUriFromSessions(newSqlDb);
@@ -236,13 +236,13 @@ const SqlLoadComp = () => {
       // console.log('Og track_uri dropped from sessions.');
 
       const dropOgTrackUriSuccess = await dropColumnFromTable(newSqlDb, 'sessions', 'og_track_uri');
-      console.log("SQL.js database binary size after column drop", (newSqlDb.length)/1000000, "MB");
+
 
 
       const albumsSuccess = await createAndAlterAlbumsTable(newSqlDb);
       if (albumsSuccess) { return; }
       console.log('Albums table created and altered.');
-      console.log("SQL.js database binary size after Albums creation:", (newSqlDb.length)/1000000, "MB");
+
 
       setTracksTableBool(true);
       setSqlDb(newSqlDb);
@@ -270,7 +270,11 @@ const SqlLoadComp = () => {
         // rather, it keeps it for future use.
         // the unvauumed size does not get stored in the dexie db though. its taking up space in memory, but not in the db.
         // still, vacuum goes vroom vroom
+
+        console.log('vacuuming...');
         newSqlDb.run('VACUUM');
+        console.log();
+        console.log('VACUUM complete');
 
         const sqlDbBinary = newSqlDb.export();
         console.log('clientTables created.');
