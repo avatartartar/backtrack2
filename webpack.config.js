@@ -109,6 +109,7 @@ module.exports = (env, argv) => {
             new webpack.DefinePlugin({
                 'process.env.REACT_APP_SPOTIFY_CLIENT_ID': JSON.stringify(process.env.REACT_APP_SPOTIFY_CLIENT_ID),
                 'process.env.REACT_APP_SPOTIFY_CLIENT_SECRET': JSON.stringify(process.env.REACT_APP_SPOTIFY_CLIENT_SECRET),
+                'process.env.REACT_APP_SPOTIFY_TOKEN': JSON.stringify(process.env.REACT_APP_SPOTIFY_TOKEN),
             }),
         ],
     };

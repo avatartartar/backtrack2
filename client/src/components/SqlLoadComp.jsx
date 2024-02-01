@@ -22,8 +22,6 @@ const SqlLoadComp = () => {
     setSqlDbBool,
     tracksTableBool,
     setTracksTableBool,
-    // results,
-    // setResults
   } = useData();
 
   const dispatch = useDispatch();
@@ -69,6 +67,7 @@ const SqlLoadComp = () => {
   //   selectedDataLink.click();
   // }
 
+  // called when a spotify history zip file is uploaded
   const makeSqlDb = async() => {
     // Check that reduxJson is defined and has at least one element
     if (!reduxJson || reduxJson.length === 0) {
@@ -243,8 +242,12 @@ const SqlLoadComp = () => {
       console.log('Albums table created and altered.');
       addInterval('to create and alter albums table');
 
+      const artistsSuccess = await createAndAlterArtistsTable(newSqlDb);
+      if (artistsSuccess) { return; }
+      console.log('Artists table created and altered.');
+
       setTracksTableBool(true);
-      setSqlDb(newSqlDb);
+      // setSqlDb(newSqlDb);
       addInterval('to set sqlDb');
 
       setSqlDbBool(true);
@@ -269,63 +272,55 @@ const SqlLoadComp = () => {
       try {
         // uncomment the line below to view the client tables in the console
         // await dispatch(viewClientTables(newSqlDb));
-                // VACUUM reclaims unused space, as SQLite doesn't automatically give it back.
-        // rather, it keeps it for future use.
-        // the unvauumed size does not get stored in the dexie db though. its taking up space in memory, but not in the db.
-        // still, vacuum goes vroom vroom
-        console.log('sql creation complete. site fully functional for user. all that remains is to save the sqlDb to dexie');
+
+        console.log('sqlDb creation complete. site fully functional for user. all that remains is to save the sqlDb to dexie');
         setSqlDb(newSqlDb);
         addInterval();
-        console.log('vacuuming...');
+
+
+        // VACUUM reclaims unused space, as SQLite doesn't automatically give it back.
+        // rather, it keeps it for future use.
+        // the unvacuumed size apparently does not get stored in the dexie db.
+        // (but i'm not so sure, as a couple of times the size was such it looked like it did. )
+        // its taking up space in memory, but not in the db.
+        // still, vacuum goes vroom vroom
+        console.log('VACUUMing...');
         await newSqlDb.run('VACUUM');
         addInterval('to vacuum');
-        console.log('VACUUM complete');
-        addInterval('to setSqlDb after vacuuming');
+        // addInterval('to setSqlDb after vacuuming');
 
-        const sqlDbBinary = newSqlDb.export();
+        const sqlDbBinary = await newSqlDb.export();
         console.log('clientTables created.');
-        // console.log("SQL.js database binary size before vacuum", (sqlDbBinary.length)/1000000, "MB");
         addInterval('to export sqlDb');
 
 
-        console.log("SQL.js database binary size after vacuum", (sqlDbBinary.length)/1000000, "MB");
+        console.log("sqlDbBinary size:", (sqlDbBinary.length)/1000000, "MB");
         try {
           await dexdb.sqlDbBinary.add({ data: sqlDbBinary });
+          console.log('sqlDbBinary database saved in Dexie/IndexedDb');
           addInterval('to add sqlDbBinary to dexie');
-          console.log('client tables can be viewed in the console');
           console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
+          console.log(countNotAdded,`rows dropped: ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
           console.log(rowCount[0].values[0][0], 'rows added to Table');
-          console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
-          console.log('SQL.js database saved in Dexie');
         } catch (error) {
           console.error("Error during Dexie operation:", error);
         }
       } catch (error) {
         console.error('Error creating client tables:', error);
       }
-
-
     }
-
-  } catch (err) {
-    console.error(err);
-  }
-};
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
 const createAndAlterTracksTable = async (dbArg) => {
-  console.log('Creating and altering tracks table...');
   try {
     await dbArg.run(`
       CREATE TABLE tracks AS
-      SELECT DISTINCT track_uri, album_uri, artist_uri, top_bool
+      SELECT DISTINCT track_uri, album_uri, top_bool
       FROM sessions;
     `);
-console.log('Tracks table created. Now altering...');
-    await dbArg.run(`
-      ALTER TABLE tracks ADD COLUMN all_uris TEXT;
-
-    `);
-
     // not working yet... 2024-01-31_03-06-AM
     // this will be used to populate the all_uris column
     // that way, we can have a place to store of all the uris for a track (surprisingly, some tracks have more than one uri)
@@ -344,6 +339,7 @@ console.log('Tracks table created. Now altering...');
 // console.log('Tracks table updated. Now adding columns...');
     // adding the columns that the API will populate
     await dbArg.exec(`
+      ALTER TABLE tracks ADD COLUMN all_uris TEXT;
       ALTER TABLE tracks ADD COLUMN preview_url TEXT;
       ALTER TABLE tracks ADD COLUMN image_url TEXT;
       ALTER TABLE tracks ADD COLUMN explicit TEXT;
@@ -352,7 +348,7 @@ console.log('Tracks table created. Now altering...');
       ALTER TABLE tracks ADD COLUMN release_date TEXT;
     `);
 
-    console.log('Tracks table created, altered, updated.');
+    console.log('Tracks table created and altered.');
     return false; // return false to indicate success, rather than returning nothing
   } catch (error) {
     console.error('Error creating and altering tracks table:', error);
@@ -360,6 +356,77 @@ console.log('Tracks table created. Now altering...');
   }
 };
 
+  const createAndAlterAlbumsTable = async (dbArg) => {
+    try {
+        await dbArg.run(`
+        CREATE TABLE albums AS
+        SELECT
+          album_name,
+          artist_name,
+          top_bool,
+          MIN(track_uri) AS rep_track_uri
+        FROM
+          sessions
+        WHERE
+          artist_name IS NOT NULL AND
+          album_name IS NOT NULL
+        GROUP BY
+          album_name,
+          artist_name
+      `);
+    } catch (error) {
+      console.error('Error creating albums table:', error);
+      return true; // true to indicate failure
+    }
+      try {
+        await dbArg.exec(`
+          ALTER TABLE albums ADD COLUMN album_uri TEXT;
+          ALTER TABLE albums ADD COLUMN artist_uri TEXT;
+          ALTER TABLE albums ADD COLUMN image_url TEXT
+        `);
+        return false; // return false to indicate success, rather than returning nothing
+      } catch (error) {
+        console.error('Error adding new columns to albums table:', error);
+        return true; // true to indicate failure
+      }
+    }
+
+    const createAndAlterArtistsTable = async (dbArg) => {
+      try {
+          await dbArg.run(`
+          CREATE TABLE artists AS
+          SELECT
+            artist_name,
+            top_bool,
+            MIN(track_uri) AS rep_track_uri
+          FROM
+            sessions
+          WHERE
+            artist_name IS NOT NULL
+          GROUP BY
+            artist_name
+        `);
+      }
+      catch (error) {
+        console.error('Error creating artists table:', error);
+        return true; // true to indicate failure
+      }
+        try {
+          await dbArg.exec(`
+          ALTER TABLE artists ADD COLUMN artist_uri TEXT;
+          ALTER TABLE artists ADD COLUMN genres TEXT;
+          `);
+
+          console.log('Artists table created and altered.');
+          return false; // return false to indicate success, rather than returning nothing
+        } catch (error) {
+          console.error('Error adding new columns to artists table:', error);
+          return true; // true to indicate failure
+        }
+      }
+
+
+// Updates the sqlDb local state after inserting the data and renaming the columns
 const dropColumnFromTable = async (dbArg, tableName, columnName) => {
   try {
     // Get the column names
@@ -388,43 +455,6 @@ const dropColumnFromTable = async (dbArg, tableName, columnName) => {
   }
 };
 
-const createAndAlterAlbumsTable = async (dbArg) => {
-  try{
-        await dbArg.run(`
-          CREATE TABLE albums AS
-          select
-            album_name,
-            artist_name
-          FROM
-            sessions
-          WHERE
-            artist_name is not null and
-            album_name is not null
-          GROUP BY
-            album_name,
-            artist_name
-          `);
-      } catch (error) {
-        console.error('Error creating albums table:', error);
-      }
-      try {
-        await dbArg.exec(`
-          ALTER TABLE albums ADD COLUMN album_uri TEXT;
-          ALTER TABLE albums ADD COLUMN artist_uri TEXT;
-          ALTER TABLE albums ADD COLUMN image_url TEXT
-        `);
-
-        console.log('Albums table created and altered.');
-        return false; // return false to indicate success, rather than returning nothing
-      } catch (error) {
-        console.error('Error adding new columns to albums table:', error);
-        return true; // true to indicate failure
-      }
-    }
-
-// Updates the sqlDb local state after inserting the data and renaming the columns
-
-
 
 // if/when reduxJson changes, makeSqlDb is called
 useEffect(() => {
@@ -435,8 +465,6 @@ useEffect(() => {
     makeSqlDb();
   }
 }, [reduxJson]); // Adds reduxJson as a dependency, i.e. only runs when reduxJson changes
-
-
   return null;
 }
 
