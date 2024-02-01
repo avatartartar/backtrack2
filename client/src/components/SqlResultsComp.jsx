@@ -8,12 +8,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setResults } from '../features/slice.js';
 import dexdb from './dexdb.js';
 import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
-import VolumePatterns from './VolumePatterns.jsx';
+import VolumePatternsComp from './VolumePatternsComp.jsx';
+import TotalMinPlayedComp from './TotalMinPlayedComp.jsx';
 
 function SqlResultsComp() {
 
     const [firstAndLast, setFirstAndLast] = useState('');
     const [volumePatterns, setVolumePatterns] = useState('');
+    const [totalMinPlayed, setTotalMinPlayed] = useState('');
 
     // getting the db and a boolen of it from the shared context with the other sqlComponents
     const { db, dbBool, setDb } = useData();
@@ -49,11 +51,37 @@ function SqlResultsComp() {
     const artistsByYearByMonthQuery = artists.byYearByMonth(chosenYear, chosenMonth);
     const firstAndLastQuery = tracks.firstAndLast;
     const volumePatternsQuery = minutes.byMonth;
+    const totalMinPlayedQuery = minutes.total;
 
     // a place to store and fetch results of queries
     const results = useSelector((state) => state.results.recent);
 
     // getting the db and a boolen of it from the shared context with the other sqlComponents
+
+    const executeFirstAndLast = () => {
+        const res = db.exec(firstAndLastQuery);
+        // dispatch(setResults(res));
+        setFirstAndLast(res);
+    }
+
+    const executeVolumePatterns = () => {
+        const res = db.exec(volumePatternsQuery);
+        setVolumePatterns(res);
+    }
+
+    const executeTotalMinPlayed = () => {
+        const res = db.exec(totalMinPlayedQuery);
+        setTotalMinPlayed(res);
+        console.log('total min played are ', res)
+    }
+
+    useEffect(() => {
+        if (db) {
+            executeFirstAndLast();  
+            executeVolumePatterns();
+            executeTotalMinPlayed();      
+        }        
+    }, [db])
 
 
     function ResultsTable({ columns, values }) {
@@ -153,18 +181,8 @@ function SqlResultsComp() {
             dispatch(setResults(res));
         }
         
-        const executeFirstAndLast = () => {
-            const res = db.exec(firstAndLastQuery);
-            // dispatch(setResults(res));
-            setFirstAndLast(res);
-            // console.log('first and last are ', res)
-        }
+ 
     
-        const executeVolumePatterns = () => {
-            const res = db.exec(volumePatternsQuery);
-            setVolumePatterns(res);
-            console.log('volume patterns are ', res);
-        }
 
 
         const [localQuery, setLocalQuery] = useState('');
@@ -192,53 +210,6 @@ function SqlResultsComp() {
         return (
 
             <div>
-                {/* <button
-                    ref={executeRef}
-                    style={{
-                        width: '500px',
-                        height: '50px',
-                        margin: '0 auto',
-                        cursor: 'pointer',
-                        border: '1px solid black',
-                        padding: '8px',
-                        alignSelf: 'center',
-                    }}
-                    onClick={executeTopTracks}
-                >
-                    Get Top Tracks
-                </button> */}
-                {/* Top album button copy/pasted from above */}
-                {/* <button
-                    ref={executeRef}
-                    style={{
-                        width: '500px',
-                        height: '50px',
-                        margin: '0 auto',
-                        cursor: 'pointer',
-                        border: '1px solid black',
-                        padding: '8px',
-                        alignSelf: 'center',
-                    }}
-                    onClick={executeTopArtist}
-                >
-                    Get Top Artists
-                </button> */}
-                {/* Top Artist button  */}
-                {/* <button
-                    ref={executeRef}
-                    style={{
-                        width: '500px',
-                        height: '50px',
-                        margin: '0 auto',
-                        cursor: 'pointer',
-                        border: '1px solid black',
-                        padding: '8px',
-                        alignSelf: 'center',
-                    }}
-                    onClick={executeTopAlbum}
-                >
-                    Get Top Albums
-                </button> */}
 
                 <form>
                     <select
@@ -349,9 +320,9 @@ function SqlResultsComp() {
                         Get Top Albums {chosenYear && `in ${chosenYear}`} {chosenMonth && `and ${chosenMonth}`}
                     </button>
                 </form>
-                <button onClick={executeFirstAndLast}>Get first and last</button>
+                {/* <button onClick={executeFirstAndLast}>Get first and last</button> */}
 
-                <button onClick={executeVolumePatterns}>Get volume patterns</button>
+                {/* <button onClick={executeVolumePatterns}>Get volume patterns</button> */}
 
                 {/* we need this to conditionally render based upon whether there has been any change to results,
             otherwise it tries to map an empty array and errors */}
@@ -361,11 +332,12 @@ function SqlResultsComp() {
                 {/* executeQuery div around  */}
                 {/* <Chart results={topTracks} /> */}
                 {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />}
-                {volumePatterns && <VolumePatterns results={volumePatterns}/>}
+                {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
+                {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
             </div>
         );
     }
-
+    
     return (
         <div>
             {db && (
