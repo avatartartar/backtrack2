@@ -150,7 +150,7 @@ const trackObjectFormat = []
         await updateTrackRecord(dbArg, 'tracks', uri, trackData); // Update the tracks table
       } catch (error) {
         console.error(`Error fetching data for URI ${uri}:`, error);
-        console.log('trackObjectFormat', trackObjectFormat);
+        // console.log('trackObjectFormat', trackObjectFormat);
       }
     }
     console.log('vacuuming...');

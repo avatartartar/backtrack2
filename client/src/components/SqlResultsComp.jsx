@@ -136,22 +136,23 @@ function SqlResultsComp() {
         const executeVolumePatterns = () => {
             const res = sqlDb.exec(volumePatternsQuery);
             setVolumePatterns(res);
-            console.log('volume patterns are ', res);
+            // console.log('volume patterns are ', res);
         }
         const executeTotalMinPlayed = () => {
             const res = sqlDb.exec(totalMinPlayedQuery);
             setTotalMinPlayed(res);
-            console.log('total min played are ', res)
+            // console.log('total min played are ', res)
         }
 
-        useEffect(() => {
-            if (sqlDb) {
-                // executeFirstAndLast();
-                executeFirstTrack();
-                executeVolumePatterns();
-                executeTotalMinPlayed();
-            }
-        }, [sqlDb])
+        // 2024-01-31_10-34-PM: the implementation of this is causing lots of re-renders, slowing
+        // useEffect(() => {
+        //     if (sqlDb) {
+        //         // executeFirstAndLast();
+        //         executeFirstTrack();
+        //         executeVolumePatterns();
+        //         executeTotalMinPlayed();
+        //     }
+        // }, [sqlDb])
 
 
         const [localQuery, setLocalQuery] = useState('');
@@ -224,6 +225,9 @@ function SqlResultsComp() {
                         Get Top {filteredType} {chosenYear === 2024 ? 'all-time' : `in ${chosenYear}` } {filteredMonth && `in ${filteredMonth}`}
                     </button>
                 </form>
+                <button onClick={executeTotalMinPlayed}>Get Total Min Played</button>
+                <button onClick={executeVolumePatterns}>Get Volume Patterns</button>
+                <button onClick={executeFirstTrack}>Get First Track</button>
                 {/* start: query testing area during development */}
                 <textarea
                     value={localQuery}
@@ -248,6 +252,7 @@ function SqlResultsComp() {
                 >
                     Execute Query
                 </button>
+
                  {lastLocalQuery && (
                  <div style={{ marginTop: '0 auto', color: 'white', backgroundColor: 'black', padding: '8px' }}>
                      <strong>Query:</strong> {lastLocalQuery}
@@ -263,10 +268,9 @@ function SqlResultsComp() {
                 {/* executeQuery div around  */}
                 <Chart results={results} />
                 {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
-                {firstTrack && < FirstTrackComp results={firstTrack} />}
-
                 {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
                 {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
+                {firstTrack && < FirstTrackComp results={firstTrack} />}
             </div>
         );
     }

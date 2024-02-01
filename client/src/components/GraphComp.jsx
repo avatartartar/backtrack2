@@ -93,7 +93,7 @@ const GraphComp = () => {
        <div className="graphWrapper" style={{ width: '90%', margin: '0 auto' }}>
       <h3>{totalHours} hours<br/> spent listening to the below songs {year === 2024 ? "all-time" :`in ${year}`}</h3>
       <div className="chart">
-        <ResponsiveContainer width='100%' height={600}>
+        <ResponsiveContainer width='90%' height={600}>
           <BarChart
             layout="vertical"
             data={data}
