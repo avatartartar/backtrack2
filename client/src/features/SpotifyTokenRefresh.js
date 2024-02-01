@@ -64,6 +64,7 @@ const getSpotifyToken = async () =>{
 
   }
   // The token is still valid
+  // console.log('getSpotifyToken: token', token);
   // Return it from the cache
   return token;
 }

@@ -274,11 +274,12 @@ const SqlLoadComp = () => {
         // the unvauumed size does not get stored in the dexie db though. its taking up space in memory, but not in the db.
         // still, vacuum goes vroom vroom
         console.log('sql creation complete. site fully functional for user. all that remains is to save the sqlDb to dexie');
+        setSqlDb(newSqlDb);
+        addInterval();
         console.log('vacuuming...');
-        newSqlDb.run('VACUUM');
+        await newSqlDb.run('VACUUM');
         addInterval('to vacuum');
         console.log('VACUUM complete');
-        setSqlDb(newSqlDb);
         addInterval('to setSqlDb after vacuuming');
 
         const sqlDbBinary = newSqlDb.export();
@@ -296,7 +297,6 @@ const SqlLoadComp = () => {
           console.log(rowCount[0].values[0][0], 'rows added to Table');
           console.log(countNotAdded,`rows not added to Table. ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
           console.log('SQL.js database saved in Dexie');
-          addInterval();
         } catch (error) {
           console.error("Error during Dexie operation:", error);
         }

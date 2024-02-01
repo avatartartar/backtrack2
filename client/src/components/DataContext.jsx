@@ -1,8 +1,6 @@
 // DataContext.jsx
 import React, { createContext, useContext, useState } from 'react';
 
-import dexdb from './dexdb.js'; // Dexie instance
-
 // useContext is a hook for sharing data between components without having to explicitly pass a prop through every level of the tree.
 // it works by creating a context object and passing it to the useContext hook.
 // every component that needs access to the context object must be wrapped in the <DataContext.Provider> component.

@@ -14,7 +14,7 @@ function SqlParentComp() {
   return (
     // Wrapping child components with the DataProvider context
     <DataProvider>
-      <ApiCall />
+      {/* <ApiCall /> */}
       <QueryComp />
       <ImportComp />
       <LandingComp />
