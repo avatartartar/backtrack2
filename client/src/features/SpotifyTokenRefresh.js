@@ -1,7 +1,6 @@
-import react from 'react';
 
 // we setup the variables for the token and the expiration time, which we will be reassigning
-let token = null;
+let token = null
 let tokenExpiration = null ;
 
 // Keith/spotifyTokenIntegration: 2024-01-13
@@ -12,11 +11,18 @@ let tokenExpiration = null ;
 
 const refreshSpotifyToken = async () => {
   // must set the below variables to the values we get from our spotify app's dashboard
-  const client_id = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
-  const client_secret = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET;
-  console.log('refreshSpotifyToken called via ApiCall');
+  console.log('refreshSpotifyToken called');
+  const client_id = process.env.REACT_APP_SPOTIFY_CLIENT_ID || 'default_client_id';
+  const client_secret = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET || 'default_client_secret';
+  client_id === 'default_client_id' ? console.log('ERROR. Client_id not pulled from env') : console.log('client_id', client_id);;
+  client_secret === 'default_client_secret' ? console.log('ERROR. Client_secret not pulled from env') : null;
+
   // has to be in base64
-  const credentials = new Buffer.from(client_id + ':' + client_secret).toString('base64');
+  // buffer is a node module not neccessarily available in the browser
+  // const credentials = Buffer.from(client_id + ':' + client_secret).toString('base64');
+  // so instead we use btoa, which is a browser method
+  const credentials = btoa(client_id + ':' + client_secret);
+  try {
   const response = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     body: 'grant_type=client_credentials',
@@ -25,13 +31,16 @@ const refreshSpotifyToken = async () => {
       'Authorization': `Basic ${credentials}`,
     },
   });
-
   const data = await response.json();
-
-  // Keith/spotifyTokenIntegration: 2024-01-13
   // returning the object from spotify to 'getSpotifyToken'
   // it has the following properties: access_token, token_type, expires_in
   return data;
+} catch (error) {
+  console.log('refreshSpotifyToken: 4: error', error);
+  return error;
+}
+
+
 };
 
 const getSpotifyToken = async () =>{

@@ -45,7 +45,6 @@ function SqlResultsComp() {
 
 
     function ResultsTable({ columns, values }) {
-        console.log('resultsTable is rendering');
 
     return (
         <table style={{ width: '100%', color: 'white', backgroundColor: 'black', borderCollapse: 'collapse' }}>

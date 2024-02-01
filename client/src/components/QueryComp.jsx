@@ -22,9 +22,9 @@ const {
 } = useData();
 }
 
-QueryComp.makeTempTables = async (db) => {
+QueryComp.makeClientTables = async (db) => {
   const { tracks, albums, artists } = useSelector(state => state.query);
-  console.log('makeTempTables invoked');
+  console.log('makeClientTables invoked');
   const typeOptions = ['tracks', 'albums', 'artists'];
       const typeMap = { tracks, albums, artists };
   typeMap.forEach( async (typeObject) => {
@@ -43,8 +43,8 @@ QueryComp.makeTempTables = async (db) => {
   );
 }
 
-QueryComp.viewTempTables = async (db) => {
-  const tempTables = [
+QueryComp.viewClientTables = async (db) => {
+  const clientTables = [
     'tracks_allTime',
     'albums_allTime',
     'artists_allTime',
@@ -52,7 +52,7 @@ QueryComp.viewTempTables = async (db) => {
     'top_albums_by_year',
     'top_artists_by_year',
   ]
-  tempTables.forEach( async (tableName) => {
+  clientTables.forEach( async (tableName) => {
   try {
     const result = await db.exec(`SELECT * FROM ${tableName};`);
     if (result.length === 0) {
@@ -69,8 +69,8 @@ QueryComp.viewTempTables = async (db) => {
   })
 };
 
-QueryComp.dropTempTables = (sqlDb) => {
-  const tempTables = [
+QueryComp.dropClientTables = (sqlDb) => {
+  const clientTables = [
     'tracks_allTime',
     'albums_allTime',
     'artists_allTime',
@@ -78,7 +78,7 @@ QueryComp.dropTempTables = (sqlDb) => {
     'top_albums_by_year',
     'top_artists_by_year',
   ]
-  tempTables.forEach((tableName) => {
+  clientTables.forEach((tableName) => {
   try {
     sqlDb.exec(`DROP TABLE ${tableName};`);
     console.log(`Dropped table "${tableName}".`);
@@ -122,9 +122,9 @@ QueryComp.executeLiveQuery = async (localQuery, sqlDb, dispatch, setLastLocalQue
 };
 
 export const {
-  makeTempTables,
-  viewTempTables,
-  dropTempTables,
+  makeClientTables,
+  viewClientTables,
+  dropClientTables,
   executeFilter,
   executeLiveQuery
 } = QueryComp;
