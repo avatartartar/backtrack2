@@ -236,14 +236,21 @@ const querySlice = createSlice({
           strftime('%Y', ts) = '${chosenYear}' and
           strftime('%m', ts) = '${chosenMonth}'
         group by
-            year,
-            artist_name
+          year,
+          artist_name
         order by
           total_minutes_played desc
         limit
           10`,
     },
     minutes: {
+      total: `
+        select
+          sum(ms_played) / 86400000 as total_days_played,
+          sum(ms_played) / 3600000 as total_hours_played,
+          sum(ms_played) / 60000 as total_minutes_played
+        from
+          sessions`,
       byMonth: `
         select
           strftime('%m', ts) as month,

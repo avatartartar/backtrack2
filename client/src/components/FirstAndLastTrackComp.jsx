@@ -23,13 +23,13 @@ const FirstAndLastTrackComp = ({ results }) => {
         <div className="topAlbumsDisplay">
             <h3>The first song you ever played, and the last</h3>
             <div className="firstAndLastTrack">
-            <div>
-                <img src="https://upload.wikimedia.org/wikipedia/en/d/d6/RayCharlesGreatestHits_1962ABC.jpg" alt="" width="500px"></img>
-                <h4>{firstTrack}<br /> {firstArtist}<br /> Played on {firstPlay}</h4>
+            <div className='trackImageCard'>
+                <img src="https://upload.wikimedia.org/wikipedia/en/d/d6/RayCharlesGreatestHits_1962ABC.jpg" alt="" width="300px"></img>
+                <h4>{firstTrack}<br /> {firstArtist}<br /> First played on {firstPlay}</h4>
             </div>
-            <div>
+            <div className='trackImageCard'>
                 <img src="https://f4.bcbits.com/img/a4190282017_10.jpg" alt="" width="500px"></img>
-                <h4>{lastTrack}<br /> {lastArtist} <br /> Played on {lastPlay}</h4>
+                <h4>{lastTrack}<br /> {lastArtist} <br /> Last played on {lastPlay}</h4>
             </div>
             </div>
         </div>
