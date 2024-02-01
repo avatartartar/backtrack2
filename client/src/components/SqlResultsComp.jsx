@@ -7,14 +7,14 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { setResults } from '../features/slice.js';
 import dexdb from './dexdb.js';
-// import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
+import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
 import FirstTrackComp from './FirstTrackComp.jsx';
 import VolumePatternsComp from './VolumePatternsComp.jsx';
 import TotalMinPlayedComp from './TotalMinPlayedComp.jsx';
 
 function SqlResultsComp() {
 
-    // const [firstAndLast, setFirstAndLast] = useState('');
+    const [firstAndLast, setFirstAndLast] = useState('');
     const [firstTrack, setFirstTrack] = useState('');
     const [volumePatterns, setVolumePatterns] = useState('');
     const [totalMinPlayed, setTotalMinPlayed] = useState('');
@@ -40,7 +40,7 @@ function SqlResultsComp() {
     const [lastLocalQuery, setLastLocalQuery] = useState('');
 
 
-    // const firstAndLastQuery = tracks.firstAndLast;
+    const firstAndLastQuery = tracks.firstAndLast;
     const firstTrackQuery = tracks.first;
 
     const volumePatternsQuery = minutes.byMonth;
@@ -126,12 +126,12 @@ function SqlResultsComp() {
             // console.log('first and last are ', res)
         }
 
-        // const executeFirstAndLast = () => {
-        //     const res = sqlDb.exec(firstQuery);
-        //     // dispatch(setResults(res));
-        //     setFirstAndLast(res);
-        //     // console.log('first and last are ', res)
-        // }
+        const executeFirstAndLast = () => {
+            const res = sqlDb.exec(firstAndLastQuery);
+            // dispatch(setResults(res));
+            setFirstAndLast(res);
+            // console.log('first and last are ', res)
+        }
 
         const executeVolumePatterns = () => {
             const res = sqlDb.exec(volumePatternsQuery);
@@ -227,8 +227,10 @@ function SqlResultsComp() {
                 </form>
                 <button onClick={executeTotalMinPlayed}>Get Total Min Played</button>
                 <button onClick={executeVolumePatterns}>Get Volume Patterns</button>
-                <button onClick={executeFirstTrack}>Get First Track</button>
+                {/* <button onClick={executeFirstTrack}>Get First Track</button> */}
+                <button onClick={executeFirstAndLast}>Get First and Last Track</button>
                 {/* start: query testing area during development */}
+
                 <textarea
                     value={localQuery}
                     onChange={(e) => setLocalQuery(e.target.value)}
@@ -270,7 +272,9 @@ function SqlResultsComp() {
                 {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
                 {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
                 {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
-                {firstTrack && < FirstTrackComp results={firstTrack} />}
+                {/* {firstTrack && < FirstTrackComp results={firstTrack} />} */}
+                {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />}
+
             </div>
         );
     }

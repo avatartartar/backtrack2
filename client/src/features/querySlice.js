@@ -305,6 +305,33 @@ const querySlice = createSlice({
           limit
             1;
           `,
+          firstAndLast: `
+          select
+            ts as timestamp,
+            track_name,
+            artist_name,
+            album_name,
+            strftime('%Y-%m-%d', ts) AS formatted_date,
+            track_uri
+          from
+            sessions
+          order by
+            ts ASC
+          limit
+            1;
+          select
+            ts as timestamp,
+            track_name,
+            artist_name,
+            album_name,
+            strftime('%Y-%m-%d', ts) AS formatted_date,
+            track_uri
+          from
+            sessions
+          order by
+            ts DESC
+          limit
+            1;`,
     },
     albums: {
       allTime: `
