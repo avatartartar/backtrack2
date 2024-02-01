@@ -173,9 +173,9 @@ function SqlResultsComp() {
 
     const executeRef = useRef(null);
     // // scrolls to the execute button when that component mounts (which is when the sqlDb is loaded)
-    useEffect(() => {
-        executeRef.current.scrollIntoView({ behavior: 'smooth' });
-    }, []);
+    // useEffect(() => {
+    //     executeRef.current.scrollIntoView({ behavior: 'smooth' });
+    // }, []);
 
         return (
 
