@@ -230,11 +230,6 @@ function SqlResultsComp() {
                     </button>
                 </form>
 
-                {/* <button onClick={executeTotalMinPlayed}>Get Total Min Played</button> */}
-                {/* <button onClick={executeVolumePatterns}>Get Volume Patterns</button> */}
-                {/* <button onClick={executeFirstTrack}>Get First Track</button> */}
-                {/* <button onClick={executeFirstAndLast}>Get First and Last Track</button> */}
-
                 {/* START: DEVELOPMENT ONLY */}
                 <textarea
                     value={localQuery}
@@ -274,10 +269,7 @@ function SqlResultsComp() {
                 ))}
                 {/* executeQuery div around  */}
                 <Chart results={results} />
-                {/* {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>} */}
-                {/* {volumePatterns && <VolumePatternsComp results={volumePatterns}/>} */}
-                {/* {firstTrack && < FirstTrackComp results={firstTrack} />} */}
-                {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
+
 
             </div>
         );
@@ -301,7 +293,16 @@ function SqlResultsComp() {
                     Download your Spotify History Database!
                 </button>
             )}
+
+            {/* <button onClick={executeTotalMinPlayed}>Get Total Min Played</button>
+            <button onClick={executeVolumePatterns}>Get Volume Patterns</button>
+            <button onClick={executeFirstTrack}>Get First Track</button> */}
+                {/* <button onClick={executeFirstAndLast}>Get First and Last Track</button> */}
             {sqlDb && <SqlResults />}
+            {firstTrack && < FirstTrackComp results={firstTrack} />}
+            {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />}
+            {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
+            {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
         </div>
     );
 }
