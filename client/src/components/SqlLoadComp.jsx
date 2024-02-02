@@ -204,6 +204,12 @@ const SqlLoadComp = () => {
             ALTER TABLE sessions ADD COLUMN album_uri TEXT;
             ALTER TABLE sessions ADD COLUMN artist_uri TEXT;
             ALTER TABLE sessions ADD COLUMN top_bool BOOLEAN;
+            ALTER TABLE sessions ADD COLUMN preview_url TEXT;
+            ALTER TABLE sessions ADD COLUMN image_url TEXT;
+            ALTER TABLE sessions ADD COLUMN explicit TEXT;
+            ALTER TABLE sessions ADD COLUMN popularity TEXT;
+            ALTER TABLE sessions ADD COLUMN duration_ms TEXT;
+            ALTER TABLE sessions ADD COLUMN release_date TEXT;
           `);
 
           console.log('Sessions table columns renamed and new column added.');
@@ -336,15 +342,15 @@ const createAndAlterTracksTable = async (dbArg) => {
 //       }
 // console.log('Tracks table updated. Now adding columns...');
     // adding the columns that the API will populate
-    await dbArg.exec(`
-      ALTER TABLE tracks ADD COLUMN preview_url TEXT;
-      ALTER TABLE tracks ADD COLUMN image_url TEXT;
-      ALTER TABLE tracks ADD COLUMN all_uris TEXT;
-      ALTER TABLE tracks ADD COLUMN explicit TEXT;
-      ALTER TABLE tracks ADD COLUMN popularity TEXT;
-      ALTER TABLE tracks ADD COLUMN duration_ms TEXT;
-      ALTER TABLE tracks ADD COLUMN release_date TEXT;
-    `);
+    // await dbArg.exec(`
+    //   ALTER TABLE tracks ADD COLUMN preview_url TEXT;
+    //   ALTER TABLE tracks ADD COLUMN image_url TEXT;
+    //   ALTER TABLE tracks ADD COLUMN all_uris TEXT;
+    //   ALTER TABLE tracks ADD COLUMN explicit TEXT;
+    //   ALTER TABLE tracks ADD COLUMN popularity TEXT;
+    //   ALTER TABLE tracks ADD COLUMN duration_ms TEXT;
+    //   ALTER TABLE tracks ADD COLUMN release_date TEXT;
+    // `);
 
     console.log('Tracks table created and altered.');
     return false; // return false to indicate success, rather than returning nothing
@@ -376,17 +382,17 @@ const createAndAlterTracksTable = async (dbArg) => {
       console.error('Error creating albums table:', error);
       return true; // true to indicate failure
     }
-      try {
-        await dbArg.exec(`
-          ALTER TABLE albums ADD COLUMN album_uri TEXT;
-          ALTER TABLE albums ADD COLUMN artist_uri TEXT;
-          ALTER TABLE albums ADD COLUMN image_url TEXT
-        `);
-        return false; // return false to indicate success, rather than returning nothing
-      } catch (error) {
-        console.error('Error adding new columns to albums table:', error);
-        return true; // true to indicate failure
-      }
+      // try {
+      //   await dbArg.exec(`
+      //     ALTER TABLE albums ADD COLUMN album_uri TEXT;
+      //     ALTER TABLE albums ADD COLUMN artist_uri TEXT;
+      //     ALTER TABLE albums ADD COLUMN image_url TEXT
+      //   `);
+      //   return false; // return false to indicate success, rather than returning nothing
+      // } catch (error) {
+      //   console.error('Error adding new columns to albums table:', error);
+      //   return true; // true to indicate failure
+      // }
     }
 
     // const createAndAlterArtistsTable = async (dbArg) => {
