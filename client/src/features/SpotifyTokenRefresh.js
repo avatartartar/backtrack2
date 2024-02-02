@@ -46,7 +46,7 @@ const refreshSpotifyToken = async () => {
 };
 
 const getSpotifyToken = async () =>{
-  const token = process.env.REACT_APP_SPOTIFY_TOKEN || 'error_token';
+  let token = process.env.REACT_APP_SPOTIFY_TOKEN || 'error_token';
   const now = Date.now();
   // if the token is not null and the expiration time is greater than now
   if (!token && tokenExpiration < now) {

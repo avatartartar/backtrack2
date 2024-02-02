@@ -29,6 +29,7 @@ import {
   // without affecting the topTracksReducer, topAlbumsReducer, topArtistsReducer stores (for now)
   resultsReducer,
   userFactsReducer,
+  topReducer,
 } from '../features/slice.js';
 
 import { queryReducer } from '../features/querySlice.js';
@@ -43,6 +44,7 @@ const store = configureStore({
     results: resultsReducer,
     query: queryReducer,
     userFacts: userFactsReducer,
+    top: topReducer,
   },
   // 2024-01-24: disabling serializableCheck, for now, which I think was preventing some functionality with storing json to the store
   middleware: (getDefaultMiddleware) =>

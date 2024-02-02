@@ -30,9 +30,6 @@ const SliderComp = () => {
   const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
 
   const { tracks, albums, artists } = useSelector(state => state.query);
-  const tracksAllTimeQuery = tracks.allTime;
-  const albumsAllTimeQuery = albums.allTime;
-  const artistsAllTimeQuery = artists.allTime;
 
   // Scroll to the top of the page when the component mounts
   // window.history.scrollRestoration = 'manual';

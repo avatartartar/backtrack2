@@ -15,6 +15,7 @@ export const makeClientTables = createAsyncThunk(
     const typeOptions = ['tracks', 'albums', 'artists'];
 
     // Use Promise.all with map instead of forEach
+    // This allows us to run all the queries concurrently, rather than one after the other.
     await Promise.all(typeOptions.map(async (typeOption) => {
       const typeObject = typeMap[typeOption];
 
@@ -28,7 +29,7 @@ export const makeClientTables = createAsyncThunk(
       }
       try {
         // await dbArg.run(typeObject.joinTopYears);
-        // console.log(`Created table "top_${typeOption}_by_year".`);
+        // console.log(`Created table "top_${typeOption}_byYear".`);
 
         // get all unique years from the sessions table
         const yearsResult = await dbArg.exec('SELECT DISTINCT strftime("%Y", ts) as year FROM sessions ORDER BY year');
@@ -43,11 +44,11 @@ export const makeClientTables = createAsyncThunk(
         }
 
         // unite all temporary tables into one table
-        const unionQuery = `CREATE TABLE top_${typeOption}_by_year AS SELECT * FROM ${years.map(year => `temp_${typeOption}_${year.year}`).join(' UNION ALL SELECT * FROM ')}`;
+        const unionQuery = `CREATE TABLE top_${typeOption}_byYear AS SELECT * FROM ${years.map(year => `temp_${typeOption}_${year.year}`).join(' UNION ALL SELECT * FROM ')}`;
         await dbArg.run(unionQuery);
-        // console.log(`Created table "top_${typeOption}_by_year".`);
+        // console.log(`Created table "top_${typeOption}_byYear".`);
 
-        // Optionally, drop the temporary tables
+        // drop the temporary tables
         for (const year of years) {
           // console.log('Dropping table: ', `temp_${typeOption}_${year.year}`);
           await dbArg.exec(`DROP TABLE temp_${typeOption}_${year.year}`);
@@ -56,7 +57,7 @@ export const makeClientTables = createAsyncThunk(
         // await dbArg.exec(`VACUUM`);
 
       } catch (error) {
-        console.error(`Error creating topYearTable "${typeOption}_by_year":`, error.message);
+        console.error(`Error creating topYearTable "${typeOption}_byYear":`, error.message);
       }
     }));
 
@@ -76,67 +77,89 @@ const getTrackUris = async (dbArg, tableName) => {
   }
 };
 
-const getTrackInfo = async (uri) => {
-  const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
-    method: 'GET',
-    // we call the getSpotifyToken function to get the token
-    // which is either cached or gets refreshed (so to speak)
-    headers: { 'Authorization': 'Bearer ' + await getSpotifyToken() },
-  });
-  // console.log('getTrackInfo response', response);
-  return await response.json();
-}
-
-const updateTopTrackRecord = async (dbArg, tableName, uri, trackData) => {
+/**
+ * Retrieves track information from the Spotify API.
+ * @param {string} uri - The URI of the track.
+ * @param {number} retries - The number of retries in case of rate limit hit.
+ * @returns {Promise} - A promise that resolves to the track information.
+ */
+const getTrackInfo = async (uri, retries = 5) => {
   try {
-    const updateSql = `
-      UPDATE ${tableName}
-      SET
-        preview_url = ?,
-        image_url = ?,
-        popularity = ?,
-        duration_ms = ?,
-        explicit = ?,
-        release_date = ?
-      WHERE track_uri = ?;
-    `;
-    await dbArg.run(updateSql, [
-      trackData.preview_url,
-      trackData.album.images[0]?.url || null,
-      trackData.popularity || null,
-      trackData.duration_ms || null,
-      trackData.explicit || null,
-      trackData.album.release_date || null,
-      uri
-    ]);
+    // Send a GET request to the Spotify API to fetch track information
+    const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + await getSpotifyToken(),
+      },
+    });
+
+    if (!response.ok) {
+
+      // 429 is the status code for rate limit hit
+      // retries > 0: if we have retries left, we'll wait for the specified time and then retry the request
+      if (response.status === 429 && retries > 0) {
+
+        // Retry-After header is given by the Spotify API to indicate the time after which we can retry the request
+        // Parses the value of the 'Retry-After' header from the response, converts it to an integer
+        const retryAfter = parseInt(response.headers.get('Retry-After'), 10);
+        console.log(`Rate limit hit, retrying after ${retryAfter} seconds.`);
+
+      // Waits for a given time (in seconds) by using a Promise and setTimeout.
+      // The resolve function is called after the specified time has passed.
+      // The time is calculated by multiplying the value of retryAfter by 1000 to get seconds from ms, and adding 1 second for safety.
+        await new Promise(resolve => setTimeout(resolve, (retryAfter + 1) * 1000));
+        return getTrackInfo(uri, retries - 1); // Retry the request and decrement the number of retries left, though that number is of our own making. Often 3 apparently.
+      }
+      // console.log('response.headers', response.headers);
+      throw new Error(`Fetch request failed with status ${response.status}`);
+    }
+
+    return await response.json();
   } catch (error) {
-    console.error(`Error updating record for URI ${uri}:`, error);
+    console.error(`Error fetching data for URI ${uri}:`, error);
+    throw error; // Rethrow to handle it in the calling context
   }
 };
 
-const updateAlbumRecord = async (dbArg, uri, albumData) => {
+const updateTopTrackRecord = async (dbArg, tableName, uri, trackData) => {
+      // JavaScript's optional chaining syntax ('?.'):
+      // This allows us to access deeply nested object properties without worrying if the property exists or not.
+      // You precede the property you want to access with a question mark, before the period.
+      // basically, '?.album' = 'is there something at album' ? 'return the something' : then don't go any further, dont error, instead return undefined.
+      // but i'd rather have a value, so we use || instead to specify a default value: in this case, null.
+  const previewUrl = trackData?.preview_url || null;
+  const imageUrl = trackData?.album?.images?.[1]?.url || trackData?.album?.images?.[0]?.url || null;
+
+  const updateSql = `
+    UPDATE ${tableName}
+    SET
+      preview_url = ?,
+      image_url = ?
+    WHERE track_uri = ?;
+  `;
+
   try {
-    const updateSql = `
-      UPDATE albums
-      SET
-        album_uri = ?,
-        artist_uri = ?,
-        image_url = ?,
-        top_bool = ?
-      WHERE rep_track_uri = ?;
-    `;
-
-    await dbArg.run(updateSql, [
-      albumData.album.id || null,
-      albumData.artists[0].id || null,
-      albumData.album.images[1].url || albumData.album.images[0].url || null,
-      1, // 1 is the value for top_bool, indicating that the track is in one of the top tracks tables
-      uri
-    ]);
-
-    // console.log(`Updated track data for URI: ${uri} in table: ${tableName}`);
+    await dbArg.run(updateSql, [previewUrl, imageUrl, uri]);
   } catch (error) {
-    console.error(`Error updating album record for track_URI ${uri}:`, error);
+    console.error(`Error updating track record for URI ${uri}:`, error);
+  }
+};
+
+const updateTopAlbumRecord = async (dbArg, tableName, uri, albumData) => {
+  console.log('updateAlbumRecord: running...');
+  const imageUrl = albumData?.album?.images?.[1]?.url || albumData?.album?.images?.[0]?.url || null;
+
+  const updateSql = `
+    UPDATE ${tableName}
+    SET
+      image_url = ?
+    WHERE rep_track_uri = ?;
+  `;
+
+  try {
+    await dbArg.run(updateSql, [imageUrl, uri]);
+  } catch (error) {
+    console.error(`Error updating track record for URI ${uri}:`, error);
   }
 };
 
@@ -145,59 +168,90 @@ export const fillTopRecordsViaApi = createAsyncThunk(
   async (dbArg, thunkAPI) => {
     console.log('fillTopRecordsViaApi: running...');
 
-    // Fetch track URIs from top_tracks_allTime and top_tracks_by_year
+    // Fetch track URIs from top_tracks_allTime and top_tracks_byYear
     const trackUrisAllTime = await getTrackUris(dbArg, 'top_tracks_allTime');
-    const trackUrisByYear = await getTrackUris(dbArg, 'top_tracks_by_year');
+    const trackUrisByYear = await getTrackUris(dbArg, 'top_tracks_byYear');
     // Combine and deduplicate URIs
-    // Create a new set in order to filter out any duplicate track URIs from both the 'trackUrisAllTime' and 'trackUrisByYear' arrays.
     const allTrackUris = [...new Set([...trackUrisAllTime, ...trackUrisByYear])];
+    // Create a new set in order to filter out any duplicate track URIs from both the 'trackUrisAllTime' and 'trackUrisByYear' arrays.
         // [...trackUrisAllTime, ...trackUrisByYear]: This creates a new array that combines the elements of trackUrisAllTime and trackUrisByYear.
         // new Set(): creates a new Set - a collectin of unqiue values, thereby removing duplicates - from the combined array
         // [...]: This creates a new array from the Set. We want an array back, not a set, so this transofrm is necessary.
             //By converting the Set back to an Array, we can use Array methods on the resulting collection of unique values.
-    // console.log('allTrackUris', allTrackUris);
+    console.log('allTrackUris', allTrackUris);
 
-    const albumUrisByYear = await getTrackUris(dbArg, 'top_albums_by_year');
-    const allAlbumUris = [...new Set([...albumUrisByYear])];
-    // console.log('allAlbumUris', allAlbumUris);
 
-    const trackSchema = []
+    // PROMISE.ALL
+    // This allows us to fetch all of the track data concurrently! Rather than having to resolve each promise one by one.
+    // This is a huge performance improvement, especially when dealing with a large number of fetches.
+    // It's reducing the duration to update all of the records given from 26 seconds to .6 seconds!!
+    // Instead of the sum of all fetches, it's the duration of the longest fetch. Crazy.
+
+    // Creating an array of promises for each track URI fetch
+    const fetchTrackPromises = allTrackUris.map(uri => getTrackInfo(uri).then(data => ({uri, data})).catch(error => ({uri, error})));
+    // Waiting for all fetches to complete
+    const trackResults = await Promise.allSettled(fetchTrackPromises);
+    // Gettting the number of rejected promises
+    const rejectedTrackCount = trackResults.filter(result => result.status === 'rejected').length;
+    console.log('rejectedTrackCount', rejectedTrackCount);
     // Loop through each URI, fetch data from API, and update the tracks table
-    for (const uri of allTrackUris) {
-      try {
-        const trackData = await getTrackInfo(uri); // Fetch track data from API
-        // console.log('trackData', trackData);
-        trackSchema[0]=trackData
-        await updateTrackRecord(dbArg, uri, trackData); // Update the tracks table
-      } catch (error) {
-        console.error(`Error fetching data for URI ${uri}:`, error);
-        // console.log('trackSchema', trackSchema);
+    // Iterate through results to update records
+    for (const result of trackResults) {
+      if (result.status === 'fulfilled' && !result.value.error) {
+        try {
+          // Extract URI and trackData from the resolved promise
+          const { uri, data: trackData } = result.value;
+          await updateTopTrackRecord(dbArg, 'top_tracks_allTime', uri, trackData);
+          await updateTopTrackRecord(dbArg, 'top_tracks_byYear', uri, trackData);
+        } catch (updateError) {
+          console.error(`Error updating track record for URI ${result.value.uri}:`, updateError);
+        }
+      } else {
+        console.error(`Error fetching data for URI ${result.value.uri}:`, result.value.error);
       }
     }
-    console.log('trackSchema', trackSchema);
 
-    const albumSchema = []
-    for (const uri of allAlbumUris) {
-      try {
-        const albumData = await getTrackInfo(uri); // Fetch track data from API
+    const albumUrisByYear = await getTrackUris(dbArg, 'top_albums_byYear');
+    const albumUrisAllTime = await getTrackUris(dbArg, 'top_albums_allTime');
+    const allAlbumUris = [...new Set([...albumUrisByYear, ...albumUrisAllTime])];
+    // console.log('allAlbumUris', allAlbumUris);
+    // Creating an array of promises for each track URI fetch, but for albums
+    const fetchAlbumPromises = allAlbumUris.map(uri => getTrackInfo(uri).then(data => ({uri, data})).catch(error => ({uri, error})));
 
-        albumSchema[0]=albumData
-        await updateAlbumRecord(dbArg, uri, albumData); // Update the albums table
-      } catch (error) {
-        console.log('albumSchema', albumSchema);
-        console.error(`Error fetching data for URI ${uri}:`, error);
+    // Wait for all fetches to complete
+    const albumResults = await Promise.allSettled(fetchAlbumPromises);
+    const rejectedAlbumCount = albumResults.filter(result => result.status === 'rejected').length;
+    console.log('rejectedAlbumCount', rejectedAlbumCount);
+    // const albumSchema = []
+    console.log('albumResults', albumResults);
+    for (const result of albumResults) {
+      if (result.status === 'fulfilled' && !result.value.error) {
+        try {
+          // Extract URI and albumData from the resolved promise
+          const { uri, data: albumData } = result.value;
+          await updateTopAlbumRecord(dbArg, 'top_albums_allTime', uri, albumData);
+          await updateTopAlbumRecord(dbArg, 'top_albums_byYear', uri, albumData);
+        } catch (updateError) {
+          console.error(`Error updating album record for URI ${result.value.uri}:`, updateError);
+        }
+      } else {
+        console.error(`Error fetching data for URI ${result.value.uri}:`, result.value.error);
       }
     }
-    console.log('albumSchema', albumSchema);
-
-    // Update the top_tracks_allTime, top_tracks_by_year, and albums_by_year tables based on the updated tracks table
-    // build these out next:
-    // await updateTopTracksTables(dbArg, 'top_tracks_allTime');
-    // await updateTopTracksTables(dbArg, 'top_tracks_by_year');
-    // await updateTopAlbumsTables(dbArg, 'top_albums_by_year');
-
-    }
+    // convertSqlToJson(sqlResultSet);
+  }
 );
+
+function convertSqlToJson(sqlResult) {
+  return sqlResult.values.map(row => {
+    const rowObject = {};
+    row.forEach((value, index) => {
+      const columnName = sqlResult.columns[index];
+      rowObject[columnName] = value;
+    });
+    return rowObject;
+  });
+}
 
 export const syncTrackUris = createAsyncThunk(
   'query/syncTrackUris',
@@ -237,7 +291,6 @@ export const syncTrackUris = createAsyncThunk(
       console.error('Error updating synced_tracks:', error);
       return true
     }
-    return false
   }
 );
 
@@ -415,7 +468,7 @@ const querySlice = createSlice({
             artist_name,
             album_name,
           count (*)
-          as 
+          as
             skipped_count
           from
             sessions
@@ -423,7 +476,7 @@ const querySlice = createSlice({
             skipped = TRUE
           group by
             track_name
-          order by 
+          order by
             skipped_count desc
           limit
             10`
@@ -441,7 +494,8 @@ const querySlice = createSlice({
           MIN(track_uri) as rep_track_uri,
           1 as top_bool,
           NULL as album_uri,
-          NULL as artist_uri
+          NULL as artist_uri,
+          NULL as image_url
         from
           sessions
         where
@@ -466,7 +520,8 @@ const querySlice = createSlice({
           MIN(track_uri) as rep_track_uri,
           1 as top_bool,
           NULL as album_uri,
-          NULL as artist_uri
+          NULL as artist_uri,
+          NULL as image_url
         from
           sessions
         where
@@ -493,8 +548,9 @@ const querySlice = createSlice({
           count(*) as total_plays,
           MIN(track_uri) as rep_track_uri,
           1 as top_bool,
-          NULL as album_uri
+          NULL as album_uri,
           NULL as artist_uri,
+          NULL as image_url
         from
           sessions
         where
@@ -656,9 +712,9 @@ export const viewClientTables = createAsyncThunk(
     'top_tracks_allTime',
     'top_albums_allTime',
     'top_artists_allTime',
-    'top_tracks_by_year',
-    'top_albums_by_year',
-    'top_artists_by_year',
+    'top_tracks_byYear',
+    'top_albums_byYear',
+    'top_artists_byYear',
   ]
   const results = await Promise.all(clientTables.map(async (tableName) => {
     try {
@@ -785,7 +841,7 @@ const { reducer: tracksApiReducer, actions: fetchTracksApi } = apiSlice('tracks/
 // fillTopRecordsViaApi
 // previously below allAlbumUris
     // const artistUrisAllTime = await getTrackUris(dbArg, 'top_artists_allTime');
-    // const artistUrisByYear = await getTrackUris(dbArg, 'top_artists_by_year');
+    // const artistUrisByYear = await getTrackUris(dbArg, 'top_artists_byYear');
     // const allArtistUris = [...new Set([...artistUrisAllTime, ...artistUrisByYear])];
     // console.log('allArtistUris', allArtistUris);
 
@@ -806,3 +862,10 @@ const { reducer: tracksApiReducer, actions: fetchTracksApi } = apiSlice('tracks/
 
     // console.log('vacuuming...');
     // dbArg.run('VACUUM');
+
+
+    // from updateTopTrackRecord
+    // popularity = ?,
+    // duration_ms = ?,
+    // explicit = ?,
+    // release_date = ?
