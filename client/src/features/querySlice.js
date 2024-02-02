@@ -87,37 +87,30 @@ const getTrackInfo = async (uri) => {
   return await response.json();
 }
 
-const updateTrackRecord = async (dbArg, uri, trackData) => {
+const updateTopTrackRecord = async (dbArg, tableName, uri, trackData) => {
   try {
     const updateSql = `
-      UPDATE tracks
+      UPDATE ${tableName}
       SET
         preview_url = ?,
         image_url = ?,
         popularity = ?,
         duration_ms = ?,
         explicit = ?,
-        release_date = ?,
-        album_uri = ?,
-        top_bool = ?
+        release_date = ?
       WHERE track_uri = ?;
     `;
-
     await dbArg.run(updateSql, [
       trackData.preview_url,
-      trackData.album.images[1].url || null,
+      trackData.album.images[0]?.url || null,
       trackData.popularity || null,
       trackData.duration_ms || null,
       trackData.explicit || null,
       trackData.album.release_date || null,
-      trackData.album.id || null,
-      1, // 1 is the value for top_bool, indicating that the track is in one of the top tracks tables
       uri
     ]);
-
-    // console.log(`Updated track data for URI: ${uri} in table: ${tableName}`);
   } catch (error) {
-    console.error(`Error updating track record for URI ${uri}:`, error);
+    console.error(`Error updating record for URI ${uri}:`, error);
   }
 };
 
@@ -147,25 +140,6 @@ const updateAlbumRecord = async (dbArg, uri, albumData) => {
   }
 };
 
-// const updateArtistRecord = async (dbArg, uri, artistData) => {
-//   try {
-//     const updateSql = `
-//       UPDATE artists
-//       SET
-//         genres = ?,
-//         top_bool = ?
-//       WHERE rep_track_uri = ?;
-//     `;
-//     await dbArg.run(updateSql, [
-//       artistData.artist[0].genres.join(', ') || null,
-//       1, // 1 is the value for top_bool, indicating that the track is in one of the top tracks tables
-//       uri
-//     ]);
-//   } catch (error) {
-//     console.error(`Error updating artist record for track_URI ${uri}:`, error);
-//   }
-// };
-
 export const fillTopRecordsViaApi = createAsyncThunk(
   'query/fillTopRecordsViaApi',
   async (dbArg, thunkAPI) => {
@@ -186,11 +160,6 @@ export const fillTopRecordsViaApi = createAsyncThunk(
     const albumUrisByYear = await getTrackUris(dbArg, 'top_albums_by_year');
     const allAlbumUris = [...new Set([...albumUrisByYear])];
     // console.log('allAlbumUris', allAlbumUris);
-
-    // const artistUrisAllTime = await getTrackUris(dbArg, 'top_artists_allTime');
-    // const artistUrisByYear = await getTrackUris(dbArg, 'top_artists_by_year');
-    // const allArtistUris = [...new Set([...artistUrisAllTime, ...artistUrisByYear])];
-    // console.log('allArtistUris', allArtistUris);
 
     const trackSchema = []
     // Loop through each URI, fetch data from API, and update the tracks table
@@ -220,23 +189,6 @@ export const fillTopRecordsViaApi = createAsyncThunk(
       }
     }
     console.log('albumSchema', albumSchema);
-
-    // const artistSchema = []
-    // for (const uri of allArtistUris) {
-    //   try {
-    //     const artistData = await getTrackInfo(uri); // Fetch artist data from API
-    //     // console.log('artistData', artistData);
-    //     artistSchema[0]=artistData
-    //     await updateArtistRecord(dbArg, uri, artistData); // Update the artists table
-    //   } catch (error) {
-    //     console.error(`Error fetching data for URI ${uri}:`, error);
-    //     // console.log('artistSchema', artistSchema);
-    //   }
-    // }
-    // console.log('artistSchema', artistSchema);
-
-    // console.log('vacuuming...');
-    // dbArg.run('VACUUM');
 
     // Update the top_tracks_allTime, top_tracks_by_year, and albums_by_year tables based on the updated tracks table
     // build these out next:
@@ -303,7 +255,16 @@ const querySlice = createSlice({
           sum(ms_played) / 60000 as total_minutes_played,
           sum(ms_played) as total_ms_played,
           count(*) as total_plays,
-          track_uri
+          track_uri,
+          NULL as preview_url,
+          NULL as image_url,
+          NULL as popularity,
+          NULL as duration_ms,
+          NULL as explicit,
+          NULL as release_date,
+          1 as top_bool,
+          NULL as album_uri,
+          NULL as artist_uri
         from
           sessions
         where
@@ -326,7 +287,16 @@ const querySlice = createSlice({
           sum(ms_played) / 60000 as total_minutes_played,
           sum(ms_played) as total_ms_played,
           count(*) as total_plays,
-          track_uri
+          track_uri,
+          NULL as preview_url,
+          NULL as image_url,
+          NULL as popularity,
+          NULL as duration_ms,
+          NULL as explicit,
+          NULL as release_date,
+          1 as top_bool,
+          NULL as album_uri,
+          NULL as artist_uri
         from
           sessions
         where
@@ -354,7 +324,16 @@ const querySlice = createSlice({
           sum(ms_played) / 60000 as total_minutes_played,
           sum(ms_played) as total_ms_played,
           count(*) as total_plays,
-          track_uri
+          track_uri,
+          NULL as preview_url,
+          NULL as image_url,
+          NULL as popularity,
+          NULL as duration_ms,
+          NULL as explicit,
+          NULL as release_date,
+          1 as top_bool,
+          NULL as album_uri,
+          NULL as artist_uri
         from
           sessions
         where
@@ -377,7 +356,16 @@ const querySlice = createSlice({
             artist_name,
             album_name,
             strftime('%Y-%m-%d', ts) AS formatted_date,
-            track_uri
+            track_uri,
+            NULL as preview_url,
+            NULL as image_url,
+            NULL as popularity,
+            NULL as duration_ms,
+            NULL as explicit,
+            NULL as release_date,
+            1 as top_bool,
+            NULL as album_uri,
+            NULL as artist_uri
           from
             sessions
           order by
@@ -392,7 +380,16 @@ const querySlice = createSlice({
             artist_name,
             album_name,
             strftime('%Y-%m-%d', ts) AS formatted_date,
-            track_uri
+            track_uri,
+            NULL as preview_url,
+            NULL as image_url,
+            NULL as popularity,
+            NULL as duration_ms,
+            NULL as explicit,
+            NULL as release_date,
+            1 as top_bool,
+            NULL as album_uri,
+            NULL as artist_uri
           from
             sessions
           order by
@@ -423,7 +420,10 @@ const querySlice = createSlice({
           sum(ms_played) / 60000 as total_minutes_played,
           sum(ms_played) as total_ms_played,
           count(*) as total_plays,
-          MIN(track_uri) as rep_track_uri
+          MIN(track_uri) as rep_track_uri,
+          1 as top_bool,
+          NULL as album_uri,
+          NULL as artist_uri
         from
           sessions
         where
@@ -445,7 +445,10 @@ const querySlice = createSlice({
           sum(ms_played) / 60000 as total_minutes_played,
           sum(ms_played) as total_ms_played,
           count(*) as total_plays,
-          MIN(track_uri) as rep_track_uri
+          MIN(track_uri) as rep_track_uri,
+          1 as top_bool,
+          NULL as album_uri,
+          NULL as artist_uri
         from
           sessions
         where
@@ -470,7 +473,10 @@ const querySlice = createSlice({
           sum(ms_played) / 60000 as total_minutes_played,
           sum(ms_played) as total_ms_played,
           count(*) as total_plays,
-          MIN(track_uri) as rep_track_uri
+          MIN(track_uri) as rep_track_uri,
+          1 as top_bool,
+          NULL as album_uri
+          NULL as artist_uri,
         from
           sessions
         where
@@ -495,7 +501,9 @@ const querySlice = createSlice({
         sum(ms_played) / 60000 as total_minutes_played,
         sum(ms_played) as total_ms_played,
         count(*) as total_plays,
-        MIN(track_uri) as rep_track_uri
+        MIN(track_uri) as rep_track_uri,
+        1 as top_bool,
+        NULL as artist_uri
       from
         sessions
       where
@@ -515,7 +523,9 @@ const querySlice = createSlice({
           sum(ms_played) / 60000 as total_minutes_played,
           sum(ms_played) as total_ms_played,
           count(*) as total_plays,
-          MIN(track_uri) as rep_track_uri
+          MIN(track_uri) as rep_track_uri,
+          1 as top_bool,
+          NULL as artist_uri
         from
           sessions
         where
@@ -538,7 +548,9 @@ const querySlice = createSlice({
         sum(ms_played) / 60000 as total_minutes_played,
         sum(ms_played) as total_ms_played,
         count(*) as total_plays,
-        MIN(track_uri) as rep_track_uri
+        MIN(track_uri) as rep_track_uri,
+        1 as top_bool,
+        NULL as artist_uri
       from
         sessions
       where
@@ -731,3 +743,48 @@ const apiSlice = (endpoint, filter) => {
 }
 
 const { reducer: tracksApiReducer, actions: fetchTracksApi } = apiSlice('tracks/api');
+
+
+// const updateArtistRecord = async (dbArg, uri, artistData) => {
+//   try {
+//     const updateSql = `
+//       UPDATE artists
+//       SET
+//         genres = ?,
+//         top_bool = ?
+//       WHERE rep_track_uri = ?;
+//     `;
+//     await dbArg.run(updateSql, [
+//       artistData.artist[0].genres.join(', ') || null,
+//       1, // 1 is the value for top_bool, indicating that the track is in one of the top tracks tables
+//       uri
+//     ]);
+//   } catch (error) {
+//     console.error(`Error updating artist record for track_URI ${uri}:`, error);
+//   }
+// };
+
+// fillTopRecordsViaApi
+// previously below allAlbumUris
+    // const artistUrisAllTime = await getTrackUris(dbArg, 'top_artists_allTime');
+    // const artistUrisByYear = await getTrackUris(dbArg, 'top_artists_by_year');
+    // const allArtistUris = [...new Set([...artistUrisAllTime, ...artistUrisByYear])];
+    // console.log('allArtistUris', allArtistUris);
+
+    // below albumSchema loop
+        // const artistSchema = []
+    // for (const uri of allArtistUris) {
+    //   try {
+    //     const artistData = await getTrackInfo(uri); // Fetch artist data from API
+    //     // console.log('artistData', artistData);
+    //     artistSchema[0]=artistData
+    //     await updateArtistRecord(dbArg, uri, artistData); // Update the artists table
+    //   } catch (error) {
+    //     console.error(`Error fetching data for URI ${uri}:`, error);
+    //     // console.log('artistSchema', artistSchema);
+    //   }
+    // }
+    // console.log('artistSchema', artistSchema);
+
+    // console.log('vacuuming...');
+    // dbArg.run('VACUUM');
