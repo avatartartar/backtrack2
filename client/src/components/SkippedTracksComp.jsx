@@ -32,7 +32,7 @@ const SkippedTracksComp = ( {results,results2} ) => {
             "Number of Skips":artist[1],
         }
     });
-    console.log('obj of data ->', skippedData);
+    // console.log('obj of data ->', skippedData);
 
 
     return (
@@ -87,10 +87,10 @@ const SkippedTracksComp = ( {results,results2} ) => {
                             stroke="#fff"
                             axisLine={{ stroke: '#FFFFFF' }}
                             tick={{ fill: '#FFFFFF' }}
-                            
+
                             />
                         <YAxis
-                        
+
                             axisLine={{ stroke: '#FFFFFF' }}
                             tick={{ fill: '#FFFFFF' }}
                             />
@@ -102,8 +102,9 @@ const SkippedTracksComp = ( {results,results2} ) => {
           </div>
           <br></br>
           {/* <h2>HOW MUCH MORE DATA CAN WE FIT IN THIS SPA?</h2> */}
+                        {/* the limit does not exist */}
         </div>
-        
+
     )
 }
 

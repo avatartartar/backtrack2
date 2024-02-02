@@ -22,6 +22,7 @@ function SqlResultsComp() {
 
     const [skippedTracks,setSkippedTracks] = useState('');
     const [skippedArtists, setSkippedArtists] = useState('');
+
     // getting the sqlDb and a boolen of it from the shared context with the other sqlComponents
     const { sqlDb } = useData();
 
@@ -81,7 +82,7 @@ function SqlResultsComp() {
     const executeSkippedTracks = () => {
         const res = sqlDb.exec(tracks.skippedTracks);
         const res2 = sqlDb.exec(artists.skipped);
-        
+
         // const res = sqlDb.exec(totalMinPlayedQuery);
         setSkippedTracks(res);
         setSkippedArtists(res2);
@@ -91,9 +92,9 @@ function SqlResultsComp() {
     useEffect(() => {
         if (sqlDb) {
             // executeFirstTrack();
-            executeFirstAndLast();
-            executeVolumePatterns();
-            executeTotalMinPlayed();
+            // executeFirstAndLast();
+            // executeVolumePatterns();
+            // executeTotalMinPlayed();
             executeSkippedTracks();
         }
     }, [sqlDb]);

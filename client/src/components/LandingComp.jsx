@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import Dexie from 'dexie';
 import initSqlJs from 'sql.js';
+import { CSSTransition } from 'react-transition-group';
+
 
 import ImportComp from './ImportComp.jsx';
 import logo from '../../assets/logo.png';
@@ -35,7 +37,7 @@ const LandingComp = () => {
   const dispatch = useDispatch();
 
   const [promptUpload, setPromptUpload] = useState(false);
-  const [loadingText, setLoadingText] = useState('Please Upload Your File Below')
+
 
   useEffect(() => {
     async function loadData() {
@@ -46,7 +48,6 @@ const LandingComp = () => {
 
         try {
           const sqlDbItem = await dexdb.sqlDbBinary.get(1);
-          console.log('sqlDbItem from dexie in LandingComp:', sqlDbItem);
 
           if (sqlDbItem && sqlDbItem.data) {
             console.log('prior user database found in dexie. Loading...');
@@ -55,7 +56,6 @@ const LandingComp = () => {
             setSqlDb(loadedSqlDb);
             setSqlDbBool(true);
             setPromptUpload(false);
-            setLoadingText('Loading File...')
           } else {
             console.log('Database not found in dexie. Prompting user to upload.');
             setPromptUpload(true); // Trigger user prompt to upload a file
@@ -79,7 +79,6 @@ const LandingComp = () => {
     const loadSqlFile = async () => {
       if (sqlFile) {
         try {
-          setLoadingText('Loading User Data...')
           // initializes a SQL.js instance asynchronously using the initSqlJs function.
           const SQL = await initSqlJs({ locateFile: () => SQLWasm });
           // creates a new database with the sqlFile binary data
@@ -104,26 +103,28 @@ const LandingComp = () => {
   }, [sqlFile]
   ); // Adds sqlFile as a dependency, i.e. the effect only runs when sqlFile changes
 
-
   return (
     <div>
       {/* Overlay */}
-      {(!sqlDbBool) && (
-        <div className="overlay">
-          <img src={logo} alt="Logo" />
-          {/* <div className="loading-spinner"></div> */}
-          {/* <div>{promptUpload ? loadingText : 'Loading...' }</div> */}
-          <div>{promptUpload ? loadingText : loadingText}</div>
-
-          {promptUpload && <ImportComp />}
-        </div>
-      )}
+      {/* CSSTransition is a React component that allows for the animation of components entering and exiting the DOM. */}
+      {/* because we're controlling the visibility of the below component with sqlDbBool,
+      we apparently need to use this or something like it. that is, something that plays well with React. */}
+      <CSSTransition
+      in={!sqlDbBool}
+      // set this to the length of the longest animation it contains
+      timeout={3000}
+      classNames="overlay-transition"
+      // what to do when done animating out
+      unmountOnExit
+    >
+      <div className="overlay">
+        {/* shifted the logo to the left 28 pixels to align the T with the loadingText and spinner */}
+        <img src={logo} alt="Logo" style={{ marginLeft: '28px', marginBottom:'50px' }} />
+        {promptUpload && <ImportComp />}
+      </div>
+    </CSSTransition>
     </div>
   );
 }
 
-
 export default LandingComp;
-
-// to-do: style the landing page. 2024-01-27_05-00-PM
-// to-do: move the import button to the landing page. 2024-01-27_05-00-PM

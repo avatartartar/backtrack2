@@ -22,25 +22,15 @@ import { useDispatch } from 'react-redux';
 import JSZip from 'jszip'; // Importing JSZip library for working with zip files
 import { useData } from './DataContext.jsx';
 
-import { setJson } from '../features/slice.js';
+import { setJson, setUserFacts } from '../features/slice.js';
 
 const ImportComp = () => {
-  const { setSqlFile } = useData()
+  const { setSqlFile, sqlDb } = useData()
   const dispatch = useDispatch();
 
   const [isDragging, setIsDragging] = useState(false);
-  const [loadingText, setLoadingText] = useState('Drop File Here')
+  const [loadingText, setLoadingText] = useState('Drop Your Spotify Extended History File Here')
   const [fileDrop, setFileDrop] = useState(false);
-
-  useEffect(() => {
-    // This code will be executed after the component renders and when fileDrop changes.
-    if (fileDrop) {
-      // Perform actions related to showing the popup.
-      console.log('Popup should be visible now.');
-    }
-  }, [fileDrop]);
-
-
 
   // Function to handle drag over event
   const handleDragOver = (event) => {
@@ -66,14 +56,13 @@ const ImportComp = () => {
 
       console.log('SQL file dropped');
 
-      console.log('file.type', file);
-      console.log('setting sql file in context');
+      // console.log('file.type', file);
       reader.onload = async function () {
         const arrayBuffer = reader.result;
         const data = new Uint8Array(arrayBuffer);
-        setSqlFile(data); // Set this Uint8Array to your state or context
+        setSqlFile(data);
       };
-      reader.readAsArrayBuffer(file); // Read as ArrayBuffer for binary files
+      reader.readAsArrayBuffer(file); // Read as ArrayBuffer: for binary files
       return;
     }
 
@@ -81,34 +70,53 @@ const ImportComp = () => {
       const timeDropped = Date.now();
       console.log('Zip file dropped');
       setFileDrop(true);
-      console.log('shoudl of changes set file droppppppppppp')
+      setLoadingText('Parsing your Spotify listening history...')
       // Array to store each json file's data
       let jsonData = [];
       reader.onload = async function () {
         const data = reader.result; // Get the file contents from the FileReader
         const zip = new JSZip(); // Create a JSZip object to work with the zip file
         const contents = await zip.loadAsync(data); // Load the zip file contents asynchronously
+        const fileNames = Object.keys(contents.files).sort(); // Get the file names from the zip file
+        let firstTrackRecord = null;
 
-        // Iterate through each file in the zip
-        contents.forEach(async (relativePath, zipEntry) => {
+       // Iterate through each file in the zip
+        for (const fileName of fileNames) {
+        const zipEntry = contents.files[fileName];
           // Run the following code if the file ends with .json
-          if (relativePath.endsWith('.json')) {
+          if (fileName.endsWith('.json') && !fileName.includes('Video')) {
             const fileData = await zipEntry.async('text'); // Read the data from the zip file dropped in by the user
+            // console.log('fileName', fileName);
             const parsedData = JSON.parse(fileData); // Parse the JSON data
             jsonData = jsonData.concat(parsedData);
-          }
-        });
 
-        const timeParsed = Date.now();
-        const timeElapsed = timeParsed - timeDropped;
-        console.log(`${timeElapsed}ms to parse my_spotify_data.zip`);
+        // getting the first track
+        if (!firstTrackRecord && parsedData.length > 0) {
+          firstTrackRecord = parsedData[0];
+        }
+              }
+        };
 
+        const firstTs = firstTrackRecord.ts;
+        const firstYear = new Date(firstTs).getFullYear();
+        const username = firstTrackRecord.username;
+        const firstTrack = firstTrackRecord.master_metadata_track_name
+        const firstArtist = firstTrackRecord.master_metadata_album_artist_name
+        const firstAlbum = firstTrackRecord.master_metadata_album_album_name
+        const firstTrackUri = firstTrackRecord.spotify_track_uri.substring(14);
+
+        dispatch(setUserFacts({ firstYear }));
+        dispatch(setUserFacts({ firstTrack }));
+        dispatch(setUserFacts({ firstArtist }));
+        dispatch(setUserFacts({ firstAlbum }));
+        dispatch(setUserFacts({ firstTs }));
+        dispatch(setUserFacts({ username }));
+        dispatch(setUserFacts({ firstTrackUri }));
 
         setTimeout(() => {
           dispatch(setJson(jsonData));
-          // const lastArray = jsonData.slice(-1000);
-          // console.log('dispatching json data to Redux store');
         }, 3000);
+
       };
 
         reader.readAsArrayBuffer(file);
@@ -124,7 +132,7 @@ const ImportComp = () => {
       console.log('Invalid file format');
       return;
     }
-    if (file.name !== 'my_spotify_data.zip') {
+    if (!file.name.includes('my_spotify_data')) {
       console.log('Invalid file name. Expected "my_spotify_data.zip"');
       return;
     }
@@ -132,36 +140,33 @@ const ImportComp = () => {
   }
 
   return (
+
     <div className="importComp">
+      {!sqlDb && (
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         style={{
-          height: '80px',
-          width: '200px',
-          // position: 'absolute',
-          // top: 0,
-          // right: 0,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           background: 'transparent',
-          border: '2px solid white',
           display: 'flex',
-          justifyContent: 'center',
           alignItems: 'center',
-          color: 'white'
+          justifyContent: 'center',
         }}
       >
-        <div>{loadingText}</div>
+        <div style={{ position: 'absolute', top: '60%' }}>{loadingText}</div>
 
         {fileDrop && (
-          <div className="loading-popup">
-            Loading User Data...
-            <div className="loading-spinner"></div>
+          <div className="loading-spinner" style={{ position: 'absolute', top: '70%'  }}></div>
+         )}
 
-          </div>
-        )}
-
-      </div>
+    </div>
+      )}
     </div>
   );
 };
