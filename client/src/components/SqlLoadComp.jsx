@@ -255,13 +255,13 @@ const SqlLoadComp = () => {
       } catch (error) {
         console.error('Error creating allTime and by_year tables:', error);
       }
-      try {
-        await dispatch(fillTopRecordsViaApi(newSqlDb));
-        addInterval('to fill top records via API');
-        console.log('Top records filled via API.');
-      } catch (error) {
-        console.error('Error filling top records via API:', error);
-      }
+      // try {
+      //   await dispatch(fillTopRecordsViaApi(newSqlDb));
+      //   addInterval('to fill top records via API');
+      //   console.log('Top records filled via API.');
+      // } catch (error) {
+      //   console.error('Error filling top records via API:', error);
+      // }
       try {
         // uncomment the line below to view the client tables in the console
         // await dispatch(viewClientTables(newSqlDb));

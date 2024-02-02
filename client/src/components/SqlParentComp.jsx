@@ -13,8 +13,8 @@ function SqlParentComp() {
   return (
     // Wrapping child components with the DataProvider context
     <DataProvider>
-      <QueryComp />
       <ImportComp />
+      <QueryComp />
       <LandingComp />
       <SqlLoadComp />
       <SqlResultsComp />

@@ -175,6 +175,43 @@ const resultsSlice = createSlice({
 const { reducer: resultsReducer, actions: resultsActions } = resultsSlice;
 const { setResults } = resultsActions;
 
+const userFactsSlice = createSlice({
+  name: 'userFacts',
+  initialState: {
+    facts: {
+      firstYear: "",
+      firstTrack: "",
+      firstAlbum: "",
+      firstArtist: "",
+      firstTrackUri: "",
+      firstTs: "",
+      lastTrack: "",
+      lastAlbum: "",
+      lastArtist: "",
+      username: "",
+      minutesSinceFirstTrack: "",
+      totalminutesPlayed: "",
+      totalHoursPlayed: "",
+      totalDaysPlayed: "",
+      pctLifeSinceFirstTrack: "", // minutesSinceFirstTrack / totalminutesPlayed
+      totalTracks: "",
+      totalAlbums: "",
+      totalArtists: "",
+      totalSkips: "",
+      totalSessions: "",
+    }
+  },
+  reducers: {
+    setUserFacts: (state, action) => {
+      const key = Object.keys(action.payload)[0];
+      state.facts[key] = action.payload[key];
+    }
+  }
+});
+
+const { reducer: userFactsReducer, actions: userFactsActions } = userFactsSlice;
+const { setUserFacts } = userFactsActions;
+
 
 export {
   fetchTopTracks,
@@ -189,5 +226,7 @@ export {
   jsonReducer,
   setJson,
   resultsReducer,
-  setResults
+  setResults,
+  userFactsReducer,
+  setUserFacts
 };

@@ -28,6 +28,7 @@ import {
   // 2024-01-26_04-42-AM: not being used yet. made to store results of our offline query
   // without affecting the topTracksReducer, topAlbumsReducer, topArtistsReducer stores (for now)
   resultsReducer,
+  userFactsReducer,
 } from '../features/slice.js';
 
 import { queryReducer } from '../features/querySlice.js';
@@ -41,6 +42,7 @@ const store = configureStore({
     json: jsonReducer,
     results: resultsReducer,
     query: queryReducer,
+    userFacts: userFactsReducer,
   },
   // 2024-01-24: disabling serializableCheck, for now, which I think was preventing some functionality with storing json to the store
   middleware: (getDefaultMiddleware) =>

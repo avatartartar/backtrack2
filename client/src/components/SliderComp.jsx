@@ -20,10 +20,6 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import gsap from 'gsap';
 
-import initSqlJs from 'sql.js';
-import SQLWasm from '/node_modules/sql.js/dist/sql-wasm.wasm';
-
-import { useData } from './DataContext.jsx';
 import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack, fetchTopAlbums } from '../features/slice.js';
 import '../../styles/index.scss';
 
@@ -32,7 +28,6 @@ import '../../styles/index.scss';
 const SliderComp = () => {
   const dispatch = useDispatch();
   const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
-  // const { sqlDb, sqlDbBool, setSqlDb  } = useData();
 
   const { tracks, albums, artists } = useSelector(state => state.query);
   const tracksAllTimeQuery = tracks.allTime;

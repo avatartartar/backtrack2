@@ -87,9 +87,9 @@ function SqlResultsComp() {
     useEffect(() => {
         if (sqlDb) {
             // executeFirstTrack();
-            executeFirstAndLast();
-            executeVolumePatterns();
-            executeTotalMinPlayed();
+            // executeFirstAndLast();
+            // executeVolumePatterns();
+            // executeTotalMinPlayed();
             executeSkippedTracks();
         }
     }, [sqlDb]);

@@ -2,7 +2,7 @@ import React from 'react'
 
 const SkippedTracksComp = ({ results }) => {
 
-    console.log('from skippedTracks -> ', results[0].values);
+    // console.log('from skippedTracks -> ', results[0].values);
     const skipped = results[0].values;
     // results[0].values.forEach(track => console.log(track));
     const skippedTracks = skipped.map(tracks => {
@@ -17,7 +17,7 @@ const SkippedTracksComp = ({ results }) => {
         )
     })
     return (
-        <div>Skipped Tracks/Artists component all time 
+        <div>Skipped Tracks/Artists component all time
             {/* {skippedTracks} */}
           <table>
             <thead>

@@ -35,7 +35,7 @@ const LandingComp = () => {
   const dispatch = useDispatch();
 
   const [promptUpload, setPromptUpload] = useState(false);
-  const [loadingText, setLoadingText] = useState('Please Upload Your File Below')
+
 
   useEffect(() => {
     async function loadData() {
@@ -55,7 +55,6 @@ const LandingComp = () => {
             setSqlDb(loadedSqlDb);
             setSqlDbBool(true);
             setPromptUpload(false);
-            setLoadingText('Loading File...')
           } else {
             console.log('Database not found in dexie. Prompting user to upload.');
             setPromptUpload(true); // Trigger user prompt to upload a file
@@ -79,7 +78,6 @@ const LandingComp = () => {
     const loadSqlFile = async () => {
       if (sqlFile) {
         try {
-          setLoadingText('Loading User Data...')
           // initializes a SQL.js instance asynchronously using the initSqlJs function.
           const SQL = await initSqlJs({ locateFile: () => SQLWasm });
           // creates a new database with the sqlFile binary data
@@ -110,11 +108,7 @@ const LandingComp = () => {
       {/* Overlay */}
       {(!sqlDbBool) && (
         <div className="overlay">
-          <img src={logo} alt="Logo" />
-          {/* <div className="loading-spinner"></div> */}
-          {/* <div>{promptUpload ? loadingText : 'Loading...' }</div> */}
-          <div>{promptUpload ? loadingText : loadingText}</div>
-
+          <img src={logo} alt="Logo" style={{ marginLeft: '28px', marginBottom:'50px' }} />
           {promptUpload && <ImportComp />}
         </div>
       )}
