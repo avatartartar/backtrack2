@@ -3,10 +3,10 @@ import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 
 const SkippedTracksComp = ( {results,results2} ) => {
 
-    const tracksSkippedArr = results[0].values;
-    const artistSkippedArr = results2[0].values;
-
-    const tracksSkipped = tracksSkippedArr.map(tracks => {
+    // console.log('from skippedTracks -> ', results[0].values);
+    const skipped = results[0].values;
+    // results[0].values.forEach(track => console.log(track));
+    const skippedTracks = skipped.map(tracks => {
         return (
            <tr style={{color:"black"}}>
             <td>{tracks[0]}</td>
@@ -36,8 +36,8 @@ const SkippedTracksComp = ( {results,results2} ) => {
 
 
     return (
-        <div>
-            <hr></hr>
+        <div>Skipped Tracks/Artists component all time
+            {/* {skippedTracks} */}
           <table>
             <thead>
                 <tr style={{color:'black'}}>

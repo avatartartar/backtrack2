@@ -53,6 +53,67 @@ const chosenSlice = createSlice({
 const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
 const { setYear, setChosenTrack } = chosenActions;
 
+const topSlice = createSlice({
+  name: 'top',
+  initialState: {
+    tracks: {},
+    albums: {},
+    artists: {},
+    loading: false,
+    error: null,
+  },
+  reducers: {
+    setTopAllTime: (state, action) => {
+      console.log('setTopAllTime action.payload:', action.payload);
+      const { category, records } = action.payload; // category: 'tracks', 'artists', 'albums'
+      state[category].allTime = records;
+    },
+    setTopByYear: (state, action) => {
+      const { category, year, records } = action.payload;
+      if (!state[category].byYear[year]) {
+        state[category].byYear[year] = [];
+      }
+      state[category].byYear[year] = records;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(setYear, (state, action) => {
+      const year = action.payload;
+      })
+      // Handle fetchTopAllTime
+      // .addCase(fetchTopAllTime.fulfilled, (state, action) => {
+      //   const { category, data } = action.payload;
+      //   state[category].allTime = data;
+      // })
+      // .addCase(fetchTopByYear.fulfilled, (state, action) => {
+      //   const { category, year, data } = action.payload;
+      //   state[category].byYear[year] = data;
+      // })
+      // // You can add more cases for pending, rejected to handle loading states and errors
+      // .addCase(fetchTopAllTime.pending, (state, action) => {
+      //   state.loading = true;
+      // })
+      // .addCase(fetchTopAllTime.rejected, (state, action) => {
+      //   state.loading = false;
+      //   state.error = action.error.message;
+      // })
+      // .addCase(fetchTopByYear.pending, (state, action) => {
+      //   state.loading = true;
+      // })
+      // .addCase(fetchTopByYear.rejected, (state, action) => {
+      //   state.loading = false;
+      //   state.error = action.error.message;
+      // });
+  },
+});
+
+const { reducer: topReducer, actions: topActions } = topSlice;
+const { setTopAllTime, setTopByYear, fetchTopByYear, fetchTopAllTime } = topActions;
+
+
+
+
 const dataSlice = (endpoint, filter) => {
   const actions = createAsyncThunk(
     `fetch/${endpoint}`,
@@ -175,6 +236,43 @@ const resultsSlice = createSlice({
 const { reducer: resultsReducer, actions: resultsActions } = resultsSlice;
 const { setResults } = resultsActions;
 
+const userFactsSlice = createSlice({
+  name: 'userFacts',
+  initialState: {
+    facts: {
+      firstYear: "",
+      firstTrack: "",
+      firstAlbum: "",
+      firstArtist: "",
+      firstTrackUri: "",
+      firstTs: "",
+      lastTrack: "",
+      lastAlbum: "",
+      lastArtist: "",
+      username: "",
+      minutesSinceFirstTrack: "",
+      totalminutesPlayed: "",
+      totalHoursPlayed: "",
+      totalDaysPlayed: "",
+      pctLifeSinceFirstTrack: "", // minutesSinceFirstTrack / totalminutesPlayed
+      totalTracks: "",
+      totalAlbums: "",
+      totalArtists: "",
+      totalSkips: "",
+      totalSessions: "",
+    }
+  },
+  reducers: {
+    setUserFacts: (state, action) => {
+      const key = Object.keys(action.payload)[0];
+      state.facts[key] = action.payload[key];
+    }
+  }
+});
+
+const { reducer: userFactsReducer, actions: userFactsActions } = userFactsSlice;
+const { setUserFacts } = userFactsActions;
+
 
 export {
   fetchTopTracks,
@@ -189,5 +287,12 @@ export {
   jsonReducer,
   setJson,
   resultsReducer,
-  setResults
+  setResults,
+  userFactsReducer,
+  setUserFacts,
+  fetchTopByYear,
+  fetchTopAllTime,
+  setTopAllTime,
+  setTopByYear,
+  topReducer,
 };
