@@ -1,8 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { LabelList, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useData } from './DataContext.jsx';
+import { useDispatch, useSelector } from "react-redux";
 
 
-const VolumePatternsComp = ({ results }) => {
+const VolumePatternsComp = () => {
+
+    const { sqlDb } = useData();
+    const [results, setResults] = useState('');
+    const { tracks, albums, artists, minutes } = useSelector(state => state.query);
+    const volumePatternsQuery = minutes.byMonth;
+
+    const executeVolumePatterns = () => {
+        const res = sqlDb.exec(volumePatternsQuery);
+        // setVolumePatterns(res);
+        setResults(res);
+        // console.log('volume patterns are ', res);
+    };
+
+    useEffect(() => {
+        if (sqlDb) {
+            executeVolumePatterns();
+        }
+      }, [sqlDb]);
 
     const monthDict = {
         '01': 'Jan',

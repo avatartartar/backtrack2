@@ -14,10 +14,10 @@ import TotalMinPlayedComp from './TotalMinPlayedComp.jsx';
 
 function SqlResultsComp() {
 
-    const [firstAndLast, setFirstAndLast] = useState('');
+    // const [firstAndLast, setFirstAndLast] = useState('');
     const [firstTrack, setFirstTrack] = useState('');
     const [volumePatterns, setVolumePatterns] = useState('');
-    const [totalMinPlayed, setTotalMinPlayed] = useState('');
+    // const [totalMinPlayed, setTotalMinPlayed] = useState('');
 
     // getting the sqlDb and a boolen of it from the shared context with the other sqlComponents
     const { sqlDb } = useData();
@@ -80,9 +80,9 @@ function SqlResultsComp() {
     useEffect(() => {
         if (sqlDb) {
             // executeFirstTrack();
-            executeFirstAndLast();
-            executeVolumePatterns();
-            executeTotalMinPlayed();
+            // executeFirstAndLast();
+            // executeVolumePatterns();
+            // executeTotalMinPlayed();
         }
     }, [sqlDb]);
 
@@ -301,8 +301,8 @@ function SqlResultsComp() {
             {sqlDb && <SqlResults />}
             {firstTrack && < FirstTrackComp results={firstTrack} />}
             {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
-            {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
-            {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
+            {/* {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>} */}
+            {/* {volumePatterns && <VolumePatternsComp results={volumePatterns}/>} */}
         </div>
     );
 }
