@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import Dexie from 'dexie';
 import initSqlJs from 'sql.js';
+import { CSSTransition } from 'react-transition-group';
+
 
 import ImportComp from './ImportComp.jsx';
 import logo from '../../assets/logo.png';
@@ -106,12 +108,23 @@ const LandingComp = () => {
   return (
     <div>
       {/* Overlay */}
-      {(!sqlDbBool) && (
-        <div className="overlay">
-          <img src={logo} alt="Logo" style={{ marginLeft: '28px', marginBottom:'50px' }} />
-          {promptUpload && <ImportComp />}
-        </div>
-      )}
+      {/* CSSTransition is a React component that allows for the animation of components entering and exiting the DOM. */}
+      {/* because we're controlling the visibility of the below component with sqlDbBool,
+      we apparently need to use this or something like it. that is, something that plays well with React. */}
+      <CSSTransition
+      in={!sqlDbBool}
+      // set this to the length of the longest animation it contains
+      timeout={3000}
+      classNames="overlay-transition"
+      // what to do when done animating out
+      unmountOnExit
+    >
+      <div className="overlay">
+        {/* shifted the logo to the left 28 pixels to align the T with the loadingText and spinner */}
+        <img src={logo} alt="Logo" style={{ marginLeft: '28px', marginBottom:'50px' }} />
+        {promptUpload && <ImportComp />}
+      </div>
+    </CSSTransition>
     </div>
   );
 }
