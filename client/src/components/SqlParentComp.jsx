@@ -7,6 +7,9 @@ import ImportComp from './ImportComp.jsx';
 import SqlLoadComp from './SqlLoadComp.jsx';
 import SqlResultsComp from './SqlResultsComp.jsx';
 import LandingComp from '../components/LandingComp.jsx';
+import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
+import TotalMinPlayedComp from './TotalMinPlayedComp.jsx';
+import VolumePatternsComp from './VolumePatternsComp.jsx';
 
 function SqlParentComp() {
   return (
@@ -16,6 +19,9 @@ function SqlParentComp() {
       <LandingComp />
       <SqlLoadComp />
       <SqlResultsComp />
+      <FirstAndLastTrackComp />
+      <TotalMinPlayedComp />
+      <VolumePatternsComp />
     </DataProvider>
   );
 }

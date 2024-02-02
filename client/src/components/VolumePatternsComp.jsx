@@ -1,8 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { LabelList, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useData } from './DataContext.jsx';
+import { useDispatch, useSelector } from "react-redux";
 
 
-const VolumePatternsComp = ({ results }) => {
+const VolumePatternsComp = () => {
+
+    const { sqlDb } = useData();
+    const [results, setResults] = useState('');
+    const { tracks, albums, artists, minutes } = useSelector(state => state.query);
+    const volumePatternsQuery = minutes.byMonth;
+
+    const executeVolumePatterns = () => {
+        const res = sqlDb.exec(volumePatternsQuery);
+        // setVolumePatterns(res);
+        setResults(res);
+        // console.log('volume patterns are ', res);
+    };
+
+    useEffect(() => {
+        if (sqlDb) {
+            executeVolumePatterns();
+        }
+    }, [sqlDb]);
 
     const monthDict = {
         '01': 'Jan',
@@ -29,9 +49,9 @@ const VolumePatternsComp = ({ results }) => {
     }));
 
     return (
-        <div>
+        <div style={{ width: '90%', margin: '0 auto', textAlign: 'center' }}>
             <h3>TOTAL MINUTES PLAYED, BY MONTH</h3>
-            <div style={{ width: '100%', height: 300 }}>
+            <div style={{ width: '80%', margin: 'auto', height: '300px' }}>
                 <ResponsiveContainer>
                     <BarChart
                         data={data}
@@ -52,7 +72,7 @@ const VolumePatternsComp = ({ results }) => {
                             tick={{ fill: '#FFFFFF' }}
                         />
                         <Tooltip />
-                        <Bar dataKey="Total minutes played" fill="#8884d8" />
+                        <Bar dataKey="Total minutes played" fill="#04a8b4" />
                     </BarChart>
                 </ResponsiveContainer>
             </div>

@@ -450,7 +450,9 @@ const querySlice = createSlice({
             artist_name,
             album_name,
             strftime('%Y-%m-%d', ts) AS formatted_date,
-            track_uri
+            track_uri,
+            NULL as preview_url,
+            NULL as image_url
           from
             sessions
           order by

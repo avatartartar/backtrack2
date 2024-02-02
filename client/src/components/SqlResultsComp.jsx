@@ -15,10 +15,10 @@ import SkippedTracksComp from './SkippedTracksComp.jsx';
 
 function SqlResultsComp() {
 
-    const [firstAndLast, setFirstAndLast] = useState('');
+    // const [firstAndLast, setFirstAndLast] = useState('');
     const [firstTrack, setFirstTrack] = useState('');
     const [volumePatterns, setVolumePatterns] = useState('');
-    const [totalMinPlayed, setTotalMinPlayed] = useState('');
+    // const [totalMinPlayed, setTotalMinPlayed] = useState('');
 
     const [skippedTracks,setSkippedTracks] = useState('');
     const [skippedArtists, setSkippedArtists] = useState('');
@@ -281,7 +281,7 @@ function SqlResultsComp() {
                     <ResultsTable key={index} columns={result.columns} values={result.values} />
                 ))}
                 {/* executeQuery div around  */}
-                <Chart results={results} />
+                {/* <Chart results={results} /> */}
 
 
             </div>
@@ -313,9 +313,9 @@ function SqlResultsComp() {
                 {/* <button onClick={executeFirstAndLast}>Get First and Last Track</button> */}
             {sqlDb && <SqlResults />}
             {firstTrack && < FirstTrackComp results={firstTrack} />}
-            {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />}
-            {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
-            {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
+            {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
+            {/* {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>} */}
+            {/* {volumePatterns && <VolumePatternsComp results={volumePatterns}/>} */}
 
             {skippedTracks && <SkippedTracksComp results = {skippedTracks} results2={skippedArtists}/>}
         </div>
