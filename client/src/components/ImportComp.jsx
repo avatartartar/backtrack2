@@ -60,9 +60,9 @@ const ImportComp = () => {
       reader.onload = async function () {
         const arrayBuffer = reader.result;
         const data = new Uint8Array(arrayBuffer);
-        setSqlFile(data); // Set this Uint8Array to your state or context
+        setSqlFile(data);
       };
-      reader.readAsArrayBuffer(file); // Read as ArrayBuffer for binary files
+      reader.readAsArrayBuffer(file); // Read as ArrayBuffer: for binary files
       return;
     }
 
@@ -70,8 +70,7 @@ const ImportComp = () => {
       const timeDropped = Date.now();
       console.log('Zip file dropped');
       setFileDrop(true);
-      setLoadingText('Parsing your Spotify data...')
-      console.log('shoudl of changes set file droppppppppppp')
+      setLoadingText('Parsing your Spotify listening history...')
       // Array to store each json file's data
       let jsonData = [];
       reader.onload = async function () {
@@ -91,12 +90,7 @@ const ImportComp = () => {
             const parsedData = JSON.parse(fileData); // Parse the JSON data
             jsonData = jsonData.concat(parsedData);
 
-                // Extract the year from the file name
-                const start = fileName.indexOf('Streaming_History_Audio_') + 'Streaming_History_Audio_'.length;
-                const year = fileName.substring(start, start + 4);
-
-                            // Add the year to yearsInUserHistory if it's not already there
-                // getting the first track
+        // getting the first track
         if (!firstTrackRecord && parsedData.length > 0) {
           firstTrackRecord = parsedData[0];
         }
@@ -110,9 +104,6 @@ const ImportComp = () => {
         const firstArtist = firstTrackRecord.master_metadata_album_artist_name
         const firstAlbum = firstTrackRecord.master_metadata_album_album_name
         const firstTrackUri = firstTrackRecord.spotify_track_uri.substring(14);
-
-        const pctLifeSinceFirstTrack = (Date.now() - firstTs) / (Date.now() - new Date(firstYear, 0, 1).getTime());
-        console.log('pctLifeSinceFirstTrack', pctLifeSinceFirstTrack);
 
         dispatch(setUserFacts({ firstYear }));
         dispatch(setUserFacts({ firstTrack }));
@@ -168,14 +159,11 @@ const ImportComp = () => {
           justifyContent: 'center',
         }}
       >
+        <div style={{ position: 'absolute', top: '60%' }}>{loadingText}</div>
 
-<div style={{ position: 'absolute', top: '60%' }}>{loadingText}</div>
-
-{fileDrop && (
-        <div className="loading-spinner" style={{ position: 'absolute', top: '70%'  }}></div>
-      )}
-
-
+        {fileDrop && (
+          <div className="loading-spinner" style={{ position: 'absolute', top: '70%'  }}></div>
+         )}
 
     </div>
       )}

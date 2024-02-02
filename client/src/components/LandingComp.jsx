@@ -103,7 +103,6 @@ const LandingComp = () => {
   }, [sqlFile]
   ); // Adds sqlFile as a dependency, i.e. the effect only runs when sqlFile changes
 
-
   return (
     <div>
       {/* Overlay */}
@@ -128,8 +127,4 @@ const LandingComp = () => {
   );
 }
 
-
 export default LandingComp;
-
-// to-do: style the landing page. 2024-01-27_05-00-PM
-// to-do: move the import button to the landing page. 2024-01-27_05-00-PM

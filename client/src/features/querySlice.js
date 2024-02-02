@@ -77,12 +77,7 @@ const getTrackUris = async (dbArg, tableName) => {
   }
 };
 
-/**
- * Retrieves track information from the Spotify API.
- * @param {string} uri - The URI of the track.
- * @param {number} retries - The number of retries in case of rate limit hit.
- * @returns {Promise} - A promise that resolves to the track information.
- */
+// retries: The number of retries in case of rate limit hit.
 const getTrackInfo = async (uri, retries = 5) => {
   try {
     // Send a GET request to the Spotify API to fetch track information
