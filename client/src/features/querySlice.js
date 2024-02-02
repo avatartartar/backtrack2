@@ -412,6 +412,24 @@ const querySlice = createSlice({
             ts DESC
           limit
             1;`,
+          skippedTracks:`
+          select
+            track_name,
+            artist_name,
+            album_name,
+          count (*)
+          as 
+            skipped_count
+          from
+            sessions
+          where
+            skipped = TRUE
+          group by
+            track_name
+          order by 
+            skipped_count desc
+          limit
+            10`
     },
     albums: {
       allTime: `
@@ -552,6 +570,22 @@ const querySlice = createSlice({
         total_minutes_played desc
       limit
         10`,
+        skipped:`
+        SELECT 
+          artist_name, 
+        COUNT(*) AS 
+          skipped_count 
+        FROM 
+          sessions 
+        WHERE 
+          skipped = TRUE 
+        GROUP BY 
+          artist_name 
+        ORDER BY 
+          skipped_count DESC
+        LIMIT 
+        10
+        `
     },
     minutes: {
       total: `
