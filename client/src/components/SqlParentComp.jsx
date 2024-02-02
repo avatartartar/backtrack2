@@ -8,6 +8,7 @@ import SqlLoadComp from './SqlLoadComp.jsx';
 import SqlResultsComp from './SqlResultsComp.jsx';
 import LandingComp from '../components/LandingComp.jsx';
 import QueryComp from './QueryComp';
+import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
 
 function SqlParentComp() {
   return (
@@ -18,6 +19,7 @@ function SqlParentComp() {
       <LandingComp />
       <SqlLoadComp />
       <SqlResultsComp />
+      <FirstAndLastTrackComp />
     </DataProvider>
   );
 }

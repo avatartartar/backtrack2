@@ -300,7 +300,7 @@ function SqlResultsComp() {
                 {/* <button onClick={executeFirstAndLast}>Get First and Last Track</button> */}
             {sqlDb && <SqlResults />}
             {firstTrack && < FirstTrackComp results={firstTrack} />}
-            {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />}
+            {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
             {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
             {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
         </div>
