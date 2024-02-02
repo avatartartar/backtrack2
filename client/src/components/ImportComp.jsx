@@ -17,7 +17,7 @@
 * - /Navbar.jsx
 */
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import JSZip from 'jszip'; // Importing JSZip library for working with zip files
 import { useData } from './DataContext.jsx';
@@ -29,6 +29,18 @@ const ImportComp = () => {
   const dispatch = useDispatch();
 
   const [isDragging, setIsDragging] = useState(false);
+  const [loadingText, setLoadingText] = useState('Drop File Here')
+  const [fileDrop, setFileDrop] = useState(false);
+
+  useEffect(() => {
+    // This code will be executed after the component renders and when fileDrop changes.
+    if (fileDrop) {
+      // Perform actions related to showing the popup.
+      console.log('Popup should be visible now.');
+    }
+  }, [fileDrop]);
+
+
 
   // Function to handle drag over event
   const handleDragOver = (event) => {
@@ -51,7 +63,9 @@ const ImportComp = () => {
     const reader = new FileReader(); // Create a FileReader object to read the file contents
 
     const handleFileSql = (file) => {
+
       console.log('SQL file dropped');
+
       console.log('file.type', file);
       console.log('setting sql file in context');
       reader.onload = async function () {
@@ -66,7 +80,8 @@ const ImportComp = () => {
     const handleFileZip = (file) => {
       const timeDropped = Date.now();
       console.log('Zip file dropped');
-
+      setFileDrop(true);
+      console.log('shoudl of changes set file droppppppppppp')
       // Array to store each json file's data
       let jsonData = [];
       reader.onload = async function () {
@@ -118,26 +133,35 @@ const ImportComp = () => {
 
   return (
     <div className="importComp">
-    <div
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      style={{
-        height: '80px',
-        width: '200px',
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        background: 'transparent',
-        border: '2px solid white',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: 'white'
-      }}
-    >
-      <div>Drop file here</div>
-    </div>
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        style={{
+          height: '80px',
+          width: '200px',
+          // position: 'absolute',
+          // top: 0,
+          // right: 0,
+          background: 'transparent',
+          border: '2px solid white',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'white'
+        }}
+      >
+        <div>{loadingText}</div>
+
+        {fileDrop && (
+          <div className="loading-popup">
+            Loading User Data...
+            <div className="loading-spinner"></div>
+
+          </div>
+        )}
+
+      </div>
     </div>
   );
 };
