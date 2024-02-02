@@ -280,7 +280,7 @@ function SqlResultsComp() {
                     <ResultsTable key={index} columns={result.columns} values={result.values} />
                 ))}
                 {/* executeQuery div around  */}
-                <Chart results={results} />
+                {/* <Chart results={results} /> */}
 
 
             </div>

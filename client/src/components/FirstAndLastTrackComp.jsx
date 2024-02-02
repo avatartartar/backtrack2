@@ -45,7 +45,7 @@ const FirstAndLastTrackComp = ({ results }) => {
     if (firstTrack && firstArtist && firstPlay && lastTrack && lastArtist && lastPlay) {
         return (
             <div className="topAlbumsDisplay">
-                <h3>The first song you ever played, and the last</h3>
+                <h3>The first song you ever played, and the last:</h3>
                 <div className="firstAndLastTrack">
                     <div className='trackImageCard'>
                         <img src="https://upload.wikimedia.org/wikipedia/en/d/d6/RayCharlesGreatestHits_1962ABC.jpg" alt="" width="300px"></img>

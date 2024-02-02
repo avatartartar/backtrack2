@@ -22,7 +22,7 @@ const VolumePatternsComp = () => {
         if (sqlDb) {
             executeVolumePatterns();
         }
-      }, [sqlDb]);
+    }, [sqlDb]);
 
     const monthDict = {
         '01': 'Jan',
@@ -49,9 +49,9 @@ const VolumePatternsComp = () => {
     }));
 
     return (
-        <div>
+        <div style={{ width: '90%', margin: '0 auto', textAlign: 'center' }}>
             <h3>TOTAL MINUTES PLAYED, BY MONTH</h3>
-            <div style={{ width: '100%', height: 300 }}>
+            <div style={{ width: '80%', margin: 'auto', height: '300px' }}>
                 <ResponsiveContainer>
                     <BarChart
                         data={data}
@@ -72,7 +72,7 @@ const VolumePatternsComp = () => {
                             tick={{ fill: '#FFFFFF' }}
                         />
                         <Tooltip />
-                        <Bar dataKey="Total minutes played" fill="#8884d8" />
+                        <Bar dataKey="Total minutes played" fill="#04a8b4" />
                     </BarChart>
                 </ResponsiveContainer>
             </div>
