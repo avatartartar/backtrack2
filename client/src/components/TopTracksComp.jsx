@@ -56,7 +56,7 @@ const TopTracksComp = () => {
     dispatch(setChosenTrack(track))
   }
 
-   const controlPlayback = (previewUrl, trackId, imageUrl, albumName, artistName) => {
+const controlPlayback = (previewUrl, trackId, imageUrl, albumName, artistName) => {
 
     // For now, in the cases when the previewUrl is null as it sometimes is. 2024-01-12_05-10-PM PST.
     if (!previewUrl) return;
@@ -135,6 +135,7 @@ const TopTracksComp = () => {
       setAudioPlaying(true);
     }
   }
+
 
 
 

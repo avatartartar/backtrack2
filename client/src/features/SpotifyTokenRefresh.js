@@ -1,6 +1,7 @@
 
 // we setup the variables for the token and the expiration time, which we will be reassigning
-let token = null
+// let token = null
+// const token = process.env.REACT_APP_SPOTIFY_TOKEN || 'error_token';
 let tokenExpiration = null ;
 
 // Keith/spotifyTokenIntegration: 2024-01-13
@@ -16,6 +17,7 @@ const refreshSpotifyToken = async () => {
   const client_secret = process.env.REACT_APP_SPOTIFY_CLIENT_SECRET || 'default_client_secret';
   client_id === 'default_client_id' ? console.log('ERROR. Client_id not pulled from env') : console.log('client_id', client_id);;
   client_secret === 'default_client_secret' ? console.log('ERROR. Client_secret not pulled from env') : null;
+  token === null ? console.log('token is null') : null;
 
   // has to be in base64
   // buffer is a node module not neccessarily available in the browser
@@ -44,11 +46,13 @@ const refreshSpotifyToken = async () => {
 };
 
 const getSpotifyToken = async () =>{
+  const token = process.env.REACT_APP_SPOTIFY_TOKEN || 'error_token';
   const now = Date.now();
   // if the token is not null and the expiration time is greater than now
   if (!token && tokenExpiration < now) {
+    console.log('token is null or expired');
     // The token is not valid, refresh it.
-    const newToken = await refreshSpotifyToken();
+    // const newToken = await refreshSpotifyToken();
 
     // setting the token var to the new token
     token = newToken.access_token;
@@ -64,6 +68,7 @@ const getSpotifyToken = async () =>{
 
   }
   // The token is still valid
+  // console.log('getSpotifyToken: token', token);
   // Return it from the cache
   return token;
 }

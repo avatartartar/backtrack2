@@ -7,21 +7,20 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { setResults } from '../features/slice.js';
 import dexdb from './dexdb.js';
+import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
+import FirstTrackComp from './FirstTrackComp.jsx';
+import VolumePatternsComp from './VolumePatternsComp.jsx';
+import TotalMinPlayedComp from './TotalMinPlayedComp.jsx';
 
 function SqlResultsComp() {
 
+    const [firstAndLast, setFirstAndLast] = useState('');
+    const [firstTrack, setFirstTrack] = useState('');
+    const [volumePatterns, setVolumePatterns] = useState('');
+    const [totalMinPlayed, setTotalMinPlayed] = useState('');
 
-  // getting the sqlDb and a boolen of it from the shared context with the other sqlComponents
-  const { sqlDb } = useData();
-
-  // a function to download the SQL database as a binary file
-//   const downloadSql = () => {
-//     const sqlDbBinary = sqlDb.export();
-//     // octet-stream means binary file type
-//     const sqlData = new Blob([sqlDbBinary], { type: 'application/octet-stream' });
-//     // asks the user where to save the file
-//     saveAs(sqlData, 'my_spotify_history_database.sql');
-//     };
+    // getting the sqlDb and a boolen of it from the shared context with the other sqlComponents
+    const { sqlDb } = useData();
 
     const dispatch = useDispatch();
 
@@ -29,7 +28,7 @@ function SqlResultsComp() {
     const { year: chosenYear } = useSelector(state => state.chosen);
 
     // a place to store and fetch queries themselves
-    const { tracks, albums, artists } = useSelector(state => state.query);
+    const { tracks, albums, artists, minutes } = useSelector(state => state.query);
 
 
     const [filteredMonth, setFilteredMonth] = useState('');
@@ -40,40 +39,102 @@ function SqlResultsComp() {
 
     const [lastLocalQuery, setLastLocalQuery] = useState('');
 
-    // a place to store and fetch results of queries
+
+    const firstAndLastQuery = tracks.firstAndLast;
+    const firstTrackQuery = tracks.first;
+
+    const volumePatternsQuery = minutes.byMonth;
+    const totalMinPlayedQuery = minutes.total;
+
+
+    // a place to store and fetch results of the most recent filterQuery
     const results = useSelector((state) => state.results.recent);
 
+    const executeFirstTrack = () => {
+        const res = sqlDb.exec(firstTrackQuery);
+        // dispatch(setResults(res));
+        setFirstTrack(res);
+        // console.log('first and last are ', res)
+    }
+
+    const executeFirstAndLast = () => {
+        const res = sqlDb.exec(firstAndLastQuery);
+        // dispatch(setResults(res));
+        setFirstAndLast(res);
+        // console.log('first and last are ', res)
+    }
+
+    const executeVolumePatterns = () => {
+        const res = sqlDb.exec(volumePatternsQuery);
+        setVolumePatterns(res);
+        // console.log('volume patterns are ', res);
+    }
+    const executeTotalMinPlayed = () => {
+        const res = sqlDb.exec(totalMinPlayedQuery);
+        setTotalMinPlayed(res);
+        // console.log('total min played are ', res)
+    }
+
+
+    // 2024-02-01_02-52-PM: the use of useEffect is causing some lag with the page load.
+    useEffect(() => {
+        if (sqlDb) {
+            // executeFirstTrack();
+            executeFirstAndLast();
+            executeVolumePatterns();
+            executeTotalMinPlayed();
+        }
+    }, [sqlDb]);
+
+    // a function to download the SQL database as a binary file
+    const downloadSqlDb = () => {
+        const sqlDbBinary = sqlDb.export();
+        // octet-stream means binary file type
+        const sqlData = new Blob([sqlDbBinary], { type: 'application/octet-stream' });
+        // asks the user where to save the file
+        saveAs(sqlData, 'my_spotify_history_database.sql');
+    };
 
     function ResultsTable({ columns, values }) {
 
-    return (
-        <table style={{ width: '100%', color: 'white', backgroundColor: 'black', borderCollapse: 'collapse' }}>
-            <thead>
-                <tr>{columns.map((column, index) => (
+        return (
+            <table style={{ width: '100%', color: 'white', backgroundColor: 'black', borderCollapse: 'collapse' }}>
+                <thead>
+                    <tr>{columns.map((column, index) => (
                         <th key={index} style={{ border: '1px solid white', padding: '8px' }}>{column}</th>
                     ))}</tr>
-            </thead>
-            <tbody>
-                {values.map((value, index) => (
-                    <tr key={index}>{value.map((cell, index) => (
+                </thead>
+                <tbody>
+                    {values.map((value, index) => (
+                        <tr key={index}>{value.map((cell, index) => (
                             <th key={index} style={{ border: '1px solid white', padding: '8px' }}>{cell}</th>
                         ))}</tr>
-                ))}
-            </tbody>
-        </table>
-    );
+                    ))}
+                </tbody>
+            </table>
+        );
     }
 
-    function Chart(results) {
+    function Chart({ results }) {
+
+        // volume patterns - busy months / quiet periods / peak listening times
+
+        // dominant genres per year
+
+        // language / countries?
+
+        // total listening minutes?
+
+
         return (
             <div>Insert chart here</div>
-        )
+            )
     }
+
     function SqlResults() {
         const typeMap = { tracks, albums, artists };
-
-        // a helper function that takes in the type and month and executes the query from the store that matches both
-        // utilizes chosenYear from the redux store
+        // a helper function that takes in the type and month filters, and executes the query from the store that matches both.
+        // utilizes chosenYear from the redux store - that is, the year chosen on the slider.
         const executeFilter = (type, month) => {
             let res;
             console.log('type, year, month', type, month);
@@ -95,9 +156,11 @@ function SqlResultsComp() {
             dispatch(setResults(res));
         };
 
+
+
+
+        // START: DEVELOPMENT ONLY
         const [localQuery, setLocalQuery] = useState('');
-
-
     // a function to execute the query and store the results in the store
     const executeLiveQuery = () => {
         try {
@@ -105,17 +168,18 @@ function SqlResultsComp() {
             const res = sqlDb.exec(localQuery);
             dispatch(setResults(res));
 
-        } catch (error) {
-            console.error('Error executing query:', error);
-            alert('Error executing query. Check the console for more details.');
-        }
-    };
+            } catch (error) {
+                console.error('Error executing query:', error);
+                alert('Error executing query. Check the console for more details.');
+            }
+        };
+    // END: DEVELOPMENT ONLY
 
     const executeRef = useRef(null);
     // // scrolls to the execute button when that component mounts (which is when the sqlDb is loaded)
-    useEffect(() => {
-        executeRef.current.scrollIntoView({ behavior: 'smooth' });
-    }, []);
+    // useEffect(() => {
+    //     executeRef.current.scrollIntoView({ behavior: 'smooth' });
+    // }, []);
 
         return (
 
@@ -166,7 +230,7 @@ function SqlResultsComp() {
                     </button>
                 </form>
 
-                {/* start: query testing area during development */}
+                {/* START: DEVELOPMENT ONLY */}
                 <textarea
                     value={localQuery}
                     onChange={(e) => setLocalQuery(e.target.value)}
@@ -190,12 +254,13 @@ function SqlResultsComp() {
                 >
                     Execute Query
                 </button>
+
                  {lastLocalQuery && (
                  <div style={{ marginTop: '0 auto', color: 'white', backgroundColor: 'black', padding: '8px' }}>
                      <strong>Query:</strong> {lastLocalQuery}
                 </div>
                  )}
-                {/* end: query testing area during development */}
+                {/* END: DEVELOPMENT ONLY */}
 
                 {/* we need this to conditionally render based upon whether there has been any change to results,
             otherwise it tries to map an empty array and errors */}
@@ -204,13 +269,15 @@ function SqlResultsComp() {
                 ))}
                 {/* executeQuery div around  */}
                 <Chart results={results} />
+
+
             </div>
         );
     }
 
     return (
         <div style={{ width: '80%', margin: '0 auto' }}>
-            {/* {sqlDb && (
+            {sqlDb && (
                 <button
                     style={{
                         width: '500px',
@@ -221,12 +288,21 @@ function SqlResultsComp() {
                         padding: '8px',
                         alignSelf: 'center',
                     }}
-                    onClick={downloadSql}
+                    onClick={downloadSqlDb}
                 >
                     Download your Spotify History Database!
                 </button>
-            )} */}
+            )}
+
+            {/* <button onClick={executeTotalMinPlayed}>Get Total Min Played</button>
+            <button onClick={executeVolumePatterns}>Get Volume Patterns</button>
+            <button onClick={executeFirstTrack}>Get First Track</button> */}
+                {/* <button onClick={executeFirstAndLast}>Get First and Last Track</button> */}
             {sqlDb && <SqlResults />}
+            {firstTrack && < FirstTrackComp results={firstTrack} />}
+            {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />}
+            {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
+            {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
         </div>
     );
 }
