@@ -21,6 +21,7 @@ function SqlResultsComp() {
     const [totalMinPlayed, setTotalMinPlayed] = useState('');
 
     const [skippedTracks,setSkippedTracks] = useState('');
+    const [skippedArtists, setSkippedArtists] = useState('');
     // getting the sqlDb and a boolen of it from the shared context with the other sqlComponents
     const { sqlDb } = useData();
 
@@ -79,8 +80,11 @@ function SqlResultsComp() {
 
     const executeSkippedTracks = () => {
         const res = sqlDb.exec(tracks.skippedTracks);
+        const res2 = sqlDb.exec(artists.skipped);
+        
         // const res = sqlDb.exec(totalMinPlayedQuery);
         setSkippedTracks(res);
+        setSkippedArtists(res2);
 }
 
     // 2024-02-01_02-52-PM: the use of useEffect is causing some lag with the page load.
@@ -312,7 +316,7 @@ function SqlResultsComp() {
             {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>}
             {volumePatterns && <VolumePatternsComp results={volumePatterns}/>}
 
-            {skippedTracks && <SkippedTracksComp results = {skippedTracks} />}
+            {skippedTracks && <SkippedTracksComp results = {skippedTracks} results2={skippedArtists}/>}
         </div>
     );
 }

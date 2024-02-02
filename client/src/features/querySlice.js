@@ -570,6 +570,22 @@ const querySlice = createSlice({
         total_minutes_played desc
       limit
         10`,
+        skipped:`
+        SELECT 
+          artist_name, 
+        COUNT(*) AS 
+          skipped_count 
+        FROM 
+          sessions 
+        WHERE 
+          skipped = TRUE 
+        GROUP BY 
+          artist_name 
+        ORDER BY 
+          skipped_count DESC
+        LIMIT 
+        10
+        `
     },
     minutes: {
       total: `
