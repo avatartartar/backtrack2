@@ -97,7 +97,7 @@ ul {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(7, 0, 78, 0.95); /* Semi-transparent background */
+  background-color: rgba(7, 0, 78, 1);
   color: white;
   display: flex;
   justify-content: center;
@@ -106,29 +106,26 @@ ul {
   z-index: 1000;
 }
 
-/* Loading Animation Styles */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Transition Styles */
+.overlay-transition-enter {
+  transform: translateY(-100%);
 }
 
-.loading-spinner {
-  border: 5px solid #f3f3f3; /* Light grey */
-  border-top: 5px solid #3498db; /* Blue */
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 2s linear infinite;
-  margin-top: 20px;
+.overlay-transition-enter-active {
+  transform: translateY(0);
+  transition: transform 2500ms;
 }
 
-/* File Upload Styles */
-.file-upload {
-  margin-top: 20px;
+.overlay-transition-exit {
+  transform: translateY(0);
 }
+
+.overlay-transition-exit-active {
+  transform: translateY(-100%);
+  transition: transform 2500ms;
+}
+
 // LandingComp above
-
-
 #landingAndSticky {
   margin-top: 200px;
   position: sticky;
@@ -592,6 +589,22 @@ background: rgb(0, 133, 255);
   }
 }
 
+/* Loading Animation Styles */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  border: 10px solid #f3f3f3; /* Light grey */
+  border-top: 10px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+
 
 .SqlLoadComp {
   font-family: sans-serif;
@@ -630,17 +643,7 @@ td {
   color: #922;
 }
 
-.loading-popup {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 130px;
-  width: 300px;
-  position: absolute;
-  z-index: 999999999;
-  background-color: #07004e;
-}
+
 .firstAndLastTrack {
   display: flex;
   gap: 60px;

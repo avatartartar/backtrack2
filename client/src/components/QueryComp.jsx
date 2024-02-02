@@ -48,9 +48,9 @@ QueryComp.viewClientTables = async (db) => {
     'tracks_allTime',
     'albums_allTime',
     'artists_allTime',
-    'top_tracks_by_year',
-    'top_albums_by_year',
-    'top_artists_by_year',
+    'top_tracks_byYear',
+    'top_albums_byYear',
+    'top_artists_byYear',
   ]
   clientTables.forEach( async (tableName) => {
   try {
@@ -74,9 +74,9 @@ QueryComp.dropClientTables = (sqlDb) => {
     'tracks_allTime',
     'albums_allTime',
     'artists_allTime',
-    'top_tracks_by_year',
-    'top_albums_by_year',
-    'top_artists_by_year',
+    'top_tracks_byYear',
+    'top_albums_byYear',
+    'top_artists_byYear',
   ]
   clientTables.forEach((tableName) => {
   try {

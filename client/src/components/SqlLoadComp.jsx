@@ -10,7 +10,7 @@ import dexdb from './dexdb.js'; // Dexie instance
 
 import { useData } from './DataContext.jsx';
 
-import { setJson } from '../features/slice.js';
+import { setJson, setTopAllTime, setTopByYear } from '../features/slice.js';
 
 import { makeClientTables, viewClientTables, syncTrackUris, fillTopRecordsViaApi } from '../features/querySlice.js';
 
@@ -32,6 +32,9 @@ const SqlLoadComp = () => {
     status: status,
     error: error
   } = useSelector(state => state.json);
+
+  const { firstYear } = useSelector(state => state.userFacts);
+  const { tracks: topTracks, artists: topArtists, albums: topAlbums } = useSelector(state => state.top);
 
 
   // an array to store the intervals in addInterval
@@ -204,6 +207,12 @@ const SqlLoadComp = () => {
             ALTER TABLE sessions ADD COLUMN album_uri TEXT;
             ALTER TABLE sessions ADD COLUMN artist_uri TEXT;
             ALTER TABLE sessions ADD COLUMN top_bool BOOLEAN;
+            ALTER TABLE sessions ADD COLUMN preview_url TEXT;
+            ALTER TABLE sessions ADD COLUMN image_url TEXT;
+            ALTER TABLE sessions ADD COLUMN explicit TEXT;
+            ALTER TABLE sessions ADD COLUMN popularity TEXT;
+            ALTER TABLE sessions ADD COLUMN duration_ms TEXT;
+            ALTER TABLE sessions ADD COLUMN release_date TEXT;
           `);
 
           console.log('Sessions table columns renamed and new column added.');
@@ -228,7 +237,6 @@ const SqlLoadComp = () => {
       console.log('Tracks table created and altered.');
       addInterval('to create and alter tracks table');
 
-
       // const ogTrackUriDropped = await dropOgTrackUriFromSessions(newSqlDb);
       // if (ogTrackUriDropped) { return; }
       // console.log('Og track_uri dropped from sessions.');
@@ -236,32 +244,33 @@ const SqlLoadComp = () => {
       const dropOgTrackUriSuccess = await dropColumnFromTable(newSqlDb, 'sessions', 'og_track_uri');
       addInterval('to drop og_track_uri from sessions');
 
-
-      const albumsSuccess = await createAndAlterAlbumsTable(newSqlDb);
-      if (albumsSuccess) { return; }
-      console.log('Albums table created and altered.');
-      addInterval('to create and alter albums table');
+      // const albumsSuccess = await createAndAlterAlbumsTable(newSqlDb);
+      // if (albumsSuccess) { return; }
+      // console.log('Albums table created and altered.');
+      // addInterval('to create and alter albums table');
 
       // const artistsSuccess = await createAndAlterArtistsTable(newSqlDb);
       // if (artistsSuccess) { return; }
       // console.log('Artists table created and altered.');
 
-      console.log('Now creating allTime and by_year tables...');
+      console.log('Now creating allTime and byYear tables...');
       try {
-        // eslint says await doesn’t have any effect on dispatch below, but that’s incorrect. when await is not on the dispatch, the rest of the code below continues async. this causes the by_year tables - which are currently taking way too long to run; i think they can be optimized - to not get stored in the dexie db.
+        // eslint says await doesn’t have any effect on dispatch below, but that’s incorrect. when await is not on the dispatch, the rest of the code below continues async. this causes the byYear tables - which are currently taking way too long to run; i think they can be optimized - to not get stored in the dexie db.
         // perhaps eslint is assuming that function dispatched doesn’t return a promise?
         await dispatch(makeClientTables(newSqlDb));
-        addInterval('to create allTime and by_year tables');
+        addInterval('to create allTime and byYear tables');
       } catch (error) {
-        console.error('Error creating allTime and by_year tables:', error);
+        console.error('Error creating allTime and byYear tables:', error);
       }
-      try {
-        await dispatch(fillTopRecordsViaApi(newSqlDb));
-        addInterval('to fill top records via API');
-        console.log('Top records filled via API.');
-      } catch (error) {
-        console.error('Error filling top records via API:', error);
-      }
+
+      // try {
+      //   await dispatch(fillTopRecordsViaApi(newSqlDb));
+      //   addInterval('to fill top records via API');
+      //   console.log('Top records filled via API.');
+      // } catch (error) {
+      //   console.error('Error filling top records via API:', error);
+      // }
+
       try {
         // uncomment the line below to view the client tables in the console
         // await dispatch(viewClientTables(newSqlDb));
@@ -276,6 +285,11 @@ const SqlLoadComp = () => {
         await newSqlDb.run('VACUUM');
         addInterval('to vacuum');
         // addInterval('to setSqlDb after vacuuming');
+
+        const fillStore = await topToStore(newSqlDb);
+        console.log('topArtists from store, from sql', topArtists);
+        console.log('topAlbums from store, from sql', topAlbums);
+        console.log('topTracks from store, from sql', topTracks);
 
         const sqlDbBinary = await newSqlDb.export();
         console.log('clientTables created.');
@@ -312,82 +326,120 @@ const SqlLoadComp = () => {
     }
   };
 
-const createAndAlterTracksTable = async (dbArg) => {
-  try {
-    await dbArg.run(`
-      CREATE TABLE tracks AS
-      SELECT DISTINCT track_uri, album_uri, top_bool
-      FROM sessions;
-    `);
-    // not working yet... 2024-01-31_03-06-AM
-    // this will be used to populate the all_uris column
-    // that way, we can have a place to store of all the uris for a track (surprisingly, some tracks have more than one uri)
-    // whle normalizing the data to only have one uri per track in the track_uri field in each table.
-// console.log('Tracks table altered. Now updating...');
-// try {
-//     await dbArg.exec(`
-//       UPDATE tracks
-//       SET all_uris = (
-//         ( SELECT GROUP_CONCAT(unique_og_track_uri, char(10)) FROM ( SELECT DISTINCT og_track_uri as unique_og_track_uri FROM sessions WHERE track_uri = s.track_uri ) ) AS all_uris FROM (SELECT DISTINCT track_uri, track_name FROM sessions order by ts desc) s LIMIT 100;
-//     `);
-//     console.log('Tracks table updated.');
-//       } catch (error) {
-//         console.error('Error updating tracks table:', error);
-//       }
-// console.log('Tracks table updated. Now adding columns...');
-    // adding the columns that the API will populate
-    await dbArg.exec(`
-      ALTER TABLE tracks ADD COLUMN preview_url TEXT;
-      ALTER TABLE tracks ADD COLUMN image_url TEXT;
-      ALTER TABLE tracks ADD COLUMN all_uris TEXT;
-      ALTER TABLE tracks ADD COLUMN explicit TEXT;
-      ALTER TABLE tracks ADD COLUMN popularity TEXT;
-      ALTER TABLE tracks ADD COLUMN duration_ms TEXT;
-      ALTER TABLE tracks ADD COLUMN release_date TEXT;
-    `);
+  const topToStore = async (dbArg) => {
+    function convertSqlToJson(sqlResult) {
+      console.log('sqlResult[0].values:', );
+      const rows = sqlResult[0].values;
+      const columns = sqlResult[0].columns;
+      console.log('sqlResult columns:', columns);
+      console.log('sqlResult rows', rows);
 
-    console.log('Tracks table created and altered.');
-    return false; // return false to indicate success, rather than returning nothing
-  } catch (error) {
-    console.error('Error creating and altering tracks table:', error);
-    return true; // true to indicate failure
-  }
-};
-
-  const createAndAlterAlbumsTable = async (dbArg) => {
+      return rows.map(row => {
+        const rowObject = {};
+        row.forEach((value, index) => {
+          const columnName = columns[index];
+          rowObject[columnName] = value;
+        });
+        return rowObject;
+      });
+    }
+    const categories = ['tracks', 'artists', 'albums'];
+    // const topTables = ['top_tracks_allTime', 'top_tracks_byYear', 'top_artists_allTime', 'top_artists_byYear', 'top_albums_allTime', 'top_albums_byYear'];
     try {
-        await dbArg.run(`
-        CREATE TABLE albums AS
-        SELECT
-          album_name,
-          artist_name,
-          top_bool,
-          MIN(track_uri) AS rep_track_uri
-        FROM
-          sessions
-        WHERE
-          artist_name IS NOT NULL AND
-          album_name IS NOT NULL
-        GROUP BY
-          album_name,
-          artist_name
-      `);
+      categories.forEach(async category => {
+      const allTime = await dbArg.exec(`SELECT * FROM top_${category}_allTime`);
+      // const byYear = await newSqlDb.exec(`SELECT * FROM top_${category}_byYear`);
+
+      const allTimeData = await convertSqlToJson(allTime);
+      // const byYearData = await convertSqlToJson(byYear);
+
+      // ...
+      dispatch(setTopAllTime({ category, records: allTimeData }));
+      // dispatch(setTopByYear({ category, data: byYearData }));
+
+    })
     } catch (error) {
-      console.error('Error creating albums table:', error);
+      console.error('Error converting top_tracks_allTime to JSON:', error);
+    }
+  }
+
+
+  const createAndAlterTracksTable = async (dbArg) => {
+    try {
+      await dbArg.run(`
+        CREATE TABLE tracks AS
+        SELECT DISTINCT track_uri, album_uri, top_bool
+        FROM sessions;
+      `);
+      // not working yet... 2024-01-31_03-06-AM
+      // this will be used to populate the all_uris column
+      // that way, we can have a place to store of all the uris for a track (surprisingly, some tracks have more than one uri)
+      // whle normalizing the data to only have one uri per track in the track_uri field in each table.
+  // console.log('Tracks table altered. Now updating...');
+  // try {
+  //     await dbArg.exec(`
+  //       UPDATE tracks
+  //       SET all_uris = (
+  //         ( SELECT GROUP_CONCAT(unique_og_track_uri, char(10)) FROM ( SELECT DISTINCT og_track_uri as unique_og_track_uri FROM sessions WHERE track_uri = s.track_uri ) ) AS all_uris FROM (SELECT DISTINCT track_uri, track_name FROM sessions order by ts desc) s LIMIT 100;
+  //     `);
+  //     console.log('Tracks table updated.');
+  //       } catch (error) {
+  //         console.error('Error updating tracks table:', error);
+  //       }
+  // console.log('Tracks table updated. Now adding columns...');
+      // adding the columns that the API will populate
+      // await dbArg.exec(`
+      //   ALTER TABLE tracks ADD COLUMN preview_url TEXT;
+      //   ALTER TABLE tracks ADD COLUMN image_url TEXT;
+      //   ALTER TABLE tracks ADD COLUMN all_uris TEXT;
+      //   ALTER TABLE tracks ADD COLUMN explicit TEXT;
+      //   ALTER TABLE tracks ADD COLUMN popularity TEXT;
+      //   ALTER TABLE tracks ADD COLUMN duration_ms TEXT;
+      //   ALTER TABLE tracks ADD COLUMN release_date TEXT;
+      // `);
+
+      console.log('Tracks table created and altered.');
+      return false; // return false to indicate success, rather than returning nothing
+    } catch (error) {
+      console.error('Error creating and altering tracks table:', error);
       return true; // true to indicate failure
     }
-      try {
-        await dbArg.exec(`
-          ALTER TABLE albums ADD COLUMN album_uri TEXT;
-          ALTER TABLE albums ADD COLUMN artist_uri TEXT;
-          ALTER TABLE albums ADD COLUMN image_url TEXT
-        `);
-        return false; // return false to indicate success, rather than returning nothing
-      } catch (error) {
-        console.error('Error adding new columns to albums table:', error);
-        return true; // true to indicate failure
-      }
-    }
+  };
+
+  // const createAndAlterAlbumsTable = async (dbArg) => {
+  //   try {
+  //       await dbArg.run(`
+  //       CREATE TABLE albums AS
+  //       SELECT
+  //         album_name,
+  //         artist_name,
+  //         top_bool,
+  //         MIN(track_uri) AS rep_track_uri
+  //       FROM
+  //         sessions
+  //       WHERE
+  //         artist_name IS NOT NULL AND
+  //         album_name IS NOT NULL
+  //       GROUP BY
+  //         album_name,
+  //         artist_name
+  //     `);
+  //   } catch (error) {
+  //     console.error('Error creating albums table:', error);
+  //     return true; // true to indicate failure
+  //   }
+      // try {
+      //   await dbArg.exec(`
+      //     ALTER TABLE albums ADD COLUMN album_uri TEXT;
+      //     ALTER TABLE albums ADD COLUMN artist_uri TEXT;
+      //     ALTER TABLE albums ADD COLUMN image_url TEXT
+      //   `);
+      //   return false; // return false to indicate success, rather than returning nothing
+      // } catch (error) {
+      //   console.error('Error adding new columns to albums table:', error);
+      //   return true; // true to indicate failure
+      // }
+    // }
 
     // const createAndAlterArtistsTable = async (dbArg) => {
     //   try {
