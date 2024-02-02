@@ -48,7 +48,6 @@ const LandingComp = () => {
 
         try {
           const sqlDbItem = await dexdb.sqlDbBinary.get(1);
-          console.log('sqlDbItem from dexie in LandingComp:', sqlDbItem);
 
           if (sqlDbItem && sqlDbItem.data) {
             console.log('prior user database found in dexie. Loading...');

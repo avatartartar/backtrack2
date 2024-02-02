@@ -3,10 +3,10 @@ import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 
 const SkippedTracksComp = ( {results,results2} ) => {
 
-    // console.log('from skippedTracks -> ', results[0].values);
-    const skipped = results[0].values;
-    // results[0].values.forEach(track => console.log(track));
-    const skippedTracks = skipped.map(tracks => {
+    const tracksSkippedArr = results[0].values;
+    const artistSkippedArr = results2[0].values;
+
+    const tracksSkipped = tracksSkippedArr.map(tracks => {
         return (
            <tr style={{color:"black"}}>
             <td>{tracks[0]}</td>
@@ -32,12 +32,12 @@ const SkippedTracksComp = ( {results,results2} ) => {
             "Number of Skips":artist[1],
         }
     });
-    console.log('obj of data ->', skippedData);
+    // console.log('obj of data ->', skippedData);
 
 
     return (
-        <div>Skipped Tracks/Artists component all time
-            {/* {skippedTracks} */}
+        <div>
+            <hr></hr>
           <table>
             <thead>
                 <tr style={{color:'black'}}>
@@ -87,10 +87,10 @@ const SkippedTracksComp = ( {results,results2} ) => {
                             stroke="#fff"
                             axisLine={{ stroke: '#FFFFFF' }}
                             tick={{ fill: '#FFFFFF' }}
-                            
+
                             />
                         <YAxis
-                        
+
                             axisLine={{ stroke: '#FFFFFF' }}
                             tick={{ fill: '#FFFFFF' }}
                             />
@@ -102,8 +102,9 @@ const SkippedTracksComp = ( {results,results2} ) => {
           </div>
           <br></br>
           {/* <h2>HOW MUCH MORE DATA CAN WE FIT IN THIS SPA?</h2> */}
+                        {/* the limit does not exist */}
         </div>
-        
+
     )
 }
 

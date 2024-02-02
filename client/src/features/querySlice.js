@@ -639,19 +639,19 @@ const querySlice = createSlice({
       limit
         10`,
         skipped:`
-        SELECT 
-          artist_name, 
-        COUNT(*) AS 
-          skipped_count 
-        FROM 
-          sessions 
-        WHERE 
-          skipped = TRUE 
-        GROUP BY 
-          artist_name 
-        ORDER BY 
+        SELECT
+          artist_name,
+        COUNT(*) AS
+          skipped_count
+        FROM
+          sessions
+        WHERE
+          skipped = TRUE
+        GROUP BY
+          artist_name
+        ORDER BY
           skipped_count DESC
-        LIMIT 
+        LIMIT
         10
         `
     },

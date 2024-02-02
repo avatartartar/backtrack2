@@ -56,8 +56,7 @@ const ImportComp = () => {
 
       console.log('SQL file dropped');
 
-      console.log('file.type', file);
-      console.log('setting sql file in context');
+      // console.log('file.type', file);
       reader.onload = async function () {
         const arrayBuffer = reader.result;
         const data = new Uint8Array(arrayBuffer);
