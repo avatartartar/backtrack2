@@ -125,9 +125,9 @@ const ImportComp = () => {
       style={{
         height: '80px',
         width: '200px',
-        position: 'absolute',
-        top: 0,
-        right: 0,
+        // position: 'absolute',
+        // top: 0,
+        // right: 0,
         background: 'transparent',
         border: '2px solid white',
         display: 'flex',

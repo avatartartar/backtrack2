@@ -103,14 +103,16 @@ const LandingComp = () => {
       {(!sqlDbBool) && (
         <div className="overlay">
           <img src={logo} alt="Logo" />
-          <div className="loading-spinner"></div>
-          <p>{promptUpload ? 'Please upload your file.' : 'Loading...'}</p>
+          {/* <div className="loading-spinner"></div> */}
+          <div>{promptUpload ? 'Please upload your file.' : <><p>'Loading...'</p> <div className="loading-spinner"></div></>}</div>
           {promptUpload && <ImportComp />}
         </div>
       )}
     </div>
   );
 }
+
+
 export default LandingComp;
 
 // to-do: style the landing page. 2024-01-27_05-00-PM
