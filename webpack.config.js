@@ -1,5 +1,7 @@
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+require('dotenv').config();
 
 // Function recieves environment variables and argument vector which enables acces to command-line args and env variables
 // Webpack config will dynamically adjust response based on the specified in argv.mode
@@ -103,6 +105,11 @@ module.exports = (env, argv) => {
                 // The relative or absolute path to the template.
                 template: './client/templates/template.html',
                 // Can insert
+            }),
+            new webpack.DefinePlugin({
+                'process.env.REACT_APP_SPOTIFY_CLIENT_ID': JSON.stringify(process.env.REACT_APP_SPOTIFY_CLIENT_ID),
+                'process.env.REACT_APP_SPOTIFY_CLIENT_SECRET': JSON.stringify(process.env.REACT_APP_SPOTIFY_CLIENT_SECRET),
+                'process.env.REACT_APP_SPOTIFY_TOKEN': JSON.stringify(process.env.REACT_APP_SPOTIFY_TOKEN),
             }),
         ],
     };
