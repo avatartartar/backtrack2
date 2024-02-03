@@ -31,6 +31,7 @@ const SqlLoadComp = () => {
     setSqlDbBool,
     tracksTableBool,
     setTracksTableBool,
+    setReduxReady,
   } = useData();
 
   const dispatch = useDispatch();
@@ -261,13 +262,13 @@ const SqlLoadComp = () => {
         console.error('Error creating allTime and byYear tables:', error);
       }
 
-      // try {
-      //   await dispatch(fillTopRecordsViaApi(newSqlDb));
-      //   addInterval('to fill top records via API');
-      //   console.log('Top records filled via API.');
-      // } catch (error) {
-      //   console.error('Error filling top records via API:', error);
-      // }
+      try {
+        await dispatch(fillTopRecordsViaApi(newSqlDb));
+        addInterval('to fill top records via API');
+        console.log('Top records filled via API.');
+      } catch (error) {
+        console.error('Error filling top records via API:', error);
+      }
 
       try {
         console.log('Creating category json...');
@@ -299,13 +300,15 @@ const SqlLoadComp = () => {
         // addInterval('to setSqlDb after vacuuming');
 
         // const fillStore = await topToStore(newSqlDb);
-        console.log('topArtists from store, from sql', topArtists);
-        console.log('topAlbums from store, from sql', topAlbums);
-        console.log('topTracks from store, from sql', topTracks);
+        // console.log('topArtists from store, from sql', topArtists);
+        // console.log('topAlbums from store, from sql', topAlbums);
+        // console.log('topTracks from store, from sql', topTracks);
 
         const sqlDbBinary = await newSqlDb.export();
         console.log('clientTables created.');
         addInterval('to export sqlDb');
+
+        setReduxReady(true);
 
 
         console.log("sqlDbBinary size:", (sqlDbBinary.length)/1000000, "MB");

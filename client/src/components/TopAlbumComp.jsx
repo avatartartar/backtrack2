@@ -27,7 +27,7 @@ const TopAlbumPage = () => {
 
   return (
     <div className='topAlbumsDisplay'>
-      <h3>And couldn't get enough of:</h3>
+      <h3>And couldn't get enough of this album:</h3>
       <div className='albumContainer'>
       {album &&
         <>
@@ -35,11 +35,11 @@ const TopAlbumPage = () => {
           <h4>{album.artist_name} <br /> {album.album_name}</h4>
         </>
       }
-      {!album &&
+      {/* {!album &&
         <>
           <img src={albumImagePlaceholder} alt="image" />
         </>
-      }
+      } */}
       </div>
     </div>
   )

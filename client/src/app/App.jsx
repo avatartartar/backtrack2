@@ -18,6 +18,7 @@
  * - App: The main functional component that renders the application layout by combining all the individual components.
  */
 import React from 'react'
+import { useSelector } from 'react-redux';
 
 import { DataProvider } from '../components/DataContext.jsx';
 import ImportComp from '../components/ImportComp.jsx';
