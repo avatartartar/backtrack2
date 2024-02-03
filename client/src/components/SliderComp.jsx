@@ -10,7 +10,7 @@
  * - '../features/slice.js': Redux slice that contains actions and reducers for fetching and setting data related to Spotify's top tracks, artists, and albums.
  * @methods
  * - fetchData: Dispatches actions to fetch top tracks, artists, and albums, and handles the initial chosen track state.
- * - handleSliderInput: Dispatches the setYear action with the value from the slider input.
+ * - handleSliderInput: Dispatches the setChosenYear action with the value from the slider input.
  * - handleClick: Invokes the fetchData method when the slider value is changed.
  * @consumers
  * - client/src/app/App.jsx
@@ -20,7 +20,16 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import gsap from 'gsap';
 
-import { setYear, fetchTopTracks, fetchTopArtists, setChosenTrack, fetchTopAlbums } from '../features/slice.js';
+import { useData } from './DataContext.jsx';
+
+import {
+  setChosenYear,
+  fetchTopTracks,
+  fetchTopArtists,
+  setChosenTrack,
+  fetchTopAlbums
+ } from '../features/slice.js';
+
 import '../../styles/index.scss';
 
 // this is to prevent the page from scrolling to the bottom when the slider is moved
@@ -29,7 +38,11 @@ const SliderComp = () => {
   const dispatch = useDispatch();
   const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
 
-  const { tracks, albums, artists } = useSelector(state => state.query);
+  const { sqlDb } = useData();
+  const { tracks } = useSelector(state => state.query);
+  const firstTrackQuery = tracks.first;
+  // const firstYear = sqlDb.exec(firstTrackQuery)
+  // console.log('firstYear', firstYear);
 
   // Scroll to the top of the page when the component mounts
   // window.history.scrollRestoration = 'manual';
@@ -81,7 +94,7 @@ const SliderComp = () => {
   }, [dispatch, status]);
 
   function handleSliderInput(e) {
-    dispatch(setYear(e.target.value));
+    dispatch(setChosenYear(e.target.value));
   }
 
   function handleClick() {
@@ -129,9 +142,11 @@ const SliderComp = () => {
       <h1 className="landing hide" style={{visibility: 'hidden'}}>Discover...</h1> */}
       <div className="landing sliderContainer">
         {/* the ternary operator below allows us to use the 2024 value in the slider while displaying the text 'all-time' */}
-        <h1 className="sliderSubContainer">Your { year != 2024 ? year : 'all-time' } backtrack</h1>
+        <h1 className="sliderSubContainer">Your { year != 2024 ? year : 'All-Time' } Back Track</h1>
         <input
           type="range"
+        // this now points to the actual first year from the user's data
+          // min={firstYear}
           min="2011"
           max="2024"
           defaultValue="2024"

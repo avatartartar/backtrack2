@@ -24,6 +24,7 @@ export const DataProvider = ({ children }) => {
   const [sqlDb, setSqlDb] = useState(null);
   const [sqlDbBool, setSqlDbBool] = useState(false);
   const [tracksTableBool, setTracksTableBool] = useState(false);
+  const [reduxReady, setReduxReady] = useState(false);
   // const [albumsTable, setAlbumsTable] = useState(null);
 
   const contextValue = {
@@ -31,6 +32,7 @@ export const DataProvider = ({ children }) => {
     sqlDb, setSqlDb,
     sqlDbBool, setSqlDbBool,
     tracksTableBool, setTracksTableBool,
+    reduxReady, setReduxReady,
     // albumsTable, setAlbumsTable,
   };
 

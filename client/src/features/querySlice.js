@@ -237,16 +237,64 @@ export const fillTopRecordsViaApi = createAsyncThunk(
   }
 );
 
+// function convertSqlToJson(sqlResult) {
+//   const rows = sqlResult[0].values;
+//   const columns = sqlResult[0].columns;
+//   return rows.map(row => {
+//     const rowObject = {};
+//     row.forEach((value, index) => {
+//       const columnName = columns[index];
+//       rowObject[columnName] = value;
+//     });
+//     return rowObject;
+//   });
+// }
+
 function convertSqlToJson(sqlResult) {
-  return sqlResult.values.map(row => {
+  if (!sqlResult[0] || !sqlResult[0].columns || !sqlResult[0].values) return [];
+  return sqlResult[0].values.map(row => {
     const rowObject = {};
     row.forEach((value, index) => {
-      const columnName = sqlResult.columns[index];
-      rowObject[columnName] = value;
+      rowObject[sqlResult[0].columns[index]] = value;
     });
     return rowObject;
   });
 }
+
+export const makeCategoryJson = createAsyncThunk(
+  'top/makeCategoryJson',
+  async (dbArg, { rejectWithValue }) => {
+    const categories = ['tracks', 'artists', 'albums'];
+    let categoryData = {};
+
+    try {
+      for (const category of categories) {
+        // Initialize category object
+        categoryData[category] = {};
+
+        // Fetch and structure allTime data
+        const allTimeSqlResult = await dbArg.exec(`SELECT * FROM top_${category}_allTime LIMIT 10`);
+        categoryData[category]['allTime'] = convertSqlToJson(allTimeSqlResult);
+
+        // Fetch and structure byYear data
+        const byYearSqlResult = await dbArg.exec(`SELECT * FROM top_${category}_byYear ORDER BY year ASC, total_minutes_played DESC`);
+        const byYearDataRaw = convertSqlToJson(byYearSqlResult);
+
+        byYearDataRaw.forEach(record => {
+          const year = record.year.toString();
+          if (!categoryData[category][year]) {
+            categoryData[category][year] = [];
+          }
+          categoryData[category][year].push(record);
+        });
+      }
+      return categoryData;
+    } catch (error) {
+      console.error(`Error structuring data for categories:`, error);
+      return rejectWithValue('Failed to structure category data');
+    }
+  }
+);
 
 export const syncTrackUris = createAsyncThunk(
   'query/syncTrackUris',

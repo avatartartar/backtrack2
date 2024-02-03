@@ -13,7 +13,7 @@ const FirstAndLastTrackComp = ({ results }) => {
     const [lastPlay, setLastPlay] = useState('');
 
     const { sqlDb } = useData();
-    const { tracks, albums, artists, minutes } = useSelector(state => state.query);
+    const { tracks } = useSelector(state => state.query);
     const firstAndLastQuery = tracks.firstAndLast;
 
     const executeFirstAndLast = () => {

@@ -10,9 +10,15 @@ dexdb.version(1).stores({
       data
     `,
 })
+
 const tokenDb = new Dexie('tokenDb');
 tokenDb.version(1).stores({
   token: 'name,value'
+});
+
+const jsonDb = new Dexie('jsonDb');
+jsonDb.version(1).stores({
+  json: '++id, data'
 });
 
 // the below code is for deleting the database, which is useful if we want to
@@ -35,5 +41,5 @@ const deleteDb = (name) => {
 
 // deleteDb('backtrackDb')
 
-export {dexdb, tokenDb, deleteDb};
+export {dexdb, tokenDb, deleteDb, jsonDb};
 export default dexdb;

@@ -6,13 +6,22 @@ import SQLWasm from '/node_modules/sql.js/dist/sql-wasm.wasm';
 
 import { saveAs } from 'file-saver';
 
-import dexdb from './dexdb.js'; // Dexie instance
+import dexdb, { jsonDb } from './dexdb.js'; // Dexie instance
 
 import { useData } from './DataContext.jsx';
 
-import { setJson, setTopAllTime, setTopByYear } from '../features/slice.js';
+import { setJson,
+  setTopAllTime,
+  setTopByYear
+ } from '../features/slice.js';
 
-import { makeClientTables, viewClientTables, syncTrackUris, fillTopRecordsViaApi } from '../features/querySlice.js';
+import {
+  makeClientTables,
+  viewClientTables,
+  syncTrackUris,
+  fillTopRecordsViaApi,
+  makeCategoryJson
+} from '../features/querySlice.js';
 
 const SqlLoadComp = () => {
   const {
@@ -33,7 +42,7 @@ const SqlLoadComp = () => {
     error: error
   } = useSelector(state => state.json);
 
-  const { firstYear } = useSelector(state => state.userFacts);
+  const { firstYear } = useSelector(state => state.user);
   const { tracks: topTracks, artists: topArtists, albums: topAlbums } = useSelector(state => state.top);
 
 
@@ -57,18 +66,7 @@ const SqlLoadComp = () => {
       const durationFromFirstToLast = (lastInterval - firstInterval) / 1000;
       console.log(`${durationFromFirstToLast} seconds to finish making all Tables and save to Dexie`);
     }
-};
-
-  // const saveJsonAsFile = () => {
-  //   const selectedData = reduxJson
-  //   const selectedDataBlob = new Blob([JSON.stringify(selectedData)], { type: 'application/json' });
-  //   const selectedDataUrl = URL.createObjectURL(selectedDataBlob);
-  //   const selectedDataLink = document.createElement('a');
-  //   selectedDataLink.href = selectedDataUrl;
-  //   selectedDataLink.download = `${selectedData.name}.json`;
-  //   document.body.appendChild(selectedDataLink);
-  //   selectedDataLink.click();
-  // }
+  };
 
   // called when a spotify history zip file is uploaded
   const makeSqlDb = async() => {
@@ -263,13 +261,27 @@ const SqlLoadComp = () => {
         console.error('Error creating allTime and byYear tables:', error);
       }
 
-      // try {
-      //   await dispatch(fillTopRecordsViaApi(newSqlDb));
-      //   addInterval('to fill top records via API');
-      //   console.log('Top records filled via API.');
-      // } catch (error) {
-      //   console.error('Error filling top records via API:', error);
-      // }
+      try {
+        await dispatch(fillTopRecordsViaApi(newSqlDb));
+        addInterval('to fill top records via API');
+        console.log('Top records filled via API.');
+      } catch (error) {
+        console.error('Error filling top records via API:', error);
+      }
+
+      try {
+        console.log('Creating category json...');
+        const jsonTables = await dispatch(makeCategoryJson(newSqlDb));
+        addInterval('to make category json');
+        await jsonDb.json.put({ id: 1, data: jsonTables }).then(() => {
+          console.log('Data stored successfully');
+        }).catch((error) => {
+          console.error('Error storing data', error);
+        });
+        console.log('Category json created.');
+      } catch (error) {
+        console.error('Error creating category json:', error);
+      }
 
       try {
         // uncomment the line below to view the client tables in the console
@@ -286,7 +298,7 @@ const SqlLoadComp = () => {
         addInterval('to vacuum');
         // addInterval('to setSqlDb after vacuuming');
 
-        const fillStore = await topToStore(newSqlDb);
+        // const fillStore = await topToStore(newSqlDb);
         console.log('topArtists from store, from sql', topArtists);
         console.log('topAlbums from store, from sql', topAlbums);
         console.log('topTracks from store, from sql', topTracks);
@@ -325,44 +337,6 @@ const SqlLoadComp = () => {
       console.error(error);
     }
   };
-
-  const topToStore = async (dbArg) => {
-    function convertSqlToJson(sqlResult) {
-      console.log('sqlResult[0].values:', );
-      const rows = sqlResult[0].values;
-      const columns = sqlResult[0].columns;
-      console.log('sqlResult columns:', columns);
-      console.log('sqlResult rows', rows);
-
-      return rows.map(row => {
-        const rowObject = {};
-        row.forEach((value, index) => {
-          const columnName = columns[index];
-          rowObject[columnName] = value;
-        });
-        return rowObject;
-      });
-    }
-    const categories = ['tracks', 'artists', 'albums'];
-    // const topTables = ['top_tracks_allTime', 'top_tracks_byYear', 'top_artists_allTime', 'top_artists_byYear', 'top_albums_allTime', 'top_albums_byYear'];
-    try {
-      categories.forEach(async category => {
-      const allTime = await dbArg.exec(`SELECT * FROM top_${category}_allTime`);
-      // const byYear = await newSqlDb.exec(`SELECT * FROM top_${category}_byYear`);
-
-      const allTimeData = await convertSqlToJson(allTime);
-      // const byYearData = await convertSqlToJson(byYear);
-
-      // ...
-      dispatch(setTopAllTime({ category, records: allTimeData }));
-      // dispatch(setTopByYear({ category, data: byYearData }));
-
-    })
-    } catch (error) {
-      console.error('Error converting top_tracks_allTime to JSON:', error);
-    }
-  }
-
 
   const createAndAlterTracksTable = async (dbArg) => {
     try {
