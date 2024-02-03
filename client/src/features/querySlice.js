@@ -237,19 +237,6 @@ export const fillTopRecordsViaApi = createAsyncThunk(
   }
 );
 
-// function convertSqlToJson(sqlResult) {
-//   const rows = sqlResult[0].values;
-//   const columns = sqlResult[0].columns;
-//   return rows.map(row => {
-//     const rowObject = {};
-//     row.forEach((value, index) => {
-//       const columnName = columns[index];
-//       rowObject[columnName] = value;
-//     });
-//     return rowObject;
-//   });
-// }
-
 function convertSqlToJson(sqlResult) {
   if (!sqlResult[0] || !sqlResult[0].columns || !sqlResult[0].values) return [];
   return sqlResult[0].values.map(row => {

@@ -112,8 +112,6 @@ const { reducer: topReducer, actions: topActions } = topSlice;
 const { setStateFromJson } = topActions;
 
 
-
-
 const dataSlice = (endpoint, filter) => {
   const actions = createAsyncThunk(
     `fetch/${endpoint}`,
