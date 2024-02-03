@@ -15,7 +15,7 @@ const LandingComp = () => {
   // useContext is a hook for sharing data between components without having to explicitly pass a prop through every level of the tree.
   // it works by creating a context object and passing it to the useContext hook.
   // every component that needs access to the context object must be wrapped in the <DataContext.Provider> component.
-  // we do that in SqlParentComp.jsx
+  // we do that in App.jsx
 
   // in this case, it returns the sqlFile and setSqlFile values
   // which are null at first.

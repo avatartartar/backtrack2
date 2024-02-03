@@ -19,6 +19,15 @@
  */
 import React from 'react'
 
+import { DataProvider } from '../components/DataContext.jsx';
+import ImportComp from '../components/ImportComp.jsx';
+import SqlLoadComp from '../components/SqlLoadComp.jsx';
+import SqlResultsComp from '../components/SqlResultsComp.jsx';
+import LandingComp from '../components/LandingComp.jsx';
+import FirstAndLastTrackComp from '../components/FirstAndLastTrackComp.jsx';
+import TotalMinPlayedComp from '../components/TotalMinPlayedComp.jsx';
+import VolumePatternsComp from '../components/VolumePatternsComp.jsx';
+import SkippedTracksComp from '../components/SkippedTracksComp.jsx';
 import GraphComp from '../components/GraphComp.jsx';
 import LogStateComp from '../components/LogStateComp.jsx';
 import NavbarComp from '../components/NavbarComp.jsx';
@@ -26,25 +35,29 @@ import TopArtistsComp from '../components/TopArtistsComp.jsx';
 import TopAlbumComp from '../components/TopAlbumComp.jsx';
 import TopTracksComp from '../components/TopTracksComp.jsx';
 import YearSliderComp from '../components/SliderComp.jsx';
-import SqlParentComp from '../components/SqlParentComp.jsx';
-
 
 import '../../styles/index.scss';
-// import FirstAndLastTrackComp from '../components/FirstAndLastTrackComp.jsx';
 
 export function App() {
 
   return (
-    <>
-      <LogStateComp/>
+     <DataProvider>
+      <ImportComp />
+      <LandingComp />
       <NavbarComp/>
+      <SqlLoadComp />
+      <LogStateComp/>
       <YearSliderComp/>
       <TopTracksComp/>
       <TopArtistsComp/>
       <TopAlbumComp/>
       <GraphComp/>
-      <SqlParentComp/>
-    </>
+      {/* <SqlResultsComp /> */}
+      <FirstAndLastTrackComp />
+      <TotalMinPlayedComp />
+      <VolumePatternsComp />
+      <SkippedTracksComp />
+    </DataProvider>
   )
 }
 
