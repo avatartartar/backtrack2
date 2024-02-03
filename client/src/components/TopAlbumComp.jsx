@@ -27,7 +27,7 @@ const TopAlbumPage = () => {
 
   return (
     <div className='topAlbumsDisplay'>
-      <h3>And couldn't get enough of:</h3>
+      <h3>And couldn't get enough of this album:</h3>
       <div className='albumContainer'>
       {album &&
         <>

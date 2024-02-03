@@ -19,6 +19,7 @@ import React, { useEffect, useState, PureComponent } from 'react';
 import { LabelList, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import '../../styles/index.scss'
 import { useDispatch, useSelector } from 'react-redux';
+import { selectTopTracks } from '../features/slice.js';
 
 
 const GraphComp = () => {
@@ -27,8 +28,8 @@ const GraphComp = () => {
   const [totalHours, setTotalHours] = useState(null);
 
   const { year, default : defaultYear, status: statusYear, error: errorYear } = useSelector(state => state.chosen);
-  const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
-
+  // const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
+  const topTracks = useSelector(selectTopTracks);
   // setting tracks to either topTracks or topTracksByYear depending on the year selected.
   // then this gets served to the component that renders the tracks.
 
@@ -37,17 +38,17 @@ const GraphComp = () => {
     if (topTracks && topTracks.length > 0) {
       const topByYear = topTracks.filter((track, index) =>  index < 10);
       const newData = topByYear.map((track) => ({
-        name: track.name,
-        minutes: track.playtime_minutes,
+        name: track.track_name,
+        minutes: track.total_minutes_played,
         album: track.image_url,
         artist_name: track.artist_name,
         album_name: track.album_name,
-        hours: (track.playtime_minutes / 60).toFixed(2),
-        percent_of_total: ((track.playtime_minutes / 60) / totalHours * 100).toFixed(2),
+        hours: (track.total_minutes_played / 60).toFixed(2),
+        percent_of_total: ((track.total_minutes_played / 60) / totalHours * 100).toFixed(2),
       }));
       let totalMinutes = 0;
       topByYear.forEach((el) => {
-        totalMinutes += el.playtime_minutes;
+        totalMinutes += el.total_minutes_played;
       })
       const hours = Math.floor(totalMinutes / 60);
       setTotalHours(hours);

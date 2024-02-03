@@ -33,6 +33,7 @@ const LandingComp = () => {
     // albumsTable,
     // setAlbumsTable,
     setReduxReady,
+    reduxReady,
   } = useData();
 
   const dispatch = useDispatch();
@@ -117,7 +118,7 @@ const LandingComp = () => {
       {/* because we're controlling the visibility of the below component with sqlDbBool,
       we apparently need to use this or something like it. that is, something that plays well with React. */}
       <CSSTransition
-      in={!sqlDbBool}
+      in={!reduxReady}
       // set this to the length of the longest animation it contains
       timeout={5000}
       classNames="overlay-transition"
@@ -132,6 +133,7 @@ const LandingComp = () => {
     </CSSTransition>
     </div>
   );
+
 }
 
 export default LandingComp;
