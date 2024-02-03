@@ -317,7 +317,7 @@ function SqlResultsComp() {
             {/* {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>} */}
             {/* {volumePatterns && <VolumePatternsComp results={volumePatterns}/>} */}
 
-            {skippedTracks && <SkippedTracksComp results = {skippedTracks} results2={skippedArtists}/>}
+            {/* {skippedTracks && <SkippedTracksComp results = {skippedTracks} results2={skippedArtists}/>} */}
         </div>
     );
 }

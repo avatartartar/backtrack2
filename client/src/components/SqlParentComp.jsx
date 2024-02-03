@@ -10,6 +10,7 @@ import LandingComp from '../components/LandingComp.jsx';
 import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
 import TotalMinPlayedComp from './TotalMinPlayedComp.jsx';
 import VolumePatternsComp from './VolumePatternsComp.jsx';
+import SkippedTracksComp from './SkippedTracksComp.jsx';
 
 function SqlParentComp() {
   return (
@@ -22,6 +23,7 @@ function SqlParentComp() {
       <FirstAndLastTrackComp />
       <TotalMinPlayedComp />
       <VolumePatternsComp />
+      <SkippedTracksComp />
     </DataProvider>
   );
 }
