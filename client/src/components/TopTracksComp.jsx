@@ -16,15 +16,17 @@
  * - client/src/app/App.jsx
  */
 import React, { useEffect, useState } from 'react';
-
-import { setChosenTrack} from '../features/slice.js';
 import { useDispatch, useSelector } from 'react-redux';
+
 import playIcon from '../../assets/play_icon.png';
 import pauseIcon from '../../assets/pause_icon.png';
-
+import { setChosenTrack} from '../features/slice.js';
+import { selectTopTracks } from '../features/slice.js';
+import { useData } from './DataContext.jsx';
 
 
 const TopTracksComp = () => {
+  const { jsonDb } = useData();
 
   const {
     year,
@@ -40,8 +42,9 @@ const TopTracksComp = () => {
     album_name: chosenTrackAlbumName,
   } = useSelector(state => state.chosen.track);
 
-  const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
+  // const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
 
+  const topTracks = useSelector(selectTopTracks);
   // setting tracks to either topTracks or topTracksByYear depending on the year selected.
   // then this gets served to the component that renders the tracks.
 
@@ -56,10 +59,10 @@ const TopTracksComp = () => {
     dispatch(setChosenTrack(track))
   }
 
-const controlPlayback = (previewUrl, trackId, imageUrl, albumName, artistName) => {
+const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) => {
 
-    // For now, in the cases when the previewUrl is null as it sometimes is. 2024-01-12_05-10-PM PST.
-    if (!previewUrl) return;
+    // For now, in the cases when the preview_url is null as it sometimes is. 2024-01-12_05-10-PM PST.
+    if (!preview_url) return;
 
     if (audioPlaying){
       audio.pause()
@@ -95,7 +98,7 @@ const controlPlayback = (previewUrl, trackId, imageUrl, albumName, artistName) =
 
     const playAudio = () => {
       setIsClickedId(trackId);
-      const newAudio = new Audio(previewUrl);
+      const newAudio = new Audio(preview_url);
       newAudio.volume = 0.0;
       newAudio.play();
       setAudioPlaying(true);
@@ -147,7 +150,7 @@ const controlPlayback = (previewUrl, trackId, imageUrl, albumName, artistName) =
         <div className="trackScrollWrapper">
           <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
             <div onClick={() => {
-              controlPlayback(track.audio_clip_url, track.id, track.image_url, track.album_name, track.artist_name)
+              controlPlayback(track.preview_url, track.id, track.image_url, track.album_name, track.artist_name)
               &
               controlImage(track)
               if (isClickedId === track.id) {
@@ -156,10 +159,10 @@ const controlPlayback = (previewUrl, trackId, imageUrl, albumName, artistName) =
                 setIsClickedId(track.id);
               }
             }}>
-            {track.name} - {track.artist_name}
+            {track.track_name} - {track.artist_name}
             </div>
-            <div onClick={() => controlPlayback(track.audio_clip_url, track.id, track.image_url, track.album_name, track.artist_name)}>
-            {track.name} - {track.artist_name}
+            <div onClick={() => controlPlayback(track.preview_url, track.id, track.image_url, track.album_name, track.artist_name)}>
+            {track.track_name} - {track.artist_name}
             </div>
           </div>
         </div>

@@ -6,23 +6,9 @@ import { useData } from './DataContext.jsx';
 import { useDispatch, useSelector } from "react-redux";
 
 import { setResults } from '../features/slice.js';
-import dexdb from './dexdb.js';
-import FirstAndLastTrackComp from './FirstAndLastTrackComp.jsx';
 import FirstTrackComp from './FirstTrackComp.jsx';
-import VolumePatternsComp from './VolumePatternsComp.jsx';
-import TotalMinPlayedComp from './TotalMinPlayedComp.jsx';
-import SkippedTracksComp from './SkippedTracksComp.jsx';
 
 function SqlResultsComp() {
-
-    // const [firstAndLast, setFirstAndLast] = useState('');
-    const [firstTrack, setFirstTrack] = useState('');
-    const [volumePatterns, setVolumePatterns] = useState('');
-    // const [totalMinPlayed, setTotalMinPlayed] = useState('');
-
-    const [skippedTracks,setSkippedTracks] = useState('');
-    const [skippedArtists, setSkippedArtists] = useState('');
-
     // getting the sqlDb and a boolen of it from the shared context with the other sqlComponents
     const { sqlDb } = useData();
 
@@ -32,8 +18,9 @@ function SqlResultsComp() {
     const { year: chosenYear } = useSelector(state => state.chosen);
 
     // a place to store and fetch queries themselves
-    const { tracks, albums, artists, minutes } = useSelector(state => state.query);
+    const { tracks, albums, artists } = useSelector(state => state.query);
 
+    const [firstTrack, setFirstTrack] = useState('');
 
     const [filteredMonth, setFilteredMonth] = useState('');
     const monthOptions = ['', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
@@ -41,15 +28,9 @@ function SqlResultsComp() {
     const [filteredType, setFilteredType] = useState('tracks');
     const typeOptions = ['tracks', 'albums', 'artists'];
 
-    const [lastLocalQuery, setLastLocalQuery] = useState('');
+    // const [lastLocalQuery, setLastLocalQuery] = useState('');
 
-
-    const firstAndLastQuery = tracks.firstAndLast;
     const firstTrackQuery = tracks.first;
-
-    const volumePatternsQuery = minutes.byMonth;
-    const totalMinPlayedQuery = minutes.total;
-
 
     // a place to store and fetch results of the most recent filterQuery
     const results = useSelector((state) => state.results.recent);
@@ -61,52 +42,8 @@ function SqlResultsComp() {
         // console.log('first and last are ', res)
     }
 
-    const executeFirstAndLast = () => {
-        const res = sqlDb.exec(firstAndLastQuery);
-        // dispatch(setResults(res));
-        setFirstAndLast(res);
-        // console.log('first and last are ', res)
-    }
 
-    const executeVolumePatterns = () => {
-        const res = sqlDb.exec(volumePatternsQuery);
-        setVolumePatterns(res);
-        // console.log('volume patterns are ', res);
-    }
-    const executeTotalMinPlayed = () => {
-        const res = sqlDb.exec(totalMinPlayedQuery);
-        setTotalMinPlayed(res);
-        // console.log('total min played are ', res)
-    }
 
-    const executeSkippedTracks = () => {
-        const res = sqlDb.exec(tracks.skippedTracks);
-        const res2 = sqlDb.exec(artists.skipped);
-
-        // const res = sqlDb.exec(totalMinPlayedQuery);
-        setSkippedTracks(res);
-        setSkippedArtists(res2);
-}
-
-    // 2024-02-01_02-52-PM: the use of useEffect is causing some lag with the page load.
-    useEffect(() => {
-        if (sqlDb) {
-            // executeFirstTrack();
-            // executeFirstAndLast();
-            // executeVolumePatterns();
-            // executeTotalMinPlayed();
-            executeSkippedTracks();
-        }
-    }, [sqlDb]);
-
-    // a function to download the SQL database as a binary file
-    const downloadSqlDb = () => {
-        const sqlDbBinary = sqlDb.export();
-        // octet-stream means binary file type
-        const sqlData = new Blob([sqlDbBinary], { type: 'application/octet-stream' });
-        // asks the user where to save the file
-        saveAs(sqlData, 'my_spotify_history_database.sql');
-    };
 
     function ResultsTable({ columns, values }) {
 
@@ -126,22 +63,6 @@ function SqlResultsComp() {
                 </tbody>
             </table>
         );
-    }
-
-    function Chart({ results }) {
-
-        // volume patterns - busy months / quiet periods / peak listening times
-
-        // dominant genres per year
-
-        // language / countries?
-
-        // total listening minutes?
-
-
-        return (
-            <div>Insert chart here</div>
-            )
     }
 
     function SqlResults() {
@@ -169,11 +90,9 @@ function SqlResultsComp() {
             dispatch(setResults(res));
         };
 
-
-
-
         // START: DEVELOPMENT ONLY
         const [localQuery, setLocalQuery] = useState('');
+        const [lastLocalQuery, setLastLocalQuery] = useState('');
     // a function to execute the query and store the results in the store
     const executeLiveQuery = () => {
         try {
@@ -281,43 +200,14 @@ function SqlResultsComp() {
                     <ResultsTable key={index} columns={result.columns} values={result.values} />
                 ))}
                 {/* executeQuery div around  */}
-                {/* <Chart results={results} /> */}
-
-
             </div>
         );
     }
 
     return (
         <div style={{ width: '80%', margin: '0 auto' }}>
-            {sqlDb && (
-                <button
-                    style={{
-                        width: '500px',
-                        height: '50px',
-                        margin: '0 auto',
-                        cursor: 'pointer',
-                        border: '1px solid black',
-                        padding: '8px',
-                        alignSelf: 'center',
-                    }}
-                    onClick={downloadSqlDb}
-                >
-                    Download your Spotify History Database!
-                </button>
-            )}
-
-            {/* <button onClick={executeTotalMinPlayed}>Get Total Min Played</button>
-            <button onClick={executeVolumePatterns}>Get Volume Patterns</button>
-            <button onClick={executeFirstTrack}>Get First Track</button> */}
-                {/* <button onClick={executeFirstAndLast}>Get First and Last Track</button> */}
             {sqlDb && <SqlResults />}
-            {firstTrack && < FirstTrackComp results={firstTrack} />}
-            {/* {firstAndLast && < FirstAndLastTrackComp results={firstAndLast} />} */}
-            {/* {totalMinPlayed && <TotalMinPlayedComp results={totalMinPlayed}/>} */}
-            {/* {volumePatterns && <VolumePatternsComp results={volumePatterns}/>} */}
-
-            {/* {skippedTracks && <SkippedTracksComp results = {skippedTracks} results2={skippedArtists}/>} */}
+            {/* {firstTrack && < FirstTrackComp results={firstTrack} />} */}
         </div>
     );
 }

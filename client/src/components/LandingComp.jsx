@@ -7,15 +7,15 @@ import { CSSTransition } from 'react-transition-group';
 
 import ImportComp from './ImportComp.jsx';
 import logo from '../../assets/logo.png';
-import {setJson} from '../features/slice.js';
-import dexdb from './dexdb.js'; // Dexie instance
+import { setJson, setStateFromJson } from '../features/slice.js';
+import dexdb, { jsonDb } from './dexdb.js'; // Dexie instance
 import { useData } from './DataContext.jsx';
 
 const LandingComp = () => {
   // useContext is a hook for sharing data between components without having to explicitly pass a prop through every level of the tree.
   // it works by creating a context object and passing it to the useContext hook.
   // every component that needs access to the context object must be wrapped in the <DataContext.Provider> component.
-  // we do that in SqlParentComp.jsx
+  // we do that in App.jsx
 
   // in this case, it returns the sqlFile and setSqlFile values
   // which are null at first.
@@ -32,6 +32,7 @@ const LandingComp = () => {
     // setTracksTable,
     // albumsTable,
     // setAlbumsTable,
+    setReduxReady,
   } = useData();
 
   const dispatch = useDispatch();
@@ -48,6 +49,7 @@ const LandingComp = () => {
 
         try {
           const sqlDbItem = await dexdb.sqlDbBinary.get(1);
+          const jsonItem = await jsonDb.json.get(1);
 
           if (sqlDbItem && sqlDbItem.data) {
             console.log('prior user database found in dexie. Loading...');
@@ -59,6 +61,11 @@ const LandingComp = () => {
           } else {
             console.log('Database not found in dexie. Prompting user to upload.');
             setPromptUpload(true); // Trigger user prompt to upload a file
+          }
+          if (jsonItem && jsonItem.data) {
+            console.log('prior user data found in dexie. Loading...');
+            await dispatch(setStateFromJson(jsonItem.data));
+            setReduxReady(true);
           }
         } catch (error) {
           console.error('Error accessing sqlDbBinary store:', error);
@@ -112,7 +119,7 @@ const LandingComp = () => {
       <CSSTransition
       in={!sqlDbBool}
       // set this to the length of the longest animation it contains
-      timeout={3000}
+      timeout={5000}
       classNames="overlay-transition"
       // what to do when done animating out
       unmountOnExit

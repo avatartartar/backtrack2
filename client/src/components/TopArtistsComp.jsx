@@ -19,13 +19,14 @@ import { useSelector } from 'react-redux';
 
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import { selectTopArtists } from '../features/slice.js';
 
 function mapNameAndAddDashes(array) {
   const copy = JSON.parse(JSON.stringify(array));
   const newArray = [];
   for (let i = 0; i < copy.length; i++) {
     const element = copy[i];
-    if (typeof element === 'object') newArray.push(element.name);
+    if (typeof element === 'object') newArray.push(element.artist_name);
     if (i !== copy.length - 1) newArray.push('-');
   }
   return newArray;
@@ -35,7 +36,7 @@ const TopArtistsComp = () => {
   const { year } = useSelector(state => state.chosen);
   const { arrData: topArtists, status, error } = useSelector(state => state.topArtists);
 
-  const mappedArtists = mapNameAndAddDashes(topArtists);
+  const mappedArtists = mapNameAndAddDashes(useSelector(selectTopArtists));
 
   useGSAP(() => {
     const tl = gsap.timeline({defaults: { ease: 'power3.out', delay: 0.2 }});

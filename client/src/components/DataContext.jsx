@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState } from 'react';
 // useContext is a hook for sharing data between components without having to explicitly pass a prop through every level of the tree.
 // it works by creating a context object and passing it to the useContext hook.
 // every component that needs access to the context object must be wrapped in the <DataContext.Provider> component.
-// we do that in SqlParentComp.jsx
+// we do that in App.jsx
 
 // in this case, it returns the sqlFile and setSqlFile values
 // which are null at first.
@@ -15,15 +15,16 @@ import React, { createContext, useContext, useState } from 'react';
 // creating the context
 const DataContext = createContext();
 
-// the below DataProvider component is called in SqlParentComp.jsx
-// each of the components invoked in SqlParentComp.jsx are wrapped in the provider component
+// the below DataProvider component is called in App.jsx
+// each of the components invoked in App.jsx are wrapped in the provider component
 // this allows them to access the 'context' object and makes them 'consumers' of the context object
-// here, they are named 'children', as in 'children of the provider component' (SqlParentComp.jsx)
+// here, they are named 'children', as in 'children of the provider component' (App.jsx)
 export const DataProvider = ({ children }) => {
   const [sqlFile, setSqlFile] = useState(null);
   const [sqlDb, setSqlDb] = useState(null);
   const [sqlDbBool, setSqlDbBool] = useState(false);
   const [tracksTableBool, setTracksTableBool] = useState(false);
+  const [reduxReady, setReduxReady] = useState(false);
   // const [albumsTable, setAlbumsTable] = useState(null);
 
   const contextValue = {
@@ -31,6 +32,7 @@ export const DataProvider = ({ children }) => {
     sqlDb, setSqlDb,
     sqlDbBool, setSqlDbBool,
     tracksTableBool, setTracksTableBool,
+    reduxReady, setReduxReady,
     // albumsTable, setAlbumsTable,
   };
 

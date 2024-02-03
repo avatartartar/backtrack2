@@ -10,7 +10,7 @@
  * - fetchTopTracks: Async thunk action created by dataSlice for fetching top tracks.
  * - fetchTopAlbums: Async thunk action created by dataSlice for fetching top albums.
  * - fetchTopArtists: Async thunk action created by dataSlice for fetching top artists.
- * - setYear: Reducer action for setting the year in the chosen slice's state.
+ * - setChosenYear: Reducer action for setting the year in the chosen slice's state.
  * - setChosenTrack: Reducer action for setting the chosen track in the chosen slice's state.
  *
  * @slices
@@ -27,13 +27,15 @@
  * - reducers:
  * - client/src/store/store.js: Imports the reducers and combines them into a single reducer.
  */
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
+import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
 
 const chosenSlice = createSlice({
   name: 'chosen',
   initialState: {
+    // year: 'allTime',
     year: 2024,
-    defaultYear: 'AllTime',
+    defaultYear: 'allTime',
     track: {},
     status: "idle",
     error: ""
@@ -41,8 +43,13 @@ const chosenSlice = createSlice({
   reducers: {
     // keys are action types
     // values are action creators
-    setYear: (state, action) => {
-      state.year = action.payload;
+    setChosenYear: (state, action) => {
+      if (action.payload === 2024) {
+        state.year = state.defaultYear;
+     }
+      else{
+        state.year = action.payload;
+      }
     },
     setChosenTrack: (state, action) => {
       state.track = action.payload;
@@ -50,8 +57,36 @@ const chosenSlice = createSlice({
   },
 });
 
+// Selectors, which are functions that take the Redux state as an argument
+// and return some data to pass to the component.
+// in this case, the chosen year from the slider, which is used to filter all of the data subscribed to by the components.
+const selectChosenYear = (state) => state.chosen.year;
+
+const selectTopTracks = createSelector(
+  [state => state.top.tracks, selectChosenYear],
+  (tracks, chosenYear) => {
+    const selectedTracks = tracks[chosenYear] || tracks.allTime || [];
+    return selectedTracks;
+  }
+);
+const selectTopAlbums = createSelector(
+  [state => state.top.albums, selectChosenYear],
+  (albums, chosenYear) => {
+    const selectedAlbums = albums[chosenYear] || albums.allTime || [];
+    return selectedAlbums;
+  }
+);
+const selectTopArtists = createSelector(
+  [state => state.top.artists, selectChosenYear],
+  (artists, chosenYear) => {
+    const selectedArtists = artists[chosenYear] || artists.allTime || [];
+    return selectedArtists;
+  }
+);
+
 const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
-const { setYear, setChosenTrack } = chosenActions;
+const { setChosenYear, setChosenTrack } = chosenActions;
+
 
 const topSlice = createSlice({
   name: 'top',
@@ -59,59 +94,22 @@ const topSlice = createSlice({
     tracks: {},
     albums: {},
     artists: {},
+    skippedArtists: {},
     loading: false,
     error: null,
   },
   reducers: {
-    setTopAllTime: (state, action) => {
-      console.log('setTopAllTime action.payload:', action.payload);
-      const { category, records } = action.payload; // category: 'tracks', 'artists', 'albums'
-      state[category].allTime = records;
-    },
-    setTopByYear: (state, action) => {
-      const { category, year, records } = action.payload;
-      if (!state[category].byYear[year]) {
-        state[category].byYear[year] = [];
-      }
-      state[category].byYear[year] = records;
+    setStateFromJson: (state, action) => {
+      return action.payload.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(setYear, (state, action) => {
-      const year = action.payload;
-      })
-      // Handle fetchTopAllTime
-      // .addCase(fetchTopAllTime.fulfilled, (state, action) => {
-      //   const { category, data } = action.payload;
-      //   state[category].allTime = data;
-      // })
-      // .addCase(fetchTopByYear.fulfilled, (state, action) => {
-      //   const { category, year, data } = action.payload;
-      //   state[category].byYear[year] = data;
-      // })
-      // // You can add more cases for pending, rejected to handle loading states and errors
-      // .addCase(fetchTopAllTime.pending, (state, action) => {
-      //   state.loading = true;
-      // })
-      // .addCase(fetchTopAllTime.rejected, (state, action) => {
-      //   state.loading = false;
-      //   state.error = action.error.message;
-      // })
-      // .addCase(fetchTopByYear.pending, (state, action) => {
-      //   state.loading = true;
-      // })
-      // .addCase(fetchTopByYear.rejected, (state, action) => {
-      //   state.loading = false;
-      //   state.error = action.error.message;
-      // });
   },
 });
 
 const { reducer: topReducer, actions: topActions } = topSlice;
-const { setTopAllTime, setTopByYear, fetchTopByYear, fetchTopAllTime } = topActions;
-
-
+const { setStateFromJson } = topActions;
 
 
 const dataSlice = (endpoint, filter) => {
@@ -157,9 +155,9 @@ const dataSlice = (endpoint, filter) => {
         .addCase(actions.fulfilled, (state, action) => {
           state.status = "succeeded";
           if (action.meta.arg === 2024) {
-            state.year = "AllTime";
+            state.year = "allTime";
             state.arrData = action.payload;
-            state.objData["AllTime"] = action.payload;
+            state.objData["allTime"] = action.payload;
          }
           else{
             state.year = action.meta.arg;
@@ -236,8 +234,8 @@ const resultsSlice = createSlice({
 const { reducer: resultsReducer, actions: resultsActions } = resultsSlice;
 const { setResults } = resultsActions;
 
-const userFactsSlice = createSlice({
-  name: 'userFacts',
+const userSlice = createSlice({
+  name: 'user',
   initialState: {
     facts: {
       firstYear: "",
@@ -265,13 +263,13 @@ const userFactsSlice = createSlice({
   reducers: {
     setUserFacts: (state, action) => {
       const key = Object.keys(action.payload)[0];
-      state.facts[key] = action.payload[key];
+      state[key] = action.payload[key];
     }
   }
 });
 
-const { reducer: userFactsReducer, actions: userFactsActions } = userFactsSlice;
-const { setUserFacts } = userFactsActions;
+const { reducer: userReducer, actions: userActions } = userSlice;
+const { setUserFacts } = userActions;
 
 
 export {
@@ -281,18 +279,18 @@ export {
   topTracksReducer,
   topAlbumsReducer,
   topArtistsReducer,
-  setYear,
+  setChosenYear,
   setChosenTrack,
   chosenReducer,
   jsonReducer,
   setJson,
   resultsReducer,
   setResults,
-  userFactsReducer,
+  userReducer,
   setUserFacts,
-  fetchTopByYear,
-  fetchTopAllTime,
-  setTopAllTime,
-  setTopByYear,
   topReducer,
+  selectTopTracks,
+  selectTopAlbums,
+  selectTopArtists,
+  setStateFromJson,
 };
