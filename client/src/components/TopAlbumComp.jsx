@@ -35,11 +35,11 @@ const TopAlbumPage = () => {
           <h4>{album.artist_name} <br /> {album.album_name}</h4>
         </>
       }
-      {!album &&
+      {/* {!album &&
         <>
           <img src={albumImagePlaceholder} alt="image" />
         </>
-      }
+      } */}
       </div>
     </div>
   )

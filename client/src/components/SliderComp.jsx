@@ -147,7 +147,7 @@ const SliderComp = () => {
           type="range"
         // this now points to the actual first year from the user's data
           // min={firstYear}
-          min="2011"
+          min="2013"
           max="2024"
           defaultValue="2024"
           onMouseUp={handleClick}
