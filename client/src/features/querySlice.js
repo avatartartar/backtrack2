@@ -245,7 +245,6 @@ export const fillTopRecordsViaApi = createAsyncThunk(
     }
   }
   await fillTopAlbums();
-    // convertSqlToJson(sqlResultSet);
   }
 );
 
