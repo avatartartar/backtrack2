@@ -14,12 +14,11 @@
  * @consumers
  * - client/src/app/App.jsx
  */
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-
 import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
 import { selectTopArtists } from '../features/slice.js';
+import { useData } from './DataContext.jsx';
 
 function mapNameAndAddDashes(array) {
   const copy = JSON.parse(JSON.stringify(array));
@@ -34,21 +33,52 @@ function mapNameAndAddDashes(array) {
 
 const TopArtistsComp = () => {
   const { year } = useSelector(state => state.chosen);
-  const { arrData: topArtists, status, error } = useSelector(state => state.topArtists);
-
+  const { reduxReady } = useData();
+  const animationTimeline = useRef(gsap.timeline({ paused: true }));
   const mappedArtists = mapNameAndAddDashes(useSelector(selectTopArtists));
 
-  useGSAP(() => {
-    const tl = gsap.timeline({defaults: { ease: 'power3.out', delay: 0.2 }});
-    tl.from('.eachArtist', { x: '100vw', duration: 0.1, stagger: 0.2 });
-  }, [status]);
+  useEffect(() => {
+    // resets and prepares elements for animation
+    const resetElements = () => {
+      gsap.set('.eachArtist', { x: '100vw', opacity: 0});
+    };
 
+    // if theres an animation in progress, clear it and start a new one
+    const animateArtists = () => {
+      if (animationTimeline.current) {
+        animationTimeline.current.clear().kill();
+      }
+      // reset elements before animating
+      resetElements();
+      animationTimeline.current = gsap.timeline();
+      animationTimeline.current.fromTo('.eachArtist',
+      // from:
+        { x: '100vw', opacity: 0 },
+        // x: starting position of the element.
+          // vw: vw: unit of measurement relative to the viewport width.
+          // '100vw': the element is off the screen to the right.
+        // opacity: 0 is the starting opacity of the element.
+
+      // to:
+        { x: 0, opacity: 1, duration: 0.2, stagger: 0.2, color: "#FFFFFF" });
+        // x: the ending position of the element.
+          // 0: relative to the div's position, i think.
+        // opacity: the opacity of the element
+        // duration: the duration of the animation
+        // stagger: the time between each element's animation
+        // color: the color of the element (white)
+    };
+
+    if (reduxReady && mappedArtists.length > 0) {
+      animateArtists();
+    }
+  }, [reduxReady, mappedArtists]);
 
   return (
     <div className='artistsWrapper'>
       <h3>You were jammin' to these artists:</h3>
       <div className='artists'>
-        {status === 'succeeded' && mappedArtists.map((element, index) => (
+        {reduxReady && mappedArtists.map((element, index) => (
           <React.Fragment key={index}>
             <p className='eachArtist'>{element}</p>
           </React.Fragment>

@@ -78,7 +78,7 @@ const getTrackUris = async (dbArg, tableName) => {
 };
 
 // retries: The number of retries in case of rate limit hit.
-const getTrackInfo = async (uri, retries = 5) => {
+const getTrackInfo = async (uri, retries = 3) => {
   try {
     // Send a GET request to the Spotify API to fetch track information
     const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
@@ -97,7 +97,7 @@ const getTrackInfo = async (uri, retries = 5) => {
         // Retry-After header is given by the Spotify API to indicate the time after which we can retry the request
         // Parses the value of the 'Retry-After' header from the response, converts it to an integer
         const retryAfter = parseInt(response.headers.get('Retry-After'), 10);
-        console.log(`Rate limit hit, retrying after ${retryAfter} seconds.`);
+        // console.log(`Rate limit hit, retrying after ${retryAfter} seconds.`);
 
       // Waits for a given time (in seconds) by using a Promise and setTimeout.
       // The resolve function is called after the specified time has passed.
@@ -111,7 +111,7 @@ const getTrackInfo = async (uri, retries = 5) => {
 
     return await response.json();
   } catch (error) {
-    console.error(`Error fetching data for URI ${uri}:`, error);
+    console.error(`QuerySlice/getTrackInfo: Error fetching data for URI ${uri}:`, error);
     throw error; // Rethrow to handle it in the calling context
   }
 };
@@ -136,12 +136,11 @@ const updateTopTrackRecord = async (dbArg, tableName, uri, trackData) => {
   try {
     await dbArg.run(updateSql, [previewUrl, imageUrl, uri]);
   } catch (error) {
-    console.error(`Error updating track record for URI ${uri}:`, error);
+    console.error(`QuerySlice/updateTopTrackRecord: Error updating track record for URI ${uri}:`, error);
   }
 };
 
 const updateTopAlbumRecord = async (dbArg, tableName, uri, albumData) => {
-  console.log('updateAlbumRecord: running...');
   const imageUrl = albumData?.album?.images?.[1]?.url || albumData?.album?.images?.[0]?.url || null;
 
   const updateSql = `
@@ -154,16 +153,17 @@ const updateTopAlbumRecord = async (dbArg, tableName, uri, albumData) => {
   try {
     await dbArg.run(updateSql, [imageUrl, uri]);
   } catch (error) {
-    console.error(`Error updating track record for URI ${uri}:`, error);
+    console.error(`QuerySlice/updateTopAlbumRecord: Error updating track record for URI ${uri}:`, error);
   }
 };
 
 export const fillTopRecordsViaApi = createAsyncThunk(
   'query/fillTopRecordsViaApi',
   async (dbArg, thunkAPI) => {
-    console.log('fillTopRecordsViaApi: running...');
+    console.log('fillTopRecordsViaApi/tracks: running...');
 
     // Fetch track URIs from top_tracks_allTime and top_tracks_byYear
+    const fillTopTracks = async () => {
     const trackUrisAllTime = await getTrackUris(dbArg, 'top_tracks_allTime');
     const trackUrisByYear = await getTrackUris(dbArg, 'top_tracks_byYear');
     // Combine and deduplicate URIs
@@ -173,7 +173,7 @@ export const fillTopRecordsViaApi = createAsyncThunk(
         // new Set(): creates a new Set - a collectin of unqiue values, thereby removing duplicates - from the combined array
         // [...]: This creates a new array from the Set. We want an array back, not a set, so this transofrm is necessary.
             //By converting the Set back to an Array, we can use Array methods on the resulting collection of unique values.
-    console.log('allTrackUris', allTrackUris);
+    // console.log('allTrackUris', allTrackUris);
 
 
     // PROMISE.ALL
@@ -199,13 +199,20 @@ export const fillTopRecordsViaApi = createAsyncThunk(
           await updateTopTrackRecord(dbArg, 'top_tracks_allTime', uri, trackData);
           await updateTopTrackRecord(dbArg, 'top_tracks_byYear', uri, trackData);
         } catch (updateError) {
-          console.error(`Error updating track record for URI ${result.value.uri}:`, updateError);
+          // console.error(`QuerySlice 202: Error updating track record for URI ${result.value.uri}:`, updateError);
+          console.error(`QuerySlice 202: Error updating track record`);
         }
       } else {
-        console.error(`Error fetching data for URI ${result.value.uri}:`, result.value.error);
+        // console.error(`QuerySlice 205: Error fetching data for URI ${result.value.uri}:`, result.value.error);
+        console.error(`QuerySlice 205: Error fetching data for URI`);
+
       }
     }
+  }
+  await fillTopTracks();
 
+  const fillTopAlbums = async () => {
+    console.log('fillTopRecordsViaApi/albums: running...');
     const albumUrisByYear = await getTrackUris(dbArg, 'top_albums_byYear');
     const albumUrisAllTime = await getTrackUris(dbArg, 'top_albums_allTime');
     const allAlbumUris = [...new Set([...albumUrisByYear, ...albumUrisAllTime])];
@@ -218,7 +225,6 @@ export const fillTopRecordsViaApi = createAsyncThunk(
     const rejectedAlbumCount = albumResults.filter(result => result.status === 'rejected').length;
     console.log('rejectedAlbumCount', rejectedAlbumCount);
     // const albumSchema = []
-    console.log('albumResults', albumResults);
     for (const result of albumResults) {
       if (result.status === 'fulfilled' && !result.value.error) {
         try {
@@ -227,12 +233,18 @@ export const fillTopRecordsViaApi = createAsyncThunk(
           await updateTopAlbumRecord(dbArg, 'top_albums_allTime', uri, albumData);
           await updateTopAlbumRecord(dbArg, 'top_albums_byYear', uri, albumData);
         } catch (updateError) {
-          console.error(`Error updating album record for URI ${result.value.uri}:`, updateError);
+          // console.error(`QuerySlice/fillTopRecords: Error updating album record for URI ${result.value.uri}:`, updateError);
+          console.error(`QuerySlice/fillTopRecords/albums: Error updating album record`);
+
         }
       } else {
-        console.error(`Error fetching data for URI ${result.value.uri}:`, result.value.error);
+        // console.error(`QuerySlice/fillTopRecords/albums: Error fetching data for URI ${result.value.uri}:`, result.value.error);
+        console.error(`QuerySlice/fillTopRecords/albums: Error fetching data for URI`);
+
       }
     }
+  }
+  await fillTopAlbums();
     // convertSqlToJson(sqlResultSet);
   }
 );
@@ -278,7 +290,7 @@ export const makeCategoryJson = createAsyncThunk(
       return categoryData;
     } catch (error) {
       console.error(`Error structuring data for categories:`, error);
-      return rejectWithValue('Failed to structure category data');
+      return rejectWithValue('logerror: Failed to structure category data');
     }
   }
 );
@@ -566,7 +578,7 @@ const querySlice = createSlice({
         order by
           total_minutes_played desc
         limit
-        10`,
+        1`,
       byYearByMonth: (chosenYear, chosenMonth) => `
         select
           strftime('%Y', ts) as year,

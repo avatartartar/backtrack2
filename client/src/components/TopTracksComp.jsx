@@ -21,14 +21,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import playIcon from '../../assets/play_icon.png';
 import pauseIcon from '../../assets/pause_icon.png';
 import { setChosenTrack} from '../features/slice.js';
-import { selectTopTracks } from '../features/slice.js';
+import { selectTopTracks, selectTopTracksFirstImage } from '../features/slice.js';
 import { useData } from './DataContext.jsx';
 
 
 const TopTracksComp = () => {
   const { reduxReady } = useData();
-  const topTracksExist = useSelector(state => Boolean(state.top.tracks && Object.keys(state.top.tracks).length));
-
 
   const {
     year,
@@ -38,13 +36,12 @@ const TopTracksComp = () => {
   } = useSelector(state => state.chosen);
 
   const {
-    name: chosenTrack,
+    track_name: chosenTrack,
     image_url: chosenTrackImage,
-    artist_name: chosenTrackArtistName,
-    album_name: chosenTrackAlbumName,
+    artist_name: chosenTrackartist_name,
+    album_name: chosenTrackalbum_name,
   } = useSelector(state => state.chosen.track);
 
-  // const { arrData: topTracks, status: statusTopTracks, error: errorTopTracks } = useSelector(state => state.topTracks);
 
   const topTracks = useSelector(selectTopTracks);
   // setting tracks to either topTracks or topTracksByYear depending on the year selected.
@@ -61,29 +58,44 @@ const TopTracksComp = () => {
     dispatch(setChosenTrack(track))
   }
 
-const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) => {
+  const fadeAudio = (audioArg, increment, delay, callback) => {
+    const fade = setInterval(() => {
+      if (!audio && !increment) {return}
+      if((increment > 0 && audioArg.volume < 0.07) || (increment < 0 && audioArg.volume > 0.005)){
+        audioArg.volume += increment;
+      } else {
+        clearInterval(fade);
+
+        if(callback) callback();
+      }
+    }, delay);
+  }
+
+  // this executes when the year changes
+  // it changes the tracksImage to be that of the top track from the chosenYear, like it is for all-time when the site first loads
+  // it also stops the audio when the year changes, if audio is playing.
+  useEffect(() => {
+    if (reduxReady && topTracks) {
+      controlImage(topTracks[0]);
+      if (audio) {
+      fadeAudio(audio, -0.005, 250, () => {
+        audio.pause();
+        setAudioPlaying(false);
+        audio.currentTime = 0;
+        setIsClickedId(null);
+      });
+    }
+    }
+  }, [year, reduxReady])
+
+
+const controlPlayback = (preview_url, track_uri, image_url, album_name, artist_name) => {
 
     // For now, in the cases when the preview_url is null as it sometimes is. 2024-01-12_05-10-PM PST.
     if (!preview_url) return;
 
-    // if (audioPlaying){
-    //   audio.pause()
-    //   setAudioPlaying(false);
-    // }
 
-    const fadeAudio = (audio, increment, delay, callback) => {
-      const fade = setInterval(() => {
-        if((increment > 0 && audio.volume < 0.07) || (increment < 0 && audio.volume > 0.005)){
-          audio.volume += increment;
-        } else {
-          clearInterval(fade);
-
-          if(callback) callback();
-        }
-      }, delay);
-    }
-
-    if (isClickedId === trackId && audio) {
+    if (isClickedId === track_uri && audio) {
       fadeAudio(audio, -0.005, 125, () => {
         audio.pause();
         setAudioPlaying(false);
@@ -93,13 +105,14 @@ const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) 
       return;
     }
 
-    setIsClickedId(trackId);
+
+    setIsClickedId(track_uri);
 
     // function to fade the audio in or out
 
 
     const playAudio = () => {
-      setIsClickedId(trackId);
+      setIsClickedId(track_uri);
       const newAudio = new Audio(preview_url);
       newAudio.volume = 0.0;
       newAudio.play();
@@ -108,7 +121,7 @@ const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) 
       // Fade in audio
       fadeAudio(newAudio, 0.005, 125);
 
-      // Start fading out after 28 seconds, as the clips are 30 seconds.
+      // Start fading out after 20 seconds.
       const endClipTimeout = setTimeout(() => {
         fadeAudio(newAudio, -0.005, 125, () => {
           newAudio.pause();
@@ -116,7 +129,7 @@ const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) 
           newAudio.currentTime = 0;
           setIsClickedId(null);
         });
-      }, 10000);
+      }, 20000);
 
       // Save the new audio and endClipTimeout in state
       setAudio(newAudio);
@@ -194,13 +207,16 @@ const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) 
         ))}
       </ul>
     </div>
+
     <div className="trackImage">
+    {topTracks && reduxReady &&
       <div className="trackImageCard">
         <img src={chosenTrackImage} alt="image" />
-        <h4>{chosenTrackArtistName}
+        <h4>{chosenTrackartist_name}
         <br />
-        "{chosenTrackAlbumName}"</h4>
+        "{chosenTrackalbum_name}"</h4>
       </div>
+    }
     </div>
   </div>
   )

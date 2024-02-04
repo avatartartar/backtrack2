@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import initSqlJs from 'sql.js';
@@ -10,9 +10,11 @@ import dexdb, { jsonDb } from './dexdb.js'; // Dexie instance
 
 import { useData } from './DataContext.jsx';
 
-import { setJson,
+import {
+  setJson,
   setTopAllTime,
-  setTopByYear
+  setTopByYear,
+  setStateFromJson,
  } from '../features/slice.js';
 
 import {
@@ -45,7 +47,6 @@ const SqlLoadComp = () => {
 
   const { firstYear } = useSelector(state => state.user);
   const { tracks: topTracks, artists: topArtists, albums: topAlbums } = useSelector(state => state.top);
-
 
   // an array to store the intervals in addInterval
   let intervals = [];
@@ -274,6 +275,7 @@ const SqlLoadComp = () => {
         console.log('Creating category json...');
         const jsonTables = await dispatch(makeCategoryJson(newSqlDb));
         addInterval('to make category json');
+        dispatch(setStateFromJson(jsonTables));
         await jsonDb.json.put({ id: 1, data: jsonTables }).then(() => {
           console.log('Data stored successfully');
         }).catch((error) => {
@@ -308,7 +310,6 @@ const SqlLoadComp = () => {
         console.log('clientTables created.');
         addInterval('to export sqlDb');
 
-        setReduxReady(true);
 
 
         console.log("sqlDbBinary size:", (sqlDbBinary.length)/1000000, "MB");
@@ -329,6 +330,9 @@ const SqlLoadComp = () => {
           console.log(reduxJson.length,`rows originally in my_spotify_data.zip`);
           console.log(countNotAdded,`rows dropped: ${errorRecords.length} rows with errors, ${duplicateCount} duplicate rows, ${nullCount} null rows`);
           console.log(rowCount[0].values[0][0], 'rows added to Table');
+
+          setReduxReady(true);
+          console.log('makeSql: reduxReady set to true');
         } catch (error) {
           console.error("Error during Dexie operation:", error);
         }

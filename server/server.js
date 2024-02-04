@@ -53,9 +53,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Mounting the router middleware to handle routes starting from the root.
-app.use('/tracks', tracksRouter);
+// app.use('/tracks', tracksRouter);
 app.use('/artists', artistsRouter);
-app.use('/albums', albumsRouter);
+// app.use('/albums', albumsRouter);
 
 app.listen(PORT, () => {
     console.log(`Server listening on port: ${PORT}...`);
