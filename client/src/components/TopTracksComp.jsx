@@ -26,7 +26,9 @@ import { useData } from './DataContext.jsx';
 
 
 const TopTracksComp = () => {
-  const { jsonDb } = useData();
+  const { reduxReady } = useData();
+  const topTracksExist = useSelector(state => Boolean(state.top.tracks && Object.keys(state.top.tracks).length));
+
 
   const {
     year,
@@ -64,10 +66,10 @@ const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) 
     // For now, in the cases when the preview_url is null as it sometimes is. 2024-01-12_05-10-PM PST.
     if (!preview_url) return;
 
-    if (audioPlaying){
-      audio.pause()
-      setAudioPlaying(false);
-    }
+    // if (audioPlaying){
+    //   audio.pause()
+    //   setAudioPlaying(false);
+    // }
 
     const fadeAudio = (audio, increment, delay, callback) => {
       const fade = setInterval(() => {
@@ -101,7 +103,7 @@ const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) 
       const newAudio = new Audio(preview_url);
       newAudio.volume = 0.0;
       newAudio.play();
-      setAudioPlaying(true);
+      // setAudioPlaying(true);
 
       // Fade in audio
       fadeAudio(newAudio, 0.005, 125);
@@ -110,17 +112,17 @@ const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) 
       const endClipTimeout = setTimeout(() => {
         fadeAudio(newAudio, -0.005, 125, () => {
           newAudio.pause();
-          setAudioPlaying(false);
+          // setAudioPlaying(false);
           newAudio.currentTime = 0;
           setIsClickedId(null);
         });
-      }, 20000);
+      }, 10000);
 
       // Save the new audio and endClipTimeout in state
       setAudio(newAudio);
       setEndClipTimeout(endClipTimeout);
     }
-    // this will
+
     if (audio) {
       // Stop the fade out process if it hasn't started yet
       clearTimeout(endClipTimeout);
@@ -128,40 +130,43 @@ const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) 
       // Fade out
       fadeAudio(audio, -0.005, 250, () => {
         audio.pause();
-        setAudioPlaying(false);
+        // setAudioPlaying(false);
         audio.currentTime = 0;
       });
 
       setTimeout(playAudio, 1000); // 1 second delay
     } else {
       playAudio();
-      setAudioPlaying(true);
+      // setAudioPlaying(true);
     }
   }
 
+  function TrackElement({ track, controlPlayback, controlImage, isClickedId, setIsClickedId, preview_url }) {
 
-
-
-  function TrackElement({ track, controlPlayback, controlImage, isClickedId, setIsClickedId }) {
     return (
       <li>
-        <img src={playIcon} alt="" style={isClickedId === track.id ? {display: 'none'} : {display: 'block'}}/>
-        <img src={pauseIcon} alt="" style={isClickedId === track.id ? { display: 'block' } : { display: 'none' }} />
+            {track.preview_url && (
+        <>
+          <img src={playIcon} alt="Play" style={isClickedId === track.track_uri ? {display: 'none'} : {}}/>
+          <img src={pauseIcon} alt="Pause" style={isClickedId === track.track_uri ? {display: 'block'} : {display: 'none'}} />
+        </>
+      )}
         <div className="trackScrollWrapper">
-          <div className={isClickedId === track.id ? 'onPlay' : 'tracks'} >
+          <div className={isClickedId === track.track_uri ? 'onPlay' : 'tracks'} >
             <div onClick={() => {
-              controlPlayback(track.preview_url, track.id, track.image_url, track.album_name, track.artist_name)
+              if (preview_url === null) return;
+              controlPlayback(track.preview_url, track.track_uri, track.image_url, track.album_name, track.artist_name)
               &
               controlImage(track)
-              if (isClickedId === track.id) {
+              if (isClickedId === track.track_uri) {
                 setIsClickedId(null);
               } else {
-                setIsClickedId(track.id);
+                setIsClickedId(track.track_uri);
               }
             }}>
             {track.track_name} - {track.artist_name}
             </div>
-            <div onClick={() => controlPlayback(track.preview_url, track.id, track.image_url, track.album_name, track.artist_name)}>
+            <div onClick={() => controlPlayback(track.preview_url, track.track_uri, track.image_url, track.album_name, track.artist_name)}>
             {track.track_name} - {track.artist_name}
             </div>
           </div>
@@ -171,18 +176,20 @@ const controlPlayback = (preview_url, trackId, imageUrl, albumName, artistName) 
   }
 
   return (
+
     <div className="TopTracksAndImageContainer">
     <div className="TopTracksContainer">
       <h3>Top 10 Tracks</h3>
       <ul>
         {topTracks.map(track => (
           <TrackElement
-            key={track.id}
+            key={track.track_uri}
             track={track}
-            controlPlayback={controlPlayback}
+            controlPlayback={ controlPlayback}
             controlImage={controlImage}
             isClickedId={isClickedId}
             setIsClickedId={setIsClickedId}
+            preview_url={track.preview_url}
           />
         ))}
       </ul>

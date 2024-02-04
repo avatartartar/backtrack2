@@ -26,7 +26,7 @@ const FirstAndLastTrackComp = ({ results }) => {
         setFirstTrack(res[0].values[0][1]);
         setFirstArtist(res[0].values[0][2]);
         setFirstPlay(res[0].values[0][4]);
-        
+
         // console.log(`first uri is `, firstURI);
         const firstTrackData = await getTrackInfo(res[0].values[0][5]);
         setFirstURL(firstTrackData.album.images[0].url)
@@ -39,7 +39,7 @@ const FirstAndLastTrackComp = ({ results }) => {
         const lastTrackData = await getTrackInfo(res[1].values[0][5]);
         // console.log('album data is ', trackData.album.images[0].url);
         setLastURL(lastTrackData.album.images[0].url)
-        
+
 
     }
 
@@ -52,18 +52,18 @@ const FirstAndLastTrackComp = ({ results }) => {
               'Authorization': 'Bearer ' + await getSpotifyToken(),
             },
           });
-      
+
           if (!response.ok) {
-      
+
             // 429 is the status code for rate limit hit
             // retries > 0: if we have retries left, we'll wait for the specified time and then retry the request
             if (response.status === 429 && retries > 0) {
-      
+
               // Retry-After header is given by the Spotify API to indicate the time after which we can retry the request
               // Parses the value of the 'Retry-After' header from the response, converts it to an integer
               const retryAfter = parseInt(response.headers.get('Retry-After'), 10);
               console.log(`Rate limit hit, retrying after ${retryAfter} seconds.`);
-      
+
             // Waits for a given time (in seconds) by using a Promise and setTimeout.
             // The resolve function is called after the specified time has passed.
             // The time is calculated by multiplying the value of retryAfter by 1000 to get seconds from ms, and adding 1 second for safety.
@@ -73,7 +73,7 @@ const FirstAndLastTrackComp = ({ results }) => {
             // console.log('response.headers', response.headers);
             throw new Error(`Fetch request failed with status ${response.status}`);
           }
-      
+
           return await response.json();
         } catch (error) {
           console.error(`Error fetching data for URI ${uri}:`, error);
