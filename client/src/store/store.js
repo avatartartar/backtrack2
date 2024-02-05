@@ -20,9 +20,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import {
-  topTracksReducer,
-  topAlbumsReducer,
-  topArtistsReducer,
   chosenReducer,
   jsonReducer,
   // 2024-01-26_04-42-AM: not being used yet. made to store results of our offline query
@@ -36,9 +33,6 @@ import { queryReducer } from '../features/querySlice.js';
 
 const store = configureStore({
   reducer: {
-    topTracks: topTracksReducer.reducer,
-    topAlbums: topAlbumsReducer.reducer,
-    topArtists: topArtistsReducer.reducer,
     chosen: chosenReducer,
     json: jsonReducer,
     results: resultsReducer,
