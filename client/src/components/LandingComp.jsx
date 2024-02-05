@@ -59,6 +59,7 @@ const LandingComp = () => {
             setSqlDb(loadedSqlDb);
             setSqlDbBool(true);
             setPromptUpload(false);
+
           } else {
             console.log('Database not found in dexie. Prompting user to upload.');
             setPromptUpload(true); // Trigger user prompt to upload a file

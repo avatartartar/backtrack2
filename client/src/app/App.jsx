@@ -23,7 +23,7 @@ import { useSelector } from 'react-redux';
 import { DataProvider } from '../components/DataContext.jsx';
 import ImportComp from '../components/ImportComp.jsx';
 import SqlLoadComp from '../components/SqlLoadComp.jsx';
-import SqlResultsComp from '../components/SqlResultsComp.jsx';
+import SqlTestingComp from '../components/SqlTestingComp.jsx';
 import LandingComp from '../components/LandingComp.jsx';
 import FirstAndLastTrackComp from '../components/FirstAndLastTrackComp.jsx';
 import TotalMinPlayedComp from '../components/TotalMinPlayedComp.jsx';
@@ -53,7 +53,7 @@ export function App() {
       <TopArtistsComp/>
       <TopAlbumComp/>
       <GraphComp/>
-      {/* <SqlResultsComp /> */}
+      {/* <SqlTestingComp /> */}
       <FirstAndLastTrackComp />
       <TotalMinPlayedComp />
       <VolumePatternsComp />

@@ -83,6 +83,13 @@ const selectTopArtists = createSelector(
     return selectedArtists;
   }
 );
+const selectTopTracksFirstImage = createSelector(
+  [state => state.top.tracks, selectChosenYear],
+  (tracks, chosenYear) => {
+    const selectedTracks = tracks[chosenYear] || tracks.allTime || [];
+    return selectedTracks[0]?.image;
+  }
+);
 
 const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
 const { setChosenYear, setChosenTrack } = chosenActions;
@@ -264,12 +271,15 @@ const userSlice = createSlice({
     setUserFacts: (state, action) => {
       const key = Object.keys(action.payload)[0];
       state[key] = action.payload[key];
+    },
+    setFirstYear: (state, action) => {
+      state.facts.firstYear = action.payload;
     }
   }
 });
 
 const { reducer: userReducer, actions: userActions } = userSlice;
-const { setUserFacts } = userActions;
+const { setUserFacts, setFirstYear } = userActions;
 
 
 export {
@@ -292,5 +302,7 @@ export {
   selectTopTracks,
   selectTopAlbums,
   selectTopArtists,
+  selectTopTracksFirstImage,
   setStateFromJson,
+  setFirstYear
 };

@@ -22,12 +22,13 @@ import gsap from 'gsap';
 
 import { useData } from './DataContext.jsx';
 
+
 import {
   setChosenYear,
-  fetchTopTracks,
+  setFirstYear,
   fetchTopArtists,
   setChosenTrack,
-  fetchTopAlbums
+  setResults
  } from '../features/slice.js';
 
 import '../../styles/index.scss';
@@ -36,13 +37,13 @@ import '../../styles/index.scss';
 
 const SliderComp = () => {
   const dispatch = useDispatch();
-  const { year, track: chosenTrack, status, error } = useSelector(state => state.chosen);
 
-  const { sqlDb } = useData();
-  const { tracks } = useSelector(state => state.query);
-  const firstTrackQuery = tracks.first;
-  // const firstYear = sqlDb.exec(firstTrackQuery)
+  const { sqlDb, reduxReady } = useData();
+  const { firstYear } = useSelector(state => state.user.facts);
+  const { tracks: tracksQueries } = useSelector(state => state.query);
+  const firstTrackQuery = tracksQueries.first;
   // console.log('firstYear', firstYear);
+  const [yearHover, setYearHover] = useState(2024);
 
   // Scroll to the top of the page when the component mounts
   // window.history.scrollRestoration = 'manual';
@@ -60,58 +61,44 @@ const SliderComp = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const fetchData = () => {
-    // the below .then on the dispatch then matching the fulfilled of dispatch to action allows us to wait
-    // for the fetchTopTracks to complete before dispatching the chosenTrack.
-    // if setChosenTrack is disptached before fetchTopTracks is fulfilled, then chosenTrack will be undefined
-    // we want to define it when the page first loads so that there is an image and track name displayed
-    // in the right component of TrackComponent.
-    // if(!sqlDb) return
-    dispatch(fetchTopTracks(year)).then((action) => {
-      if (fetchTopTracks.fulfilled.match(action) & !chosenTrack.name) {
-        dispatch(setChosenTrack(action.payload[0]))
-      }
-    })
-
-    dispatch(fetchTopAlbums(year));
-
-    // const res = sqlDb.exec(artistsAllTimeQuery);
-    gsap.to('.eachArtist', {
-      opacity: 0,
-      duration: 0.3,
-      onComplete: () => {
-        // dispatch(setResults(res));
-        dispatch(fetchTopArtists(year));
-      }
-    });
-  }
-
-  // Dispatch the fetch async thunks when the component mounts
-  useEffect(() => {
-    if (status === 'idle') {
-      fetchData()
-    }
-  }, [dispatch, status]);
-
   function handleSliderInput(e) {
-    dispatch(setChosenYear(e.target.value));
+    setYearHover(e.target.value);
   }
 
   function handleClick() {
-    fetchData()
+    dispatch(setChosenYear(yearHover));
   }
 
+  useEffect(() => {
+    if (firstYear) {
+      console.log('First Year after dispatching, in useEffect:', firstYear);
+      // fetchData()
+      // Perform actions that depend on firstYear being set
+    }
+  }, [firstYear]); // Listen for changes to firstYear
+
+  const getFirstYear = async () => {
+    const firstYearRes = await sqlDb.exec(firstTrackQuery)[0].values[0][0].substring(0, 4);
+    try {
+      console.log('firstYear before dispatching', firstYear);
+      await dispatch(setFirstYear(firstYearRes));
+
+    }
+    catch (error) {
+      console.error('Error dispatching first year:', error);
+    }
+  }
   // functionality for slider animation on load: All of this text/animation will disappear except
   // for slider and header for slider after animation completes.
   useEffect(() => {
+    // ony runs once our redux store is filled with the sql/dexie data
+    if (!reduxReady) return;
+    getFirstYear();
     // commenting out portions are to make testing easier during development
     const tl = gsap.timeline({
       defaults: {ease: "power1.out"},
       onComplete: () => {
-        // gsap.to(".hide", {duration: 2, opacity: 0, y: -600, stagger: 0.05})
-        // gsap.from(".sliderContainer", {duration: 2, y: 0, stagger: 0.05}, "+5")
-        // the movement of the slider container
-        // gsap.to(".sliderContainer", {duration: 2, y: -400})
+
         gsap.to("#landingAndSticky", {
           duration: 2, height: 150, padding: '30px', marginTop: '0px'})
           // the background color behind the "Your ... Backtrack" and the slider
@@ -121,39 +108,29 @@ const SliderComp = () => {
       }
     })
 
-
-    // const headings = document.querySelectorAll(".landing")
-    // gsap.set(headings, {y: "100%", opacity: 0});
     gsap.set(".slider", {opacity: 0})
     gsap.set('.currentYear', {duration: 0.02, ease: 'in'})
 
-    // headings.forEach((heading, index) => {
-    //   tl.to(heading, {y: "0%", opacity: 1, duration: 2}, index * 0.75);
-    // })
-  }, [])
+
+  }, [reduxReady])
 
   return (
     <div id="landingAndSticky">
-      {/* hiding the below name now, as a quick attempt to delete it messed up the spacing of the slider container*/}
-      {/* <h1 className="landing hide" style={{visibility: 'hidden'}}>Keith,</h1>
-      {/* hiding to make testing easier}
-      <h1 className="landing hide" style={{visibility: 'hidden'}}>In your Spotify</h1>
-      <h1 className="landing hide" style={{visibility: 'hidden'}}>Adventure,</h1>
-      <h1 className="landing hide" style={{visibility: 'hidden'}}>Discover...</h1> */}
       <div className="landing sliderContainer">
         {/* the ternary operator below allows us to use the 2024 value in the slider while displaying the text 'all-time' */}
-        <h1 className="sliderSubContainer">Your { year != 2024 ? year : 'All-Time' } Back Track</h1>
-        <input
-          type="range"
-        // this now points to the actual first year from the user's data
-          // min={firstYear}
-          min="2013"
-          max="2024"
-          defaultValue="2024"
-          onMouseUp={handleClick}
-          className="slider"
-          name='slider'
-          onChange={(e) => (handleSliderInput(e))} />
+        <h1 className="sliderSubContainer">Your { yearHover != 2024 ? yearHover : 'All-Time' } Back Track</h1>
+        {firstYear && (
+  <input
+    type="range"
+    min={firstYear}
+    max="2024"
+    defaultValue="2024"
+    onMouseUp={handleClick}
+    className="slider"
+    name='slider'
+    onChange={handleSliderInput}
+  />
+)}
           {/* <br></br> */}
       </div>
     </div>

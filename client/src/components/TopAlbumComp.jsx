@@ -13,36 +13,41 @@
 * - client/src/app/App.jsx
 */
 import React, { useEffect, useState } from 'react'
-import albumImagePlaceholder from '../../assets/album.png';
+// import albumImagePlaceholder from '../../assets/album.png';
 import { useSelector } from 'react-redux';
 import { selectTopAlbums } from '../features/slice.js';
+import { useData } from './DataContext.jsx';
 
-const TopAlbumPage = () => {
+const TopAlbumComp = () => {
+  const { reduxReady } = useData();
   const { year } = useSelector(state => state.chosen)
   const album = useSelector(selectTopAlbums)[0];
-  const {arrData: topAlbumsByYear, status: statusTopAlbumsByYear, error: errorTopAlbumsByYear} = useSelector(state => state.topAlbums);
-  // console.log('topAlbums in TopAlbumPage: ', topAlbumsByYear);
-  // console.log('album in TopAlbumPage:', album)
+  // console.log('album in TopAlbumComp:', album)
+  useEffect(() => {
+    if (reduxReady && album) {
+      console.log('redux is ready in album', new Date().toLocaleTimeString());
+      console.log('album in TopAlbumComp:', album)
+    }
+    else {
+      console.log('redux is not ready in album', new Date().toLocaleTimeString())
+    }
+  }, [album, reduxReady])
+
 
 
   return (
     <div className='topAlbumsDisplay'>
       <h3>And couldn't get enough of this album:</h3>
       <div className='albumContainer'>
-      {album &&
+      {album && reduxReady &&
         <>
           <img src={album.image_url} alt="image" />
           <h4>{album.artist_name} <br /> {album.album_name}</h4>
         </>
       }
-      {/* {!album &&
-        <>
-          <img src={albumImagePlaceholder} alt="image" />
-        </>
-      } */}
       </div>
     </div>
   )
 };
 
-export default TopAlbumPage;
+export default TopAlbumComp;
