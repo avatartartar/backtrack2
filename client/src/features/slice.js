@@ -143,30 +143,11 @@ const resultsSlice = createSlice({
   initialState: {
   all:[],
   recent: [],
-    results: {
-      tracks: {
-        allTime: [],
-        byYear: []
-      },
-      albums: {
-        allTime: [],
-        byYear: []
-      },
-      artists: {
-        allTime: [],
-        byYear: []
-      }
-    }
   },
   reducers: {
     setResults: (state, action) => {
       console.log('setResults action.payload:', action.payload);
       state.recent = action.payload;
-      // state.all.push(action.payload);
-      // if (action.meta.arg){
-      // state.results[action.meta.arg][action.meta.arg2] = action.payload;
-      // // state.results[action.meta.arg] = action.payload;
-      // }
     }
   },
 });
@@ -216,9 +197,9 @@ const { setUserFacts, setFirstYear } = userActions;
 
 
 export {
+  chosenReducer,
   setChosenYear,
   setChosenTrack,
-  chosenReducer,
   jsonReducer,
   setJson,
   resultsReducer,
