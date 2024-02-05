@@ -698,23 +698,39 @@ const querySlice = createSlice({
         10
         `
     },
-    minutes: {
-      total: `
+    listeningTime: {
+      totals: `
         select
           sum(ms_played) / 86400000 as total_days_played,
           sum(ms_played) / 3600000 as total_hours_played,
           sum(ms_played) / 60000 as total_minutes_played
         from
           sessions`,
-      byMonth: `
+      daysByMonth: `
         select
           strftime('%m', ts) as month,
-          sum(ms_played) / 60000 as total_minutes_played
+          sum(ms_played) / 86400000 as total_days_played
         from
           sessions
         group by
           month`,
-    },
+      hoursByMonth: `
+        select
+          strftime('%m', ts) as month,
+          sum(ms_played) / 3600000 as total_hours_played
+        from
+          sessions
+        group by
+          month`,
+      minutesByMonth: `
+      select
+        strftime('%m', ts) as month,
+        sum(ms_played) / 3600000 as total_hours_played
+      from
+        sessions
+      group by
+        month`,
+},
     status: "idle",
     error: ""
   },

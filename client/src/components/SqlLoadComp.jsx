@@ -263,13 +263,13 @@ const SqlLoadComp = () => {
         console.error('Error creating allTime and byYear tables:', error);
       }
 
-      try {
-        await dispatch(fillTopRecordsViaApi(newSqlDb));
-        addInterval('to fill top records via API');
-        console.log('Top records filled via API.');
-      } catch (error) {
-        console.error('Error filling top records via API:', error);
-      }
+      // try {
+      //   await dispatch(fillTopRecordsViaApi(newSqlDb));
+      //   addInterval('to fill top records via API');
+      //   console.log('Top records filled via API.');
+      // } catch (error) {
+      //   console.error('Error filling top records via API:', error);
+      // }
 
       try {
         console.log('Creating category json...');
