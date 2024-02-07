@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getSpotifyToken } from "./SpotifyTokenRefresh.js";
+import { getTrackRequest } from "./getTrackRequest.js";
 
 export const makeClientTables = createAsyncThunk(
   'query/makeClientTables',
@@ -66,7 +66,7 @@ export const makeClientTables = createAsyncThunk(
   }
 );
 
-const getTrackUris = async (dbArg, tableName) => {
+const queryTrackUris = async (dbArg, tableName) => {
   const uriField = tableName.includes('tracks') ? 'track_uri' : 'rep_track_uri';
   try {
     const result = await dbArg.exec(`SELECT DISTINCT ${uriField} FROM ${tableName}`);
@@ -77,44 +77,6 @@ const getTrackUris = async (dbArg, tableName) => {
   }
 };
 
-// retries: The number of retries in case of rate limit hit.
-const getTrackInfo = async (uri, retries = 3) => {
-  try {
-    // Send a GET request to the Spotify API to fetch track information
-    const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + await getSpotifyToken(),
-      },
-    });
-
-    if (!response.ok) {
-
-      // 429 is the status code for rate limit hit
-      // retries > 0: if we have retries left, we'll wait for the specified time and then retry the request
-      if (response.status === 429 && retries > 0) {
-
-        // Retry-After header is given by the Spotify API to indicate the time after which we can retry the request
-        // Parses the value of the 'Retry-After' header from the response, converts it to an integer
-        const retryAfter = parseInt(response.headers.get('Retry-After'), 10);
-        // console.log(`Rate limit hit, retrying after ${retryAfter} seconds.`);
-
-      // Waits for a given time (in seconds) by using a Promise and setTimeout.
-      // The resolve function is called after the specified time has passed.
-      // The time is calculated by multiplying the value of retryAfter by 1000 to get seconds from ms, and adding 1 second for safety.
-        await new Promise(resolve => setTimeout(resolve, (retryAfter + 1) * 1000));
-        return getTrackInfo(uri, retries - 1); // Retry the request and decrement the number of retries left, though that number is of our own making. Often 3 apparently.
-      }
-      // console.log('response.headers', response.headers);
-      throw new Error(`Fetch request failed with status ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error(`QuerySlice/getTrackInfo: Error fetching data for URI ${uri}:`, error);
-    throw error; // Rethrow to handle it in the calling context
-  }
-};
 
 const updateTopTrackRecord = async (dbArg, tableName, uri, trackData) => {
       // JavaScript's optional chaining syntax ('?.'):
@@ -164,8 +126,8 @@ export const fillTopRecordsViaApi = createAsyncThunk(
 
     // Fetch track URIs from top_tracks_allTime and top_tracks_byYear
     const fillTopTracks = async () => {
-    const trackUrisAllTime = await getTrackUris(dbArg, 'top_tracks_allTime');
-    const trackUrisByYear = await getTrackUris(dbArg, 'top_tracks_byYear');
+    const trackUrisAllTime = await queryTrackUris(dbArg, 'top_tracks_allTime');
+    const trackUrisByYear = await queryTrackUris(dbArg, 'top_tracks_byYear');
     // Combine and deduplicate URIs
     const allTrackUris = [...new Set([...trackUrisAllTime, ...trackUrisByYear])];
     // Create a new set in order to filter out any duplicate track URIs from both the 'trackUrisAllTime' and 'trackUrisByYear' arrays.
@@ -183,7 +145,7 @@ export const fillTopRecordsViaApi = createAsyncThunk(
     // Instead of the sum of all fetches, it's the duration of the longest fetch. Crazy.
 
     // Creating an array of promises for each track URI fetch
-    const fetchTrackPromises = allTrackUris.map(uri => getTrackInfo(uri).then(data => ({uri, data})).catch(error => ({uri, error})));
+    const fetchTrackPromises = allTrackUris.map(uri => getTrackRequest(uri).then(data => ({uri, data})).catch(error => ({uri, error})));
     // Waiting for all fetches to complete
     const trackResults = await Promise.allSettled(fetchTrackPromises);
     // Gettting the number of rejected promises
@@ -213,12 +175,12 @@ export const fillTopRecordsViaApi = createAsyncThunk(
 
   const fillTopAlbums = async () => {
     console.log('fillTopRecordsViaApi/albums: running...');
-    const albumUrisByYear = await getTrackUris(dbArg, 'top_albums_byYear');
-    const albumUrisAllTime = await getTrackUris(dbArg, 'top_albums_allTime');
+    const albumUrisByYear = await queryTrackUris(dbArg, 'top_albums_byYear');
+    const albumUrisAllTime = await queryTrackUris(dbArg, 'top_albums_allTime');
     const allAlbumUris = [...new Set([...albumUrisByYear, ...albumUrisAllTime])];
     // console.log('allAlbumUris', allAlbumUris);
     // Creating an array of promises for each track URI fetch, but for albums
-    const fetchAlbumPromises = allAlbumUris.map(uri => getTrackInfo(uri).then(data => ({uri, data})).catch(error => ({uri, error})));
+    const fetchAlbumPromises = allAlbumUris.map(uri => getTrackRequest(uri).then(data => ({uri, data})).catch(error => ({uri, error})));
 
     // Wait for all fetches to complete
     const albumResults = await Promise.allSettled(fetchAlbumPromises);
@@ -873,16 +835,16 @@ const apiSlice = (endpoint, filter) => {
           state.status = "failed";
           state.error = action.error.message;
         })
-        .addCase(getTrackInfo.fulfilled, (state, action) => {
-          console.log('getTrackInfo.fulfilled');
+        .addCase(getTrackRequest.fulfilled, (state, action) => {
+          console.log('getTrackRequest.fulfilled');
           state.status = "success";
         })
-        .addCase(getTrackInfo.pending, (state, action) => {
-          // console.log('getTrackInfo.pending: action.payload:', action.payload);
+        .addCase(getTrackRequest.pending, (state, action) => {
+          // console.log('getTrackRequest.pending: action.payload:', action.payload);
           state.status = "loading";
         })
-        .addCase(getTrackInfo.rejected, (state, action) => {
-          console.log('getTrackInfo.rejected: action.payload:', action.payload);
+        .addCase(getTrackRequest.rejected, (state, action) => {
+          console.log('getTrackRequest.rejected: action.payload:', action.payload);
           state.status = "failed";
           state.error = action.error.message;
         })
@@ -915,8 +877,8 @@ const { reducer: tracksApiReducer, actions: fetchTracksApi } = apiSlice('tracks/
 
 // fillTopRecordsViaApi
 // previously below allAlbumUris
-    // const artistUrisAllTime = await getTrackUris(dbArg, 'top_artists_allTime');
-    // const artistUrisByYear = await getTrackUris(dbArg, 'top_artists_byYear');
+    // const artistUrisAllTime = await queryTrackUris(dbArg, 'top_artists_allTime');
+    // const artistUrisByYear = await queryTrackUris(dbArg, 'top_artists_byYear');
     // const allArtistUris = [...new Set([...artistUrisAllTime, ...artistUrisByYear])];
     // console.log('allArtistUris', allArtistUris);
 
@@ -924,7 +886,7 @@ const { reducer: tracksApiReducer, actions: fetchTracksApi } = apiSlice('tracks/
         // const artistSchema = []
     // for (const uri of allArtistUris) {
     //   try {
-    //     const artistData = await getTrackInfo(uri); // Fetch artist data from API
+    //     const artistData = await getTrackRequest(uri); // Fetch artist data from API
     //     // console.log('artistData', artistData);
     //     artistSchema[0]=artistData
     //     await updateArtistRecord(dbArg, uri, artistData); // Update the artists table

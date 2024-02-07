@@ -53,7 +53,7 @@ const ListeningPatternComp = () => {
 
     return (
         <div style={{ width: '90%', margin: '0 auto', textAlign: 'center' }}>
-            <h3>Total Days Played, By Month, {year === 2024 ? "All-Time" :`in ${year}`}</h3>
+            <h3>Total Days Listened, By Month, {year === 2024 ? "All-Time" :`in ${year}`}</h3>
             <div style={{ width: '80%', margin: 'auto', height: '300px' }}>
                 <ResponsiveContainer>
                     <BarChart

@@ -54,7 +54,7 @@ export function App() {
       <TopAlbumComp/>
       <GraphComp/>
       <SqlTestingComp />
-      <FirstAndLastTrackComp />
+      {/* <FirstAndLastTrackComp /> */}
       <ListeningTotalsComp />
       <ListeningPatternComp />
       <SkippedTracksComp />

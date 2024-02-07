@@ -91,6 +91,13 @@ const selectTopTracksFirstImage = createSelector(
   }
 );
 
+const selectMinutesListened = createSelector(
+  [state => state.user.total.minutesListened],
+  (minutesListened) => {
+    return minutesListened || 0;
+  }
+);
+
 const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
 const { setChosenYear, setChosenTrack } = chosenActions;
 
@@ -158,42 +165,53 @@ const { setResults } = resultsActions;
 const userSlice = createSlice({
   name: 'user',
   initialState: {
-    facts: {
-      firstYear: "",
-      firstTrack: "",
-      firstAlbum: "",
-      firstArtist: "",
-      firstTrackUri: "",
-      firstTs: "",
-      lastTrack: "",
-      lastAlbum: "",
-      lastArtist: "",
-      username: "",
+    username: "",
+    first: {
+      year: "",
+      track: "",
+      album: "",
+      artist: "",
+      trackUri: "",
+      ts: "",
+    },
+    last: {
+      track: "",
+      album: "",
+      artist: "",
+    },
+    total: {
       minutesSinceFirstTrack: "",
-      totalminutesPlayed: "",
-      totalHoursPlayed: "",
-      totalDaysPlayed: "",
-      pctLifeSinceFirstTrack: "", // minutesSinceFirstTrack / totalminutesPlayed
-      totalTracks: "",
-      totalAlbums: "",
-      totalArtists: "",
-      totalSkips: "",
-      totalSessions: "",
+      minutesListened: "",
+      hoursListened: "",
+      daysListened: "",
+      pctLifeSinceFirstTrack: "", // minutesSinceFirstTrack / totalminutesListened
+      tracksCount: "",
+      albumsCount: "",
+      artistsCount: "",
+      skipsCount: "",
+      sessionsCount: "",
     }
   },
   reducers: {
-    setUserFacts: (state, action) => {
-      const key = Object.keys(action.payload)[0];
-      state[key] = action.payload[key];
+    setUserFirsts: (state, action) => {
+      const key = Object.keys(action.payload);
+      state.first[key] = action.payload[key];
     },
     setFirstYear: (state, action) => {
-      state.facts.firstYear = action.payload;
+      state.first.year = action.payload;
+    },
+    setUsername: (state, action) => {
+      state.username = action.payload.value;
+    },
+    setUserTotals: (state, action) => {
+      const key = Object.keys(action.payload)[0];
+      state.total[key] = action.payload[key];
     }
   }
 });
 
 const { reducer: userReducer, actions: userActions } = userSlice;
-const { setUserFacts, setFirstYear } = userActions;
+const { setUserFirsts, setFirstYear, setUsername, setUserTotals } = userActions;
 
 
 export {
@@ -205,12 +223,15 @@ export {
   resultsReducer,
   setResults,
   userReducer,
-  setUserFacts,
+  setUserFirsts,
+  setFirstYear,
+  setUsername,
+  setUserTotals,
   topReducer,
   selectTopTracks,
   selectTopAlbums,
   selectTopArtists,
   selectTopTracksFirstImage,
-  setStateFromJson,
-  setFirstYear
+  selectMinutesListened,
+  setStateFromJson
 };
