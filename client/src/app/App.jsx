@@ -26,8 +26,8 @@ import SqlLoadComp from '../components/SqlLoadComp.jsx';
 import SqlTestingComp from '../components/SqlTestingComp.jsx';
 import LandingComp from '../components/LandingComp.jsx';
 import FirstAndLastTrackComp from '../components/FirstAndLastTrackComp.jsx';
-import TotalMinPlayedComp from '../components/TotalMinPlayedComp.jsx';
-import VolumePatternsComp from '../components/VolumePatternsComp.jsx';
+import ListeningTotalsComp from '../components/ListeningTotalsComp.jsx';
+import ListeningPatternComp from '../components/ListeningPatternComp.jsx';
 import SkippedTracksComp from '../components/SkippedTracksComp.jsx';
 import GraphComp from '../components/GraphComp.jsx';
 import LogStateComp from '../components/LogStateComp.jsx';
@@ -53,10 +53,10 @@ export function App() {
       <TopArtistsComp/>
       <TopAlbumComp/>
       <GraphComp/>
-      {/* <SqlTestingComp /> */}
-      <FirstAndLastTrackComp />
-      <TotalMinPlayedComp />
-      <VolumePatternsComp />
+      <SqlTestingComp />
+      {/* <FirstAndLastTrackComp /> */}
+      <ListeningTotalsComp />
+      <ListeningPatternComp />
       <SkippedTracksComp />
     </DataProvider>
   )

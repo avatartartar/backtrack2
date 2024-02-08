@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useData } from './DataContext.jsx';
-import { getSpotifyToken } from "../features/SpotifyTokenRefresh.js";
+import { getSpotifyToken } from "../features/getSpotifyToken.js";
+import albumPlaceholder from '../../assets/albumPlaceholder.jpg';
 
 
 
@@ -28,17 +29,17 @@ const FirstAndLastTrackComp = ({ results }) => {
         setFirstPlay(res[0].values[0][4]);
 
         // console.log(`first uri is `, firstURI);
-        const firstTrackData = await getTrackInfo(res[0].values[0][5]);
-        setFirstURL(firstTrackData.album.images[0].url)
+        // const firstTrackData = await getTrackInfo(res[0].values[0][5]);
+        // setFirstURL(firstTrackData.album.images[0].url)
 
         setLastTrack(res[1].values[0][1]);
         setLastArtist(res[1].values[0][2]);
         setLastPlay(res[1].values[0][4]);
 
         // console.log(`last uri is `, lastURI);
-        const lastTrackData = await getTrackInfo(res[1].values[0][5]);
+        // const lastTrackData = await getTrackInfo(res[1].values[0][5]);
         // console.log('album data is ', trackData.album.images[0].url);
-        setLastURL(lastTrackData.album.images[0].url)
+        // setLastURL(lastTrackData.album.images[0].url)
 
 
     }
@@ -102,11 +103,13 @@ const FirstAndLastTrackComp = ({ results }) => {
                 <h3>The first song you ever played, and the last:</h3>
                 <div className="firstAndLastTrack">
                     <div className='trackImageCard'>
-                        <img src={firstURL} alt="" width="300px"></img>
+                        {/* <img src={firstURL} alt="" width="300px"></img> */}
+                        <img src={albumPlaceholder} alt="" width="300px"></img>
                         <h4>{firstTrack}<br /> {firstArtist}<br /> First played on {firstPlay}</h4>
                     </div>
                     <div className='trackImageCard'>
-                        <img src={lastURL} alt="" width="500px"></img>
+                        {/* <img src={lastURL} alt="" width="500px"></img> */}
+                        <img src={albumPlaceholder} alt="" width="300px"></img>
                         <h4>{lastTrack}<br /> {lastArtist} <br /> Last played on {lastPlay}</h4>
                     </div>
                 </div>

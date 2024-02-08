@@ -26,6 +26,7 @@ import { useData } from './DataContext.jsx';
 import {
   setChosenYear,
   setFirstYear,
+  setUserFirsts,
   fetchTopArtists,
   setChosenTrack,
   setResults
@@ -39,7 +40,7 @@ const SliderComp = () => {
   const dispatch = useDispatch();
 
   const { sqlDb, reduxReady } = useData();
-  const { firstYear } = useSelector(state => state.user.facts);
+  const { year: firstYear } = useSelector(state => state.user.first);
   const { tracks: tracksQueries } = useSelector(state => state.query);
   const firstTrackQuery = tracksQueries.first;
   // console.log('firstYear', firstYear);
@@ -81,7 +82,8 @@ const SliderComp = () => {
     const firstYearRes = await sqlDb.exec(firstTrackQuery)[0].values[0][0].substring(0, 4);
     try {
       console.log('firstYear before dispatching', firstYear);
-      await dispatch(setFirstYear(firstYearRes));
+        // dispatch(setUserFirsts({ year: firstYearRes }));
+        dispatch(setFirstYear(firstYearRes));
 
     }
     catch (error) {

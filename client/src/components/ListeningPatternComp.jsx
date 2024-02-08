@@ -1,26 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { LabelList, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useData } from './DataContext.jsx';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 
-const VolumePatternsComp = () => {
+const ListeningPatternComp = () => {
 
     const { sqlDb } = useData();
     const [results, setResults] = useState('');
-    const { tracks, albums, artists, minutes } = useSelector(state => state.query);
-    const volumePatternsQuery = minutes.byMonth;
+    const { listeningTime } = useSelector(state => state.query);
+    const { year } = useSelector(state => state.chosen);
+    const listeningPatternDays = listeningTime.daysByMonth;
+    // const listeningPatternHours = listeningTime.hoursByMonth;
+    // const listeningPatternMinutes = listeningTime.minutesByMonth;
 
-    const executeVolumePatterns = () => {
-        const res = sqlDb.exec(volumePatternsQuery);
-        // setVolumePatterns(res);
+    const executeListeningPattern = () => {
+        const res = sqlDb.exec(listeningPatternDays);
+        // setListeningPattern(res);
         setResults(res);
-        // console.log('volume patterns are ', res);
+        // console.log('listening pattern:', res);
     };
 
     useEffect(() => {
         if (sqlDb) {
-            executeVolumePatterns();
+            executeListeningPattern();
         }
     }, [sqlDb]);
 
@@ -43,14 +46,14 @@ const VolumePatternsComp = () => {
         return <div>No data available</div>;
     }
 
-    const data = results[0].values.map(([month, total_minutes_played]) => ({
+    const data = results[0].values.map(([month, total_days_played]) => ({
         month: monthDict[month],
-        "Total minutes played": total_minutes_played
+        "Total days played": total_days_played
     }));
 
     return (
         <div style={{ width: '90%', margin: '0 auto', textAlign: 'center' }}>
-            <h3>TOTAL MINUTES PLAYED, BY MONTH</h3>
+            <h3>Total Days Listened, By Month, {year === 2024 ? "All-Time" :`in ${year}`}</h3>
             <div style={{ width: '80%', margin: 'auto', height: '300px' }}>
                 <ResponsiveContainer>
                     <BarChart
@@ -72,7 +75,7 @@ const VolumePatternsComp = () => {
                             tick={{ fill: '#FFFFFF' }}
                         />
                         <Tooltip />
-                        <Bar dataKey="Total minutes played" fill="#04a8b4" />
+                        <Bar dataKey="Total days played" fill="#04a8b4" />
                     </BarChart>
                 </ResponsiveContainer>
             </div>
@@ -80,4 +83,4 @@ const VolumePatternsComp = () => {
     );
 }
 
-export default VolumePatternsComp;
+export default ListeningPatternComp;

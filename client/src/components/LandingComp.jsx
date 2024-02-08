@@ -94,6 +94,7 @@ const LandingComp = () => {
           const newSqlDb = new SQL.Database(sqlFile); // Load the binary data
           // sets the sqlDb local state to the database
           setSqlDb(newSqlDb)
+          setPromptUpload(false);
 
           // adds the uploaded sql database to the dexie database
           const sqlDbBinary = newSqlDb.export();

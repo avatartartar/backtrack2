@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux';
 import JSZip from 'jszip'; // Importing JSZip library for working with zip files
 import { useData } from './DataContext.jsx';
 
-import { setJson, setUserFacts } from '../features/slice.js';
+import { setJson, setUserFirsts, setUsername } from '../features/slice.js';
 
 const ImportComp = () => {
   const { setSqlFile, sqlDb } = useData()
@@ -105,13 +105,13 @@ const ImportComp = () => {
         const firstAlbum = firstTrackRecord.master_metadata_album_album_name
         const firstTrackUri = firstTrackRecord.spotify_track_uri.substring(14);
 
-        dispatch(setUserFacts({ firstYear }));
-        dispatch(setUserFacts({ firstTrack }));
-        dispatch(setUserFacts({ firstArtist }));
-        dispatch(setUserFacts({ firstAlbum }));
-        dispatch(setUserFacts({ firstTs }));
-        dispatch(setUserFacts({ username }));
-        dispatch(setUserFacts({ firstTrackUri }));
+        // dispatch(setUserFirsts({ firstYear }));
+        dispatch(setUserFirsts({ track: firstTrack }));
+        dispatch(setUserFirsts({ artist: firstArtist }));
+        dispatch(setUserFirsts({ album: firstAlbum }));
+        dispatch(setUserFirsts({ ts: firstTs }));
+        dispatch(setUsername({ username }));
+        dispatch(setUserFirsts({ trackUri: firstTrackUri }));
 
         setTimeout(() => {
           dispatch(setJson(jsonData));

@@ -26,6 +26,7 @@ import dotenv from 'dotenv';
 // Importing cors middleware.
 import cors from 'cors';
 // Import router and routes.
+import { getSpotifyToken } from './spotifyTokenRefresh.js';
 
 // Load environment variables from .env.server.
 dotenv.config({ path: '.env.server' });
@@ -47,6 +48,16 @@ const corsOptions = {
     optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
+
+app.get('/spotifyToken', async (req, res) => {
+    try {
+      const token = await getSpotifyToken();
+      res.json(token);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error retrieving Spotify token');
+    }
+  });
 
 app.listen(PORT, () => {
     console.log(`Server listening on port: ${PORT}...`);

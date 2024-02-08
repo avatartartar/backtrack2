@@ -20,20 +20,7 @@ import { useData } from './DataContext.jsx';
 
 const TopAlbumComp = () => {
   const { reduxReady } = useData();
-  const { year } = useSelector(state => state.chosen)
   const album = useSelector(selectTopAlbums)[0];
-  // console.log('album in TopAlbumComp:', album)
-  useEffect(() => {
-    if (reduxReady && album) {
-      console.log('redux is ready in album', new Date().toLocaleTimeString());
-      console.log('album in TopAlbumComp:', album)
-    }
-    else {
-      console.log('redux is not ready in album', new Date().toLocaleTimeString())
-    }
-  }, [album, reduxReady])
-
-
 
   return (
     <div className='topAlbumsDisplay'>

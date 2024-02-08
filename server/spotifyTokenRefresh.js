@@ -12,7 +12,6 @@
  * - getSpotifyToken: This public method retrieves the current token, refreshing it if necessary, and returns a valid token for use in API requests.
  */
 
-import path from 'path';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env.server.

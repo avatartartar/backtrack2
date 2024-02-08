@@ -91,6 +91,13 @@ const selectTopTracksFirstImage = createSelector(
   }
 );
 
+const selectMinutesListened = createSelector(
+  [state => state.user.total.minutesListened],
+  (minutesListened) => {
+    return minutesListened || 0;
+  }
+);
+
 const { reducer: chosenReducer, actions: chosenActions } = chosenSlice;
 const { setChosenYear, setChosenTrack } = chosenActions;
 
@@ -119,73 +126,6 @@ const { reducer: topReducer, actions: topActions } = topSlice;
 const { setStateFromJson } = topActions;
 
 
-const dataSlice = (endpoint, filter) => {
-  const actions = createAsyncThunk(
-    `fetch/${endpoint}`,
-    async (year) => {
-      let url = `/${endpoint}/`;
-      if (year != 2024) {
-        url = `${url}${filter}${year}`;
-      }
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Fetch request failed at endpoint ${url}`);
-      }
-      const responseJson = await response.json();
-      return responseJson;
-    }
-  );
-
-  const reducer = createSlice({
-    name: endpoint,
-    initialState:{
-      arrData: [],
-      objData: {},
-      year: "",
-      status: "idle",
-      error: "",
-    },
-    // extraReducers
-    // - Defines additional reducer functions for a slice.
-    // - Allows defining reducers for async actions (like below) in the current slice
-    // - Or reducers for actions of other slices.
-    // - Enhances the reducer logic of the current slice.
-    extraReducers(builder) {
-        // Redux Toolkit Builder
-        // - Creates reusable, standardized slices of application state.
-        // - Simplifies the typical Redux workflow.
-        // - Auto-generates action creators and action types.
-        builder
-        .addCase(actions.pending, (state, action) => {
-          state.status = "loading";
-        })
-        .addCase(actions.fulfilled, (state, action) => {
-          state.status = "succeeded";
-          if (action.meta.arg === 2024) {
-            state.year = "allTime";
-            state.arrData = action.payload;
-            state.objData["allTime"] = action.payload;
-         }
-          else{
-            state.year = action.meta.arg;
-            state.arrData = action.payload;
-            state.objData[action.meta.arg] = action.payload;
-          }
-        })
-        .addCase(actions.rejected, (state, action) => {
-          console.log(`status REJECTED for ${endpoint} in slice.js`);
-          state.status = "failed";
-          state.error = action.error.message;
-        })
-    }
-  });
-  return { reducer, actions };
-}
-
-const { reducer: topTracksReducer, actions: fetchTopTracks } = dataSlice('tracks', 'ByYear?year=');
-const { reducer: topAlbumsReducer, actions: fetchTopAlbums } = dataSlice('albums', 'ByYear?year=');
-const { reducer: topArtistsReducer, actions: fetchTopArtists } = dataSlice('artists', 'ByYear?year=');
-
 const jsonSlice = createSlice({
   name: 'json',
   initialState: {
@@ -210,30 +150,11 @@ const resultsSlice = createSlice({
   initialState: {
   all:[],
   recent: [],
-    results: {
-      tracks: {
-        allTime: [],
-        byYear: []
-      },
-      albums: {
-        allTime: [],
-        byYear: []
-      },
-      artists: {
-        allTime: [],
-        byYear: []
-      }
-    }
   },
   reducers: {
     setResults: (state, action) => {
       console.log('setResults action.payload:', action.payload);
       state.recent = action.payload;
-      // state.all.push(action.payload);
-      // if (action.meta.arg){
-      // state.results[action.meta.arg][action.meta.arg2] = action.payload;
-      // // state.results[action.meta.arg] = action.payload;
-      // }
     }
   },
 });
@@ -244,65 +165,73 @@ const { setResults } = resultsActions;
 const userSlice = createSlice({
   name: 'user',
   initialState: {
-    facts: {
-      firstYear: "",
-      firstTrack: "",
-      firstAlbum: "",
-      firstArtist: "",
-      firstTrackUri: "",
-      firstTs: "",
-      lastTrack: "",
-      lastAlbum: "",
-      lastArtist: "",
-      username: "",
+    username: "",
+    first: {
+      year: "",
+      track: "",
+      album: "",
+      artist: "",
+      trackUri: "",
+      ts: "",
+    },
+    last: {
+      track: "",
+      album: "",
+      artist: "",
+    },
+    total: {
       minutesSinceFirstTrack: "",
-      totalminutesPlayed: "",
-      totalHoursPlayed: "",
-      totalDaysPlayed: "",
-      pctLifeSinceFirstTrack: "", // minutesSinceFirstTrack / totalminutesPlayed
-      totalTracks: "",
-      totalAlbums: "",
-      totalArtists: "",
-      totalSkips: "",
-      totalSessions: "",
+      minutesListened: "",
+      hoursListened: "",
+      daysListened: "",
+      pctLifeSinceFirstTrack: "", // minutesSinceFirstTrack / totalminutesListened
+      tracksCount: "",
+      albumsCount: "",
+      artistsCount: "",
+      skipsCount: "",
+      sessionsCount: "",
     }
   },
   reducers: {
-    setUserFacts: (state, action) => {
-      const key = Object.keys(action.payload)[0];
-      state[key] = action.payload[key];
+    setUserFirsts: (state, action) => {
+      const key = Object.keys(action.payload);
+      state.first[key] = action.payload[key];
     },
     setFirstYear: (state, action) => {
-      state.facts.firstYear = action.payload;
+      state.first.year = action.payload;
+    },
+    setUsername: (state, action) => {
+      state.username = action.payload.value;
+    },
+    setUserTotals: (state, action) => {
+      const key = Object.keys(action.payload)[0];
+      state.total[key] = action.payload[key];
     }
   }
 });
 
 const { reducer: userReducer, actions: userActions } = userSlice;
-const { setUserFacts, setFirstYear } = userActions;
+const { setUserFirsts, setFirstYear, setUsername, setUserTotals } = userActions;
 
 
 export {
-  fetchTopTracks,
-  fetchTopAlbums,
-  fetchTopArtists,
-  topTracksReducer,
-  topAlbumsReducer,
-  topArtistsReducer,
+  chosenReducer,
   setChosenYear,
   setChosenTrack,
-  chosenReducer,
   jsonReducer,
   setJson,
   resultsReducer,
   setResults,
   userReducer,
-  setUserFacts,
+  setUserFirsts,
+  setFirstYear,
+  setUsername,
+  setUserTotals,
   topReducer,
   selectTopTracks,
   selectTopAlbums,
   selectTopArtists,
   selectTopTracksFirstImage,
-  setStateFromJson,
-  setFirstYear
+  selectMinutesListened,
+  setStateFromJson
 };
