@@ -10,9 +10,12 @@ export const makeClientTables = createAsyncThunk(
   // followed by doing const getState = thunkAPI.getState;
 
   async (dbArg, { getState }) => {
-    const { tracks, albums, artists } = getState().query;
-    const typeMap = { tracks, albums, artists };
-    const typeOptions = ['tracks', 'albums', 'artists'];
+    const { tracks, albums, artists, listeningTime } = getState().query;
+    const typeMap = { tracks, albums, artists, listeningTime };
+    const typeOptions = ['tracks', 'albums', 'artists', 'listeningTime'];
+    // const { tracks, albums, artists } = getState().query;
+    // const typeMap = { tracks, albums, artists };
+    // const typeOptions = ['tracks', 'albums', 'artists'];
 
     // Use Promise.all with map instead of forEach
     // This allows us to run all the queries concurrently, rather than one after the other.
@@ -20,18 +23,22 @@ export const makeClientTables = createAsyncThunk(
       const typeObject = typeMap[typeOption];
 
       try {
-        const allTimeQuery = `CREATE TABLE top_${typeOption}_allTime AS ${typeObject.allTime}`;
+        const allTimeQuery = `CREATE TABLE ${typeOption}_allTime AS ${typeObject.allTime}`;
         await dbArg.run(allTimeQuery);
-        console.log(`Created table "top_${typeOption}_allTime".`);
+        console.log(`Created table "${typeOption}_allTime".`);
 
       } catch (error) {
         console.error(`Error creating allTimetable "${typeOption}_allTime":`, error.message);
       }
       try {
         // await dbArg.run(typeObject.joinTopYears);
-        // console.log(`Created table "top_${typeOption}_byYear".`);
+        // console.log(`Created table "${typeOption}_byYear".`);
 
         // get all unique years from the sessions table
+        // const byYearQuery2 = `CREATE TABLE ${typeOption}_byYear AS ${typeObject.byYear}`;
+        // const yearsResult2 = await dbArg.run(byYearQuery2);
+        // console.log('yearsResult2: ', yearsResult2);
+
         const yearsResult = await dbArg.exec('SELECT DISTINCT strftime("%Y", ts) as year FROM sessions ORDER BY year');
         const years = await yearsResult[0].values.map(value => ({ year: value[0] }));
         // console.log('years: ', years);
@@ -44,9 +51,9 @@ export const makeClientTables = createAsyncThunk(
         }
 
         // unite all temporary tables into one table
-        const unionQuery = `CREATE TABLE top_${typeOption}_byYear AS SELECT * FROM ${years.map(year => `temp_${typeOption}_${year.year}`).join(' UNION ALL SELECT * FROM ')}`;
+        const unionQuery = `CREATE TABLE ${typeOption}_byYear AS SELECT * FROM ${years.map(year => `temp_${typeOption}_${year.year}`).join(' UNION ALL SELECT * FROM ')}`;
         await dbArg.run(unionQuery);
-        // console.log(`Created table "top_${typeOption}_byYear".`);
+        // console.log(`Created table "${typeOption}_byYear".`);
 
         // drop the temporary tables
         for (const year of years) {
@@ -124,10 +131,10 @@ export const fillTopRecordsViaApi = createAsyncThunk(
   async (dbArg, thunkAPI) => {
     console.log('fillTopRecordsViaApi/tracks: running...');
 
-    // Fetch track URIs from top_tracks_allTime and top_tracks_byYear
+    // Fetch track URIs from tracks_allTime and tracks_byYear
     const fillTopTracks = async () => {
-    const trackUrisAllTime = await queryTrackUris(dbArg, 'top_tracks_allTime');
-    const trackUrisByYear = await queryTrackUris(dbArg, 'top_tracks_byYear');
+    const trackUrisAllTime = await queryTrackUris(dbArg, 'tracks_allTime');
+    const trackUrisByYear = await queryTrackUris(dbArg, 'tracks_byYear');
     // Combine and deduplicate URIs
     const allTrackUris = [...new Set([...trackUrisAllTime, ...trackUrisByYear])];
     // Create a new set in order to filter out any duplicate track URIs from both the 'trackUrisAllTime' and 'trackUrisByYear' arrays.
@@ -158,8 +165,8 @@ export const fillTopRecordsViaApi = createAsyncThunk(
         try {
           // Extract URI and trackData from the resolved promise
           const { uri, data: trackData } = result.value;
-          await updateTopTrackRecord(dbArg, 'top_tracks_allTime', uri, trackData);
-          await updateTopTrackRecord(dbArg, 'top_tracks_byYear', uri, trackData);
+          await updateTopTrackRecord(dbArg, 'tracks_allTime', uri, trackData);
+          await updateTopTrackRecord(dbArg, 'tracks_byYear', uri, trackData);
         } catch (updateError) {
           // console.error(`QuerySlice 202: Error updating track record for URI ${result.value.uri}:`, updateError);
           console.error(`QuerySlice 202: Error updating track record`);
@@ -175,8 +182,8 @@ export const fillTopRecordsViaApi = createAsyncThunk(
 
   const fillTopAlbums = async () => {
     console.log('fillTopRecordsViaApi/albums: running...');
-    const albumUrisByYear = await queryTrackUris(dbArg, 'top_albums_byYear');
-    const albumUrisAllTime = await queryTrackUris(dbArg, 'top_albums_allTime');
+    const albumUrisByYear = await queryTrackUris(dbArg, 'albums_byYear');
+    const albumUrisAllTime = await queryTrackUris(dbArg, 'albums_allTime');
     const allAlbumUris = [...new Set([...albumUrisByYear, ...albumUrisAllTime])];
     // console.log('allAlbumUris', allAlbumUris);
     // Creating an array of promises for each track URI fetch, but for albums
@@ -192,8 +199,8 @@ export const fillTopRecordsViaApi = createAsyncThunk(
         try {
           // Extract URI and albumData from the resolved promise
           const { uri, data: albumData } = result.value;
-          await updateTopAlbumRecord(dbArg, 'top_albums_allTime', uri, albumData);
-          await updateTopAlbumRecord(dbArg, 'top_albums_byYear', uri, albumData);
+          await updateTopAlbumRecord(dbArg, 'albums_allTime', uri, albumData);
+          await updateTopAlbumRecord(dbArg, 'albums_byYear', uri, albumData);
         } catch (updateError) {
           // console.error(`QuerySlice/fillTopRecords: Error updating album record for URI ${result.value.uri}:`, updateError);
           console.error(`QuerySlice/fillTopRecords/albums: Error updating album record`);
@@ -233,11 +240,11 @@ export const makeCategoryJson = createAsyncThunk(
         categoryData[category] = {};
 
         // Fetch and structure allTime data
-        const allTimeSqlResult = await dbArg.exec(`SELECT * FROM top_${category}_allTime LIMIT 10`);
+        const allTimeSqlResult = await dbArg.exec(`SELECT * FROM ${category}_allTime LIMIT 10`);
         categoryData[category]['allTime'] = convertSqlToJson(allTimeSqlResult);
 
         // Fetch and structure byYear data
-        const byYearSqlResult = await dbArg.exec(`SELECT * FROM top_${category}_byYear ORDER BY year ASC, total_minutes_played DESC`);
+        const byYearSqlResult = await dbArg.exec(`SELECT * FROM ${category}_byYear ORDER BY year ASC, total_minutes_played DESC`);
         const byYearDataRaw = convertSqlToJson(byYearSqlResult);
 
         byYearDataRaw.forEach(record => {
@@ -661,6 +668,21 @@ const querySlice = createSlice({
         `
     },
     listeningTime: {
+      allTime: `
+        select
+          sum(ms_played) / 60000 as total_minutes_played
+        from
+          sessions`,
+      byYear: (chosenYear) => `
+        select
+          strftime('%Y', ts) as year,
+          sum(ms_played) / 60000 as total_minutes_played
+        from
+          sessions
+        where
+          strftime('%Y', ts) = '${chosenYear}'
+        group by
+          year`,
       totals: `
         select
           sum(ms_played) / 86400000 as total_days_played,
@@ -746,12 +768,12 @@ export const viewClientTables = createAsyncThunk(
   'query/viewClientTables',
   async (dbArg) => {
   const clientTables = [
-    'top_tracks_allTime',
-    'top_albums_allTime',
-    'top_artists_allTime',
-    'top_tracks_byYear',
-    'top_albums_byYear',
-    'top_artists_byYear',
+    'tracks_allTime',
+    'albums_allTime',
+    'artists_allTime',
+    'tracks_byYear',
+    'albums_byYear',
+    'artists_byYear',
   ]
   const results = await Promise.all(clientTables.map(async (tableName) => {
     try {
@@ -835,19 +857,19 @@ const apiSlice = (endpoint, filter) => {
           state.status = "failed";
           state.error = action.error.message;
         })
-        .addCase(getTrackRequest.fulfilled, (state, action) => {
-          console.log('getTrackRequest.fulfilled');
-          state.status = "success";
-        })
-        .addCase(getTrackRequest.pending, (state, action) => {
-          // console.log('getTrackRequest.pending: action.payload:', action.payload);
-          state.status = "loading";
-        })
-        .addCase(getTrackRequest.rejected, (state, action) => {
-          console.log('getTrackRequest.rejected: action.payload:', action.payload);
-          state.status = "failed";
-          state.error = action.error.message;
-        })
+        // .addCase(getTrackRequest.fulfilled, (state, action) => {
+        //   console.log('getTrackRequest.fulfilled');
+        //   state.status = "success";
+        // })
+        // .addCase(getTrackRequest.pending, (state, action) => {
+        //   // console.log('getTrackRequest.pending: action.payload:', action.payload);
+        //   state.status = "loading";
+        // })
+        // .addCase(getTrackRequest.rejected, (state, action) => {
+        //   console.log('getTrackRequest.rejected: action.payload:', action.payload);
+        //   state.status = "failed";
+        //   state.error = action.error.message;
+        // })
     }
   });
   return { reducer, actions };
@@ -877,8 +899,8 @@ const { reducer: tracksApiReducer, actions: fetchTracksApi } = apiSlice('tracks/
 
 // fillTopRecordsViaApi
 // previously below allAlbumUris
-    // const artistUrisAllTime = await queryTrackUris(dbArg, 'top_artists_allTime');
-    // const artistUrisByYear = await queryTrackUris(dbArg, 'top_artists_byYear');
+    // const artistUrisAllTime = await queryTrackUris(dbArg, 'artists_allTime');
+    // const artistUrisByYear = await queryTrackUris(dbArg, 'artists_byYear');
     // const allArtistUris = [...new Set([...artistUrisAllTime, ...artistUrisByYear])];
     // console.log('allArtistUris', allArtistUris);
 
