@@ -25,7 +25,12 @@ import express from 'express';
 import dotenv from 'dotenv';
 // Importing cors middleware.
 import cors from 'cors';
-// Import router and routes.
+
+import WebSocket from 'ws';
+import http from 'http';
+import { WebSocketServer } from 'ws';
+
+
 import { getSpotifyToken } from './spotifyTokenRefresh.js';
 
 // Load environment variables from .env.server.
@@ -36,6 +41,8 @@ const PORT = process.env.PORT;
 
 // Assign express to variable app.
 const app = express();
+
+
 
 // Using epxress.json and epxress .urlencoded middleware to parse incoming JSON and URL-encoded requesr bodies.
 app.use(express.json());
@@ -59,6 +66,18 @@ app.get('/spotifyToken', async (req, res) => {
     }
   });
 
-app.listen(PORT, () => {
+
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+  wss.on('connection', (ws) => {
+    ws.on('message', (message) => {
+      console.log('WEBSOCKET: received: %s', message);
+    });
+
+    ws.send('something');
+  });
+
+  server.listen(PORT, () => {
     console.log(`Server listening on port: ${PORT}...`);
 });

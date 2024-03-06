@@ -1,3 +1,19 @@
+/**
+ * @file querySlice.js
+ * @description This file defines a slice of the Redux state management for handling SQL database queries.
+ * It uses Redux Toolkit's `createAsyncThunk` and `createSlice` to handle asynchronous actions and reducers.
+ *
+ * @imports
+ * - createSlice, createAsyncThunk from @reduxjs/toolkit: Utilities to create a slice and handle async actions.
+ * - getTrackRequest from './getTrackRequest.js': Function to perform API requests for track data.
+ *
+ * @exports
+ * - makeClientTables: An asynchronous thunk action used to create tables in the client-side SQL database.
+ *
+ * @thunks
+ * - makeClientTables: Accepts `dbArg`, the database object, and `getState`, a function to access the current Redux state.
+ *   It is responsible for creating client-side tables based on the application's SQL database.
+ */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getTrackRequest } from "./getTrackRequest.js";
 
@@ -73,13 +89,28 @@ export const makeClientTables = createAsyncThunk(
   }
 );
 
+/**
+ * Asynchronously queries the track URIs from the specified table in the database.
+ *
+ * @param {Object} dbArg - the database object used for querying
+ * @param {string} tableName - the name of the table to query
+ * @return {Array} an array of track URIs
+ */
 const queryTrackUris = async (dbArg, tableName) => {
+  // Determine the field name for URI based on the table's name
   const uriField = tableName.includes('tracks') ? 'track_uri' : 'rep_track_uri';
+
   try {
+    // Execute SQL query to select distinct URIs from the specified table
     const result = await dbArg.exec(`SELECT DISTINCT ${uriField} FROM ${tableName}`);
+
+    // Map the result set to an array of URI strings
     return result[0].values.map(row => row[0]);
   } catch (error) {
+    // Log an error message if the query fails
     console.error(`Error fetching track URIs from ${tableName}:`, error);
+
+    // Return an empty array if an error occurs
     return [];
   }
 };
@@ -101,7 +132,6 @@ const updateTopTrackRecord = async (dbArg, tableName, uri, trackData) => {
       image_url = ?
     WHERE track_uri = ?;
   `;
-
   try {
     await dbArg.run(updateSql, [previewUrl, imageUrl, uri]);
   } catch (error) {
@@ -215,6 +245,7 @@ export const fillTopRecordsViaApi = createAsyncThunk(
   }
   await fillTopAlbums();
   }
+
 );
 
 function convertSqlToJson(sqlResult) {
@@ -227,6 +258,8 @@ function convertSqlToJson(sqlResult) {
     return rowObject;
   });
 }
+
+//
 
 export const makeCategoryJson = createAsyncThunk(
   'top/makeCategoryJson',

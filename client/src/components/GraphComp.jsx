@@ -88,6 +88,7 @@ const GraphComp = () => {
   }
 
   const paddingLeft = 15;
+
   const fontSize = 18;
 
   return (

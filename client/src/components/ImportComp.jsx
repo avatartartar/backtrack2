@@ -159,7 +159,7 @@ const ImportComp = () => {
           justifyContent: 'center',
         }}
       >
-        <div style={{ position: 'absolute', top: '60%' }}>{loadingText}</div>
+        <div id='loadingText' style={{ position: 'absolute', top: '60%', color: 'white', }}>{loadingText}</div>
 
         {fileDrop && (
           <div className="loading-spinner" style={{ position: 'absolute', top: '70%'  }}></div>

@@ -42,7 +42,6 @@ const TopTracksComp = () => {
     album_name: chosenTrackalbum_name,
   } = useSelector(state => state.chosen.track);
 
-
   const topTracks = useSelector(selectTopTracks);
   // setting tracks to either topTracks or topTracksByYear depending on the year selected.
   // then this gets served to the component that renders the tracks.
@@ -87,7 +86,6 @@ const TopTracksComp = () => {
     }
     }
   }, [year, reduxReady])
-
 
 const controlPlayback = (preview_url, track_uri, image_url, album_name, artist_name) => {
 
@@ -191,8 +189,9 @@ const controlPlayback = (preview_url, track_uri, image_url, album_name, artist_n
   return (
 
     <div className="TopTracksAndImageContainer">
-    <div className="TopTracksContainer">
-      <h3>Top 10 Tracks</h3>
+    <div className="TopTracksContainer" style={{ color: 'white', fontFamily: 'monospace' }}>
+  <h3 style={{ margin: '0px', textAlign: window.innerWidth > 1055 ? 'left' : 'center' }}>Top 10 Tracks</h3>
+      {/* <h3>Top 10 Tracks</h3> */}
       <ul>
         {topTracks.map(track => (
           <TrackElement

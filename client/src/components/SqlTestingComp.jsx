@@ -13,8 +13,10 @@ function SqlTestingComp() {
 
     const dispatch = useDispatch();
 
+
     // the year from the slider
     const { year: chosenYear } = useSelector(state => state.chosen);
+
 
     // a place to store and fetch queries themselves
     const { tracks, albums, artists } = useSelector(state => state.query);
@@ -27,7 +29,32 @@ function SqlTestingComp() {
     const [filteredType, setFilteredType] = useState('tracks');
     const typeOptions = ['tracks', 'albums', 'artists'];
 
+
+    const executeFilter = (type, month) => {
+        let res;
+        const typeObject = typeMap[type];
+        if (chosenYear === 2024) {
+            if (month) {
+                return null;
+            }
+            res = sqlDb.exec(typeObject.allTime);
+        }
+        else {
+            if (!month) {
+                res = sqlDb.exec(typeObject.byYear(chosenYear));
+            } else {
+                res = sqlDb.exec(typeObject.byYearByMonth(chosenYear, month));
+            }
+        }
+        dispatch(setResults(res));
+    };
+
     // const [lastLocalQuery, setLastLocalQuery] = useState('');
+
+
+
+
+
 
     const firstTrackQuery = tracks.first;
 

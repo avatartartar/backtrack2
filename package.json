@@ -4,10 +4,10 @@
   "description": "Fullstack Template",
   "main": "index.js",
   "scripts": {
-    "build-dev": "webpack --mode development",
-    "build-prod": "webpack --mode production",
+    "build": "webpack --mode production",
     "start": "webpack serve --mode development",
     "both": "concurrently --kill-others-on-fail \"cd server && npm start\" \"npm start\"",
+    "both-prod": "concurrently --kill-others-on-fail \"cd server && npm start\" \"npm run build\"",
     "test": "jest --verbose",
     "install-all": "npm install && cd server && npm install"
   },
@@ -50,6 +50,7 @@
     "recharts": "^2.10.4",
     "sql.js": "^1.10.2",
     "stream-browserify": "^3.0.0",
-    "util": "^0.12.5"
+    "util": "^0.12.5",
+    "ws": "^8.16.0"
   }
 }
