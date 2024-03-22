@@ -37,7 +37,10 @@ import TopAlbumComp from '../components/TopAlbumComp.jsx';
 import TopTracksComp from '../components/TopTracksComp.jsx';
 import YearSliderComp from '../components/SliderComp.jsx';
 
+import '../../styles/albumComp.scss';
+import '../../styles/artistsComp.scss';
 import '../../styles/index.scss';
+// import '../../styles/all.scss';
 
 export function App() {
 
@@ -47,13 +50,13 @@ export function App() {
       <LandingComp />
       <NavbarComp/>
       <SqlLoadComp />
-      <LogStateComp/>
+      {/* <LogStateComp /> */}
       <YearSliderComp/>
       <TopTracksComp/>
       <TopArtistsComp/>
       <TopAlbumComp/>
       <GraphComp/>
-      <SqlTestingComp />
+      {/* <SqlTestingComp /> */}
       {/* <FirstAndLastTrackComp /> */}
       <ListeningTotalsComp />
       <ListeningPatternComp />

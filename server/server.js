@@ -26,9 +26,9 @@ import dotenv from 'dotenv';
 // Importing cors middleware.
 import cors from 'cors';
 
-import WebSocket from 'ws';
-import http from 'http';
-import { WebSocketServer } from 'ws';
+// import WebSocket from 'ws';
+// import http from 'http';
+// import { WebSocketServer } from 'ws';
 
 
 import { getSpotifyToken } from './spotifyTokenRefresh.js';
@@ -49,12 +49,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Cors is enabled for all origins allowing any origin to access the server's resources.
-const corsOptions = {
-    origin: '*',
-    credentials: true,
-    optionSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//     origin: '*',
+//     credentials: true,
+//     optionSuccessStatus: 200,
+// };
+// app.use(cors(corsOptions));
 
 app.get('/spotifyToken', async (req, res) => {
     try {
@@ -67,17 +67,17 @@ app.get('/spotifyToken', async (req, res) => {
   });
 
 
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+// const server = http.createServer(app);
+// const wss = new WebSocketServer({ server });
 
-  wss.on('connection', (ws) => {
-    ws.on('message', (message) => {
-      console.log('WEBSOCKET: received: %s', message);
-    });
+//   wss.on('connection', (ws) => {
+//     ws.on('message', (message) => {
+//       console.log('WEBSOCKET: received: %s', message);
+//     });
 
-    ws.send('something');
-  });
+//     ws.send('something');
+//   });
 
-  server.listen(PORT, () => {
+  app.listen(PORT, () => {
     console.log(`Server listening on port: ${PORT}...`);
 });

@@ -6,7 +6,6 @@
  * @requires gsap: For creating and controlling animations.
  * @requires react-redux: To dispatch actions and select state from the Redux store.
  * @imports
- * - '../../styles/index.scss': Styles for the component.
  * - '../features/slice.js': Redux slice that contains actions and reducers for fetching and setting data related to Spotify's top tracks, artists, and albums.
  * @methods
  * - fetchData: Dispatches actions to fetch top tracks, artists, and albums, and handles the initial chosen track state.
@@ -32,7 +31,6 @@ import {
   setResults
  } from '../features/slice.js';
 
-import '../../styles/index.scss';
 
 // this is to prevent the page from scrolling to the bottom when the slider is moved
 

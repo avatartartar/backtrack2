@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+
+
+$purple: #B200FF;
+$blue: #0085FF;
+$green: #0BEC21;
+$white: #efefef;
+$darkBlue: #130188;
+$darkBlue2: #13008b;
+$lightBlue: #ADADFF;
+$skyeBlue: #6072D1;
+
+$font-family-mono: "Red Hat Mono", monospace;
+$font-family-roboto-mono: "Roboto Mono", monospace;
+$font-family-header: "Rubik", sans-serif;
+//gradient for headers / slider etc:
+$gradient-text: -webkit-linear-gradient(60deg, $purple, $blue, $green);
+// border radius used for list elements, slider etc:
+$border-radius: 69px;
+// gradient animation style for landing page
+
+.topAlbum {
+  h3 {
+    margin: 0;
+    text-align: end;
+    word-wrap: break-word;
+    margin-bottom: 15px;
+    @media (max-width: 1055px) {
+      text-align: center;
+    }
+  }
+}
+
+.albumCard {
+background: rgb(0, 133, 255);
+  background: linear-gradient(16deg, rgba(238, 0, 255, 0.2) 0%,  rgba(0, 133, 255, 1) 100%);
+  width: 500px;
+  height: 515px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+    img {
+        padding-top: 25px;
+        height: 400px;
+        width: 425px;
+        object-fit: cover;
+      }
+  h4 {
+    font-weight: 300;
+    text-align: end;
+    margin-right: -250px;
+  }
+}
+
+.topAlbumsDisplay {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    // height: 60vh;
+    // justify-content: center;
+    align-items: center;
+    h3 {
+      // width: 1010px;
+      // height: 76px;
+      // top: 3036px;
+      // left: 359px;
+      font-family: $font-family-header;
+      font-size: 60px;
+      font-weight: 700;
+      line-height: 76px;
+      // letter-spacing: 0em;
+      background: $white;
+      text-align: center;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-top: 3em;
+
+    }
+  }
+
+// .albumContainer img {
+//     width: 980px;
+//     height: 988px;
+//     position: absolute;
+//     top: 3164px;
+//     left: 374px;
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+//     align-items: center;
+//     position: absolute;
+//     top: 3164px;
+//     left: 374px;
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+//     align-items: center;
+//     width: 800px;
+//     height: 800px;
+// }
+
+.albumContainer {
+  background: linear-gradient($lightBlue, $skyeBlue);
+  width: 800px;
+  height: 824px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+    img {
+        padding-top: 25px;
+        height: 640px;
+        width: 660px;
+        object-fit: cover;
+      }
+  h4 {
+    font-weight: 300;
+    text-align: end;
+    margin-right: -250px;
+  }
+}

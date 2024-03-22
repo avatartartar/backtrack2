@@ -5,7 +5,6 @@
 * @requires react: Utilizes React for component structure, hooks for state management, and lifecycle.
 * @requires recharts: For creating the responsive bar chart and custom tooltip.
 * @requires react-redux: To dispatch actions and access the Redux store state.
-* @requires '../../styles/index.scss': Styles for the graph and tooltip components.
 * @imports
 * - useSelector, useDispatch from 'react-redux': Hooks for accessing and updating the Redux store.
 * - LabelList, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer from 'recharts': Components and elements for constructing the bar chart.
@@ -17,7 +16,6 @@
 
 import React, { useEffect, useState, PureComponent } from 'react';
 import { LabelList, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import '../../styles/index.scss'
 import { useDispatch, useSelector } from 'react-redux';
 import { selectTopTracks } from '../features/slice.js';
 

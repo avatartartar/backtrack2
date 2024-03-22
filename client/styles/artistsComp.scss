@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+
+
+$purple: #B200FF;
+$blue: #0085FF;
+$green: #0BEC21;
+$white: #efefef;
+$darkBlue: #130188;
+$darkBlue2: #13008b;
+$lightBlue: #ADADFF;
+$skyeBlue: #6072D1;
+
+$font-family-mono: "Red Hat Mono", monospace;
+$font-family-roboto-mono: "Roboto Mono", monospace;
+$font-family-header: "Rubik", sans-serif;
+//gradient for headers / slider etc:
+$gradient-text: -webkit-linear-gradient(60deg, $purple, $blue, $green);
+// border radius used for list elements, slider etc:
+$border-radius: 69px;
+// gradient animation style for landing page
+
+.artistsWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  // height: 50vh;
+  justify-content: center;
+  align-items: center;
+  h3 {
+    font-family: $font-family-header;
+    font-weight: 800;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-size: 60px;
+    background: $white;
+    // background: $gradient-text;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.artists {
+  width: 60%;
+  height: 40%;
+  margin-bottom: 3em;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2em;
+}
+
+.artists p {
+  font-family: $font-family-roboto-mono;
+  // font-family: $font-family-header;
+  font-size: 30px;
+  color: $white;
+}

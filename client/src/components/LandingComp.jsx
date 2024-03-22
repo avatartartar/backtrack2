@@ -128,8 +128,7 @@ const LandingComp = () => {
       unmountOnExit
     >
       <div className="overlay" style={{ textAlign: 'match-parent' }}>
-        {/* shifted the logo to the left 28 pixels to align the T with the loadingText and spinner */}
-        <img src={logo} alt="Logo" style={{ marginLeft: '28px', marginBottom:'50px' }} />
+        <img src={logo} alt="Logo" style={{marginBottom:'50px' }} />
         {promptUpload && <ImportComp />}
       </div>
     </CSSTransition>

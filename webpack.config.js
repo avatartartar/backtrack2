@@ -28,8 +28,8 @@ module.exports = (env, argv) => {
         },
         // Generates source maps for easeir debugging (see build folder)
         // devtool: isDevelopment ? 'source-map' : false,
-        // devtool: 'inline-source-map',
-        devtool: 'source-map',
+        devtool: 'inline-source-map',
+        // devtool: 'source-map',
         // Can create local servers to mimic production environment.
         devServer: {
             // Configures a local development server.
@@ -111,7 +111,7 @@ module.exports = (env, argv) => {
                 'process.env.REACT_APP_SPOTIFY_CLIENT_ID': JSON.stringify(process.env.REACT_APP_SPOTIFY_CLIENT_ID),
                 'process.env.REACT_APP_SPOTIFY_CLIENT_SECRET': JSON.stringify(process.env.REACT_APP_SPOTIFY_CLIENT_SECRET),
                 'process.env.REACT_APP_SPOTIFY_TOKEN': JSON.stringify(process.env.REACT_APP_SPOTIFY_TOKEN),
-                'process.env.ASSET_BASE_URL': JSON.stringify(process.env.ASSET_BASE_URL || 'http://localhost:8000'),
+                'process.env.BASE_URL': JSON.stringify(process.env.BASE_URL || 'http://localhost:8000'),
 
             }),
         ],
