@@ -72,7 +72,7 @@ const getSpotifyToken = async () =>{
 
     // tokenExpiration in minutes for easy viewing
     const tokenExpirationMinutes = Math.floor((tokenExpiration - now) / 60000);
-    console.log('tokenExpirationMinutes', tokenExpirationMinutes);
+    console.log('spotifyTokenRefresh.js: tokenExpirationMinutes', tokenExpirationMinutes);
 
   }
   // The token is still valid

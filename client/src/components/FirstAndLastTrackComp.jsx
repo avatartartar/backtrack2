@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useData } from './DataContext.jsx';
-import { getSpotifyToken } from "../features/getSpotifyToken.js";
+
 import albumPlaceholder from '../../assets/albumPlaceholder.jpg';
 
 

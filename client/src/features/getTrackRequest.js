@@ -1,4 +1,4 @@
-// import { getSpotifyToken } from "./getSpotifyToken.js";
+
 
 const getToken = async () => {
   const response = await fetch('/spotifyToken');
