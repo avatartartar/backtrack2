@@ -127,7 +127,7 @@ const LandingComp = () => {
       // what to do when done animating out
       unmountOnExit
     >
-      <div className="overlay" style={{ textAlign: 'match-parent' }}>
+      <div className="overlay" style={{ textAlign: 'match-parent', }}>
         <img src={logo} alt="Logo" style={{marginBottom:'50px' }} />
         {promptUpload && <ImportComp />}
       </div>

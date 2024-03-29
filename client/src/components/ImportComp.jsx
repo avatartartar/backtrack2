@@ -132,8 +132,8 @@ const ImportComp = () => {
       console.log('Invalid file format');
       return;
     }
-    if (!file.name.includes('my_spotify_data')) {
-      console.log('Invalid file name. Expected "my_spotify_data.zip"');
+    if (!file.name.includes('_spotify_') || !file.name.includes('.zip')) {
+      console.log('Invalid file name or type. Expected name ot include "_spotify_" and type to be ".zip"');
       return;
     }
     handleFileZip(file);
@@ -159,7 +159,7 @@ const ImportComp = () => {
           justifyContent: 'center',
         }}
       >
-        <div id='loadingText' style={{ position: 'absolute', top: '60%', color: 'white', }}>{loadingText}</div>
+        <div id='loadingText' style={{ position: 'absolute', top: '60%', color: 'purple' }}>{loadingText}</div>
 
         {fileDrop && (
           <div className="loading-spinner" style={{ position: 'absolute', top: '70%'  }}></div>

@@ -64,7 +64,8 @@ module.exports = (env, argv) => {
                 "stream": require.resolve("stream-browserify"),
                 "fs": require.resolve("browserify-fs"),
                 "path": require.resolve("path-browserify"),
-                "util": require.resolve("util/")
+                "util": require.resolve("util/"),
+                "vm": require.resolve("vm-browserify")
             }
         },
         stats: {
