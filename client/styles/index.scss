@@ -190,7 +190,7 @@ ul {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: 74px;
+  font-size: 34px;
   margin: 0px;
 }
 
@@ -412,7 +412,7 @@ ul {
   }
 }
 
-.importComp{
+.importComp {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -432,8 +432,9 @@ ul {
 }
 
 #loadingText {
-  margin-top: -5px;
-  font-size: 22px;
+  margin-top: auto;
+  font-size: 12px;
+  color: $skyeBlue;
 }
 
 /* Loading Animation Styles */
@@ -473,14 +474,16 @@ table {
   text-align: right;
 }
 
-thead {
+thead, #loadingText {
   font-weight: bold;
   text-align: center;
-  border: 2px solid #999;
+  text-decoration: underline;
+
+
 }
 
 th,
-td {
+td, thead {
   border: 1px solid #aaa;
 }
 

@@ -141,9 +141,10 @@ const ImportComp = () => {
 
   return (
 
-    <div className="importComp">
+    <div>
       {!sqlDb && (
       <div
+      className="importComp"
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -154,12 +155,9 @@ const ImportComp = () => {
           right: 0,
           bottom: 0,
           background: 'transparent',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
         }}
       >
-        <div id='loadingText' style={{ position: 'absolute', top: '60%', color: 'purple' }}>{loadingText}</div>
+        <div id='loadingText' style={{position: 'absolute', top: '60%', color: 'white'}}>{loadingText}</div>
 
         {fileDrop && (
           <div className="loading-spinner" style={{ position: 'absolute', top: '70%'  }}></div>

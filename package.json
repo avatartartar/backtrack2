@@ -10,8 +10,10 @@
     "both-prod": "concurrently --kill-others-on-fail \"cd server && npm start\" \"npm run build\"",
     "test": "jest --verbose",
     "install-all": "npm install && cd server && npm install",
+    "sexy2": "TARGET_DIR=$(pwd) npm run dev --prefix node_modules/cssxe",
+    "sexy-prod": "TARGET_DIR=$(pwd) npm run cssxe:prod --prefix node_modules/cssxe",
     "sexy": "TARGET_DIR=$(pwd) npm run cssxe:dev --prefix node_modules/cssxe",
-    "sexy-prod": "TARGET_DIR=$(pwd) npm run cssxe:prod --prefix node_modules/cssxe"
+    "sexy-prod2": "TARGET_DIR=$(pwd) npm run prod --prefix node_modules/cssxe"
   },
   "keywords": [],
   "author": "",

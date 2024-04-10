@@ -7,7 +7,7 @@ const getToken = async () => {
 };
 
 // retries: The number of retries in case of rate limit hit.
-const getTrackRequest = async (uri, retries = 3) => {
+const getTrackRequest = async (uri, retries = 5) => {
   try {
     // Send a GET request to the Spotify API to fetch track information
     const response = await fetch(`https://api.spotify.com/v1/tracks/${uri}?market=US`, {
@@ -31,7 +31,7 @@ const getTrackRequest = async (uri, retries = 3) => {
       // Waits for a given time (in seconds) by using a Promise and setTimeout.
       // The resolve function is called after the specified time has passed.
       // The time is calculated by multiplying the value of retryAfter by 1000 to get seconds from ms, and adding 1 second for safety.
-        await new Promise(resolve => setTimeout(resolve, (retryAfter + 1) * 1000));
+        await new Promise(resolve => setTimeout(resolve, (retryAfter + 1) * 1500));
         return getTrackInfo(uri, retries - 1); // Retry the request and decrement the number of retries left, though that number is of our own making. Often 3 apparently.
       }
       // console.log('response.headers', response.headers);
