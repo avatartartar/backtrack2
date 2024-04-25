@@ -28,7 +28,7 @@ import LandingComp from '../components/LandingComp.jsx';
 import FirstAndLastTrackComp from '../components/FirstAndLastTrackComp.jsx';
 import ListeningTotalsComp from '../components/ListeningTotalsComp.jsx';
 import ListeningPatternComp from '../components/ListeningPatternComp.jsx';
-import SkippedTracksComp from '../components/SkippedTracksComp.jsx';
+import SkippedComp from '../components/SkippedComp.jsx';
 import GraphComp from '../components/GraphComp.jsx';
 import LogStateComp from '../components/LogStateComp.jsx';
 import NavbarComp from '../components/NavbarComp.jsx';
@@ -60,7 +60,7 @@ export function App() {
       {/* <FirstAndLastTrackComp /> */}
       <ListeningTotalsComp />
       <ListeningPatternComp />
-      <SkippedTracksComp />
+      <SkippedComp />
     </DataProvider>
   )
 }

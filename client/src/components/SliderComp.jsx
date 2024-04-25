@@ -29,7 +29,7 @@ import {
   fetchTopArtists,
   setChosenTrack,
   setResults
- } from '../features/slice.js';
+} from '../features/slice.js';
 
 
 // this is to prevent the page from scrolling to the bottom when the slider is moved
@@ -80,8 +80,8 @@ const SliderComp = () => {
     const firstYearRes = await sqlDb.exec(firstTrackQuery)[0].values[0][0].substring(0, 4);
     try {
       console.log('firstYear before dispatching', firstYear);
-        // dispatch(setUserFirsts({ year: firstYearRes }));
-        dispatch(setFirstYear(firstYearRes));
+      // dispatch(setUserFirsts({ year: firstYearRes }));
+      dispatch(setFirstYear(firstYearRes));
 
     }
     catch (error) {
@@ -96,42 +96,43 @@ const SliderComp = () => {
     getFirstYear();
     // commenting out portions are to make testing easier during development
     const tl = gsap.timeline({
-      defaults: {ease: "power1.out"},
+      defaults: { ease: "power1.out" },
       onComplete: () => {
 
         gsap.to("#landingAndSticky", {
-          duration: 2, height: 150, padding: '30px', marginTop: '0px'})
-          // the background color behind the "Your ... Backtrack" and the slider
-        gsap.to('#landingAndSticky', { duration: 0, background: '#07004e' }, )
+          duration: 2, height: 150, padding: '30px', marginTop: '0px'
+        })
+        // the background color behind the "Your ... Backtrack" and the slider
+        gsap.to('#landingAndSticky', { duration: 0, background: '#07004e' },)
         // the slider
-        gsap.to(".slider", {duration: 2, width: '70%', opacity: 1, ease: 'power3.out'})
+        gsap.to(".slider", { duration: 2, width: '70%', opacity: 1, ease: 'power3.out' })
       }
     })
 
-    gsap.set(".slider", {opacity: 0})
-    gsap.set('.currentYear', {duration: 0.02, ease: 'in'})
-
+    gsap.set(".slider", { opacity: 0 })
+    gsap.set('.currentYear', { duration: 0.02, ease: 'in' })
 
   }, [reduxReady])
 
   return (
     <div id="landingAndSticky">
+      {/* <h1 className="slider">Your { yearHover != 2024 ? yearHover : 'All-Time' } Back Track</h1> */}
       <div className="landing sliderContainer">
         {/* the ternary operator below allows us to use the 2024 value in the slider while displaying the text 'all-time' */}
-        <h1 className="sliderSubContainer">Your { yearHover != 2024 ? yearHover : 'All-Time' } Back Track</h1>
+        <h1 className="sliderSubContainer">Your {yearHover != 2024 ? yearHover : 'All-Time'} Back Track</h1>
         {firstYear && (
-  <input
-    type="range"
-    min={firstYear}
-    max="2024"
-    defaultValue="2024"
-    onMouseUp={handleClick}
-    className="slider"
-    name='slider'
-    onChange={handleSliderInput}
-  />
-)}
-          {/* <br></br> */}
+          <input
+            type="range"
+            min={firstYear}
+            max="2024"
+            defaultValue="2024"
+            className="slider"
+            onMouseUp={handleClick}
+            onChange={handleSliderInput}
+            name='slider'
+          />
+        )}
+        {/* <br></br> */}
       </div>
     </div>
   )

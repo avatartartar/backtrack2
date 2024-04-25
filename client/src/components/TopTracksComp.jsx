@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import playIcon from '../../assets/play_icon.png';
 import pauseIcon from '../../assets/pause_icon.png';
-import { setChosenTrack} from '../features/slice.js';
+import { setChosenTrack } from '../features/slice.js';
 import { selectTopTracks, selectTopTracksFirstImage } from '../features/slice.js';
 import { useData } from './DataContext.jsx';
 
@@ -59,13 +59,13 @@ const TopTracksComp = () => {
 
   const fadeAudio = (audioArg, increment, delay, callback) => {
     const fade = setInterval(() => {
-      if (!audio && !increment) {return}
-      if((increment > 0 && audioArg.volume < 0.07) || (increment < 0 && audioArg.volume > 0.005)){
+      if (!audio && !increment) { return }
+      if ((increment > 0 && audioArg.volume < 0.07) || (increment < 0 && audioArg.volume > 0.005)) {
         audioArg.volume += increment;
       } else {
         clearInterval(fade);
 
-        if(callback) callback();
+        if (callback) callback();
       }
     }, delay);
   }
@@ -77,17 +77,17 @@ const TopTracksComp = () => {
     if (reduxReady && topTracks) {
       controlImage(topTracks[0]);
       if (audio) {
-      fadeAudio(audio, -0.005, 250, () => {
-        audio.pause();
-        setAudioPlaying(false);
-        audio.currentTime = 0;
-        setIsClickedId(null);
-      });
-    }
+        fadeAudio(audio, -0.005, 250, () => {
+          audio.pause();
+          setAudioPlaying(false);
+          audio.currentTime = 0;
+          setIsClickedId(null);
+        });
+      }
     }
   }, [year, reduxReady])
 
-const controlPlayback = (preview_url, track_uri, image_url, album_name, artist_name) => {
+  const controlPlayback = (preview_url, track_uri, image_url, album_name, artist_name) => {
 
     // For now, in the cases when the preview_url is null as it sometimes is. 2024-01-12_05-10-PM PST.
     if (!preview_url) return;
@@ -156,29 +156,29 @@ const controlPlayback = (preview_url, track_uri, image_url, album_name, artist_n
 
     return (
       <li>
-            {track.preview_url && (
-        <>
-          <img src={playIcon} alt="Play" style={isClickedId === track.track_uri ? {display: 'none'} : {}}/>
-          <img src={pauseIcon} alt="Pause" style={isClickedId === track.track_uri ? {display: 'block'} : {display: 'none'}} />
-        </>
-      )}
+        {track.preview_url && (
+          <>
+            <img src={playIcon} alt="Play" style={isClickedId === track.track_uri ? { display: 'none' } : {}} />
+            <img src={pauseIcon} alt="Pause" style={isClickedId === track.track_uri ? { display: 'block' } : { display: 'none' }} />
+          </>
+        )}
         <div className="trackScrollWrapper">
           <div className={isClickedId === track.track_uri ? 'onPlay' : 'tracks'} >
             <div onClick={() => {
               if (preview_url === null) return;
               controlPlayback(track.preview_url, track.track_uri, track.image_url, track.album_name, track.artist_name)
-              &
-              controlImage(track)
+                &
+                controlImage(track)
               if (isClickedId === track.track_uri) {
                 setIsClickedId(null);
               } else {
                 setIsClickedId(track.track_uri);
               }
             }}>
-            {track.track_name} - {track.artist_name}
+              {track.track_name} - {track.artist_name}
             </div>
             <div onClick={() => controlPlayback(track.preview_url, track.track_uri, track.image_url, track.album_name, track.artist_name)}>
-            {track.track_name} - {track.artist_name}
+              {track.track_name} - {track.artist_name}
             </div>
           </div>
         </div>
@@ -189,35 +189,35 @@ const controlPlayback = (preview_url, track_uri, image_url, album_name, artist_n
   return (
 
     <div className="TopTracksAndImageContainer">
-    <div className="TopTracksContainer" style={{ color: 'white', fontFamily: 'monospace' }}>
-  <h3 style={{ margin: '0px', textAlign: window.innerWidth > 1055 ? 'left' : 'center' }}>Top 10 Tracks</h3>
-      {/* <h3>Top 10 Tracks</h3> */}
-      <ul>
-        {topTracks.map(track => (
-          <TrackElement
-            key={track.track_uri}
-            track={track}
-            controlPlayback={ controlPlayback}
-            controlImage={controlImage}
-            isClickedId={isClickedId}
-            setIsClickedId={setIsClickedId}
-            preview_url={track.preview_url}
-          />
-        ))}
-      </ul>
-    </div>
-
-    <div className="trackImage">
-    {topTracks && reduxReady &&
-      <div className="trackImageCard">
-        <img src={chosenTrackImage} alt="image" />
-        <h4>{chosenTrackartist_name}
-        <br />
-        "{chosenTrackalbum_name}"</h4>
+      <div className="TopTracksContainer" style={{ color: 'white', fontFamily: 'monospace' }}>
+        <h3 style={{ margin: '0px', textAlign: window.innerWidth > 1055 ? 'left' : 'center' }}>Top 10 Tracks</h3>
+        {/* <h3>Top 10 Tracks</h3> */}
+        <ul>
+          {topTracks.map(track => (
+            <TrackElement
+              key={track.track_uri}
+              track={track}
+              controlPlayback={controlPlayback}
+              controlImage={controlImage}
+              isClickedId={isClickedId}
+              setIsClickedId={setIsClickedId}
+              preview_url={track.preview_url}
+            />
+          ))}
+        </ul>
       </div>
-    }
+
+      <div className="trackImage">
+        {topTracks && reduxReady &&
+          <div className="trackImageCard">
+            <img src={chosenTrackImage} alt="image" />
+            <h4>{chosenTrackartist_name}
+              <br />
+              "{chosenTrackalbum_name}"</h4>
+          </div>
+        }
+      </div>
     </div>
-  </div>
   )
 }
 

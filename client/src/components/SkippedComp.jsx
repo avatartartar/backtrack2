@@ -5,14 +5,12 @@ import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 
 import { selectSkippedArtists } from '../features/slice.js';
 
-
 const SkippedComp = ({ results, results2 }) => {
     const { sqlDb, reduxReady } = useData();
     const { tracks, albums, artists, minutes } = useSelector(state => state.query);
 
     const [skippedTracks, setSkippedTracks] = useState('');
     const [skippedArtists, setSkippedArtists] = useState('');
-
 
     // console.log('tracks skipped Arr after state declaration ->',skippedTracks);
     const getSkipData = () => {
